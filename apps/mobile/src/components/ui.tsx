@@ -38,7 +38,7 @@ export function Avatar({ label }: { label: string }) { return <View accessibilit
 export function EmptyState({ title, message }: { title: string; message?: string }) { return <View style={s.empty}><Text accessibilityRole="header">{title}</Text>{message && <Text style={s.muted}>{message}</Text>}</View>; }
 export function LoadingState({ label = 'Loading your information…' }: { label?: string }) { return <View style={s.loading}><ActivityIndicator color={t.colors.primary} /><Text>{label}</Text></View>; }
 export function ErrorState({ message }: { message: string }) { return <View style={s.errorBox}><Text accessibilityRole="alert">{message}</Text></View>; }
-export function InfoRow({ label, value }: { label: string; value?: string }) { return <View style={s.row}><Text style={[s.muted, { width: 88 }]}>{label}</Text><Text style={{ flex: 1 }}>{value || 'Not provided'}</Text></View>; }
+export function InfoRow({ label, value }: { label: string; value?: string }) { return <View style={s.row}><Text style={[s.muted, { width: 88, fontSize: t.type.caption, lineHeight: 18 }]}>{label}</Text><Text style={{ flex: 1 }}>{value || 'Not provided'}</Text></View>; }
 const s = StyleSheet.create({
   text: { color: t.colors.text, fontSize: t.type.body, lineHeight: 21, flexShrink: 1 }, heading: { color: t.colors.ink, fontSize: t.type.section, lineHeight: 25, fontWeight: t.weight.bold, marginTop: 0 },
   error: { color: t.colors.error }, button: { minHeight: 44, borderRadius: t.radius.sm, paddingHorizontal: 16, paddingVertical: 11, alignItems: 'center', justifyContent: 'center', borderWidth: 1 },

@@ -1,8 +1,8 @@
 # Android visual-overhaul evidence — November 12, 2026
 
-Actual Pixel_9_Pro / emulator-5554 state device, Android16/API36 x86_64, 1280×2856. Real non-production team517-dev with synthetic accounts/content. Standalone Hermes APK, no Metro. Final installed APK: **40,853,564 bytes**, SHA256 **4ca8318c4f5b015c631d13080ff81e593e78d1d05d679a45ebfed5b2922aa119**.
+Actual Pixel_9_Pro / emulator-5554 state device, Android16/API36 x86_64, 1280×2856. Real non-production team517-dev with synthetic accounts/content. Standalone Hermes APK, no Metro. Final installed APK: **40,853,600 bytes**, SHA256 **7d282c03ad0bd76ac284cc5fc854ab3da99845ae7ce946527750ab8f88ace7a2**.
 
-Evidence was collected during iterative APK rebuilds. final-* captures show the unchanged relevant layouts before final navigation/assistant refinement; native scheduling captures use 1fd87f5; backfix-* and release-ai-* use b53811a1; package-* captures use the final hash above. The final refinement hides root tabs on focused pages and opens task/circle conversations as a focused modal. They are not all screenshots of a single build, and intermediate keyboard/system-dialog evidence is explicitly labelled. No credential-filled login screenshot is included.
+Evidence was collected during iterative APK rebuilds. final-* captures show the unchanged relevant layouts before final navigation/assistant refinement; native scheduling captures use 1fd87f5; backfix-* and release-ai-* use b53811a1; package-* captures use 4ca8318c; final-package-task uses the final hash above (caption-wrap correction only). The final refinement hides root tabs on focused pages and opens task/circle conversations as a focused modal. They are not all screenshots of a single build, and intermediate keyboard/system-dialog evidence is explicitly labelled. No credential-filled login screenshot is included.
 
 [Overview](overview.png) · [Discovery comparison](compare-discovery.png) · [Community comparison](compare-community.png) · [Conversation comparison](compare-conversation.png) · [Task comparison](compare-task-detail.png). Before/reference/after images have different content, roles where indicated and device frames; no matching percentage is claimed.
 
@@ -36,3 +36,5 @@ No native pass claimed for all creation/error/loading states, native AI review r
 Issues: no new observed BLOCKER/HIGH; MEDIUM Back-order bug fixed and retested. LOW original icon/asset/precise spacing differences remain under the approved PDF approximation. Full Figma visual acceptance remains open until those differences and the pending native checks are reviewed.
 
 Final Inbox screenshot: [Inbox](release-inbox.png). [Floating Gboard](software-keyboard.png) is a real OS keyboard, not an application keyboard. No Windows/device security or networking settings were changed. Main overhaul hosted CI passed at [c85287b](https://github.com/KuoFuKai/team517/actions/runs/43266289770); focused navigation follow-up CI is reported separately.
+
+LOW label-wrap correction was also rendered on the final APK: [Task information](final-package-task.png). Compensation and Who can offer fit on one label line; native screenshot confirms the CTA is visible.

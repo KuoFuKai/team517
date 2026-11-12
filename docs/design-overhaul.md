@@ -46,3 +46,5 @@ New dependencies are DM Sans 0.4.2 and native datetimepicker 8.6.0; Expo font wa
 APK: artifacts/android/team517-preview.apk. Install as an update to edu.cornelltech.team517; uninstalling is unnecessary. The [native evidence matrix](native-evidence/2026-11-12-design-overhaul/README.md) records what actually rendered and the final artifact hash. This remains a development Preview, not a production distribution.
 
 Main overhaul commit c85287b hosted Node 22 CI passed: [run](https://github.com/KuoFuKai/team517/actions/runs/43266289770). Final focused-navigation/modal changes passed the same focused 61-test client suite, typecheck and Hermes export; no backend changes.
+
+Final LOW polish: caption-sized information labels prevent orphaned wrapping (Compensation / Who can offer); rendered again on the final APK. No business logic changed.

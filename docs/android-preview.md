@@ -1,5 +1,7 @@
 # Android Preview — Sprint 7B.1
 
+Latest UI artifact: [design alignment batch 1](design-alignment-batch1.md) rebuilt the same Preview APK on November 12, SHA256 `8510aff3478725df1ad33057684b79c620ae4578082eda856410d094242efaa2`, 39,990,716 bytes. Its scoped native tests passed against the existing cloud backend; older APK hash/launch records below are historical. No new backend deployment occurred for the UI batch; physical acceptance remains pending.
+
 ## Purpose and current status
 
 Internal Product Studio demo/team review only: **team517 Preview**, non-production Firebase project **team517-dev**. No Google Play submission, production environment or iOS build.

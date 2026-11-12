@@ -8,14 +8,16 @@ import { ScrollResetContext } from './src/navigation/scroll';
 import { ScrollView, StyleSheet, KeyboardAvoidingView, View, StatusBar } from 'react-native';
 import { SafeAreaProvider, SafeAreaView, initialWindowMetrics } from 'react-native-safe-area-context';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from 'firebase/auth';
-import type { CareContextDto } from '@team517/contracts';
+import type { CareContextDto, TaskDetailDto } from '@team517/contracts';
 import { auth } from './src/auth/firebase';
 import * as api from './src/api/client';
 import { useSession } from './src/hooks/useSession';
 import { useHardwareBack } from './src/navigation/useHardwareBack';
 import { theme as t } from './src/theme';
-import { friendlyError, roleLabel } from './src/utils/presentation';
+import { friendlyError } from './src/utils/presentation';
 import { AppHeader, BottomNavigation, type MainTab } from './src/components/AppChrome';
+import { SegmentedControl } from './src/components/SegmentedControl';
+import { createPostDraftSession } from './src/navigation/post-draft';
 import { Button, Text, Card, EmptyState, ErrorState, LoadingState } from './src/components/ui';
 import { AuthScreen } from './src/screens/AuthScreen';
 import { HomeScreen } from './src/screens/HomeScreen';
@@ -37,6 +39,8 @@ function AppContent() {
   const { user, profile, setProfile } = session;
   const [tab, setTab] = useState<MainTab>('tasks'), [overlay, setOverlay] = useState<'inbox' | 'notifications' | 'verification' | 'create' | null>(null);
   const [circleTasks, setCircleTasks] = useState(false);
+  const [postDraftId, setPostDraftId] = useState<string | null>(null);
+  const postDraftSession = useRef(createPostDraftSession<TaskDetailDto>()).current;
   useEffect(() => { const frame = requestAnimationFrame(resetScroll); return () => cancelAnimationFrame(frame); }, [tab, overlay, circleTasks, resetScroll]);
   const [contexts, setContexts] = useState<CareContextDto[]>([]), [context, setContext] = useState<CareContextDto | null>(null);
   const [busy, setBusy] = useState(false), [error, setError] = useState(''), [unread, setUnread] = useState(false), [messageUnread, setMessageUnread] = useState(false);
@@ -54,7 +58,7 @@ function AppContent() {
     if (auth.currentUser?.uid !== uid) return;
     setContexts(data.careContexts); setContext(current => data.careContexts.find(c => c.id === current?.id) ?? data.careContexts[0] ?? null);
   };
-  useEffect(() => { setContexts([]); setContext(null); setTab('tasks'); setOverlay(null); setError(''); setUnread(false); setMessageUnread(false); setCircleTasks(false); }, [user?.uid]);
+  useEffect(() => { setContexts([]); setContext(null); setTab('tasks'); setOverlay(null); setError(''); setUnread(false); setMessageUnread(false); setCircleTasks(false); setPostDraftId(null); postDraftSession.reset(); }, [user?.uid]);
   // Auth restoration resets navigation first. Apply a queued notification only
   // after the session is ready so the initial account reset cannot erase it.
   useEffect(() => {
@@ -67,12 +71,12 @@ function AppContent() {
     if (profile) void api.getNotifications().then(result => { if (active) setUnread(result.notifications.some(n => !n.readAt)); }).catch(() => {});
     return () => { active = false; };
   }, [profile?.id, tab, overlay, pushRefresh]);
-  const navigate = (next: MainTab) => { setTab(next); setOverlay(null); setError(''); setCircleTasks(false); };
+  const navigate = (next: MainTab) => { if (next === 'post' && tab !== 'post') { setPostDraftId(null); postDraftSession.reset(); } setTab(next); setOverlay(null); setError(''); setCircleTasks(false); };
   useHardwareBack(() => { if (overlay) { setOverlay(null); return true; } if (tab !== 'tasks') { navigate('tasks'); return true; } return false; });
-  const titles: Record<MainTab, string> = { community: 'Community', tasks: 'Your tasks', calendar: 'Your schedule', discover: 'Find a task', circle: 'Your circle', me: 'Me' };
+  const titles: Record<MainTab, string> = { community: 'Community', tasks: helperMode ? 'Your caregiving tasks' : 'Your tasks', calendar: 'Your tasks', discover: 'Find nearby tasks', circle: 'Your circle', me: 'Your profile', post: 'Post a task', messages: 'Messages' };
   const title = !user ? 'Care starts together' : !profile ? 'Welcome to team517' : overlay === 'inbox' ? 'Inbox' : overlay === 'notifications' ? 'Notifications' : overlay === 'verification' ? 'Verification' : overlay === 'create' ? 'Create your circle' : titles[tab];
   return <SafeAreaView style={s.safe}><StatusBar barStyle="dark-content" backgroundColor={t.colors.canvas} />
-    <AppHeader title={title} subtitle={profile ? roleLabel(profile.lastActiveRole ?? profile.primaryOnboardingRole) : undefined} unread={unread || messageUnread} notifications={profile ? () => { setOverlay('inbox'); setError(''); } : undefined} disabled={busy} />
+    <AppHeader title={title} contextLabel={profile ? helperMode ? 'Caregiver' : context?.name ?? 'Your care circle' : undefined} changeContext={() => navigate(helperMode ? 'me' : 'circle')} unread={unread} notifications={profile ? () => { setOverlay('notifications'); setError(''); } : undefined} disabled={busy} />
     <KeyboardAvoidingView style={s.flex} behavior="padding">
       <ScrollView ref={scroll} nestedScrollEnabled keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag" contentContainerStyle={s.scroll}>
         <ScrollResetContext.Provider value={resetScroll}><View style={s.content}>
@@ -84,11 +88,12 @@ function AppContent() {
             <Button title="Sign out" disabled={busy} onPress={() => void run(async () => { await beforeLogout(); await signOut(auth); })} />
           </> : <>
             {overlay === 'create' ? <><Button title="Back to circle" onPress={() => setOverlay(null)} /><CreateCareContextScreen busy={busy} create={name => void run(async () => { const created = await api.createCareContext({ name }); setContext(created); setContexts(list => [created, ...list]); setCircleTasks(true); setOverlay(null); setTab('tasks'); await loadContexts(); })} /></> : overlay === 'inbox' ? <MessagingScreen back={() => setOverlay(null)} updates={() => setOverlay('notifications')} /> : overlay === 'notifications' || overlay === 'verification' ? <SupportScreen key={overlay} mode={overlay} pushId={pushId} consumePush={() => setPushId(null)} onNotificationsLoaded={setUnread} back={() => setOverlay(null)} /> : <>
-              {tab === 'tasks' && (helperMode && !circleTasks ? <MyWorkScreen back={() => navigate('me')} /> : context ? <><Button variant="quiet" title={context.name + ' · Change circle'} disabled={busy} onPress={() => navigate('circle')} /><TaskWorkspace key={context.id} context={context} viewerId={user.uid} helper={profile.roles.includes('HELPER')} back={() => navigate('circle')} /></> : <><EmptyState title="A place for your care" message="Choose or create a care circle to begin planning tasks." /><Button title="Go to my circle" onPress={() => navigate('circle')} /></>)}
+              {(tab === 'tasks' || tab === 'post') && (tab === 'tasks' && helperMode && !circleTasks ? <><SegmentedControl value="status" options={[{ value: 'calendar', label: 'Calendar' }, { value: 'status', label: 'By status' }]} onChange={value => { if (value === 'calendar') navigate('calendar'); }} /><MyWorkScreen back={() => navigate('me')} /></> : context ? <TaskWorkspace key={context.id + (tab === 'post' ? '-post' : '-tasks')} context={context} viewerId={user.uid} helper={profile.roles.includes('HELPER')} createOnOpen={tab === 'post'} initialDraftId={postDraftId} createDraftRequest={() => postDraftSession.get(() => api.createTaskDraft(context.id, {}))} onDraftCreated={id => { if (auth.currentUser?.uid === user.uid) setPostDraftId(id); }} finishPost={() => navigate('tasks')} calendar={() => navigate('calendar')} back={() => navigate('circle')} /> : <><EmptyState title="A place for your care" message="Choose or create a care circle to begin planning tasks." /><Button title="Go to my circle" onPress={() => navigate('circle')} /></>)}
               {tab === 'community' && <CommunityScreen />}
               {tab === 'discover' && <DiscoveryWorkspace back={() => navigate('tasks')} />}
-              {tab === 'calendar' && <SupportScreen mode="calendar" back={() => navigate('tasks')} />}
-              {tab === 'circle' && <CareContextsScreen contexts={contexts} busy={busy} canCreate={profile.roles.includes('CARE_MANAGER')} refresh={() => void run(loadContexts)} create={() => setOverlay('create')} open={id => void run(async () => { setContext(await api.getCareContext(id)); setCircleTasks(true); setTab('tasks'); })} />}
+              {tab === 'calendar' && <><SegmentedControl value="calendar" options={[{ value: 'calendar', label: 'Calendar' }, { value: 'status', label: 'By status' }]} onChange={value => { if (value === 'status') navigate('tasks'); }} /><SupportScreen mode="calendar" back={() => navigate('tasks')} /></>}
+              {tab === 'messages' && <MessagingScreen back={() => navigate('tasks')} updates={() => setOverlay('notifications')} />}
+              {tab === 'circle' && <><Button title="Messages" onPress={() => setOverlay('inbox')} /><CareContextsScreen contexts={contexts} busy={busy} canCreate={profile.roles.includes('CARE_MANAGER')} refresh={() => void run(loadContexts)} create={() => setOverlay('create')} open={id => void run(async () => { setContext(await api.getCareContext(id)); setCircleTasks(true); setTab('tasks'); })} /></>}
               {tab === 'me' && <><Card><Text accessibilityRole="header">{user.email}</Text><Text>Your account and care preferences.</Text></Card><HomeScreen busy={busy} profile={profile} initialize={() => {}} loadUser={() => void run(async () => setProfile(await api.getCurrentUser()))} switchRole={role => void run(async () => { setProfile(await api.updateRolePreference({ lastActiveRole: role })); navigate('tasks'); })} /><Button title="Your care circle" onPress={() => navigate('circle')} /><Button title="Messages" onPress={() => setOverlay('inbox')} /><PushSettings /><Button title="Verification status" onPress={() => setOverlay('verification')} /><Button title="Notifications" onPress={() => setOverlay('notifications')} /><Button title="Sign out" disabled={busy} onPress={() => void run(async () => { await beforeLogout(); await signOut(auth); })} /></>}
             </>}
           </>}
@@ -96,7 +101,7 @@ function AppContent() {
         </View></ScrollResetContext.Provider>
       </ScrollView>
     </KeyboardAvoidingView>
-    {user && profile && <BottomNavigation active={tab} helper={profile.roles.includes('HELPER')} disabled={busy} change={navigate} />}
+    {user && profile && <BottomNavigation active={tab} helper={helperMode} disabled={busy} messageUnread={messageUnread} change={navigate} />}
   </SafeAreaView>;
 }
 const s = StyleSheet.create({ safe: { flex: 1, backgroundColor: t.colors.canvas }, flex: { flex: 1 }, scroll: { flexGrow: 1, paddingHorizontal: t.screenPadding, paddingBottom: 32 }, content: { width: '100%', maxWidth: t.contentWidth, alignSelf: 'center', gap: 14 } });

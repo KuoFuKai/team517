@@ -1,5 +1,7 @@
 # Sprint 7B.1 standalone cloud acceptance — November 12, 2026
 
+Later UI batch 1: [scoped native results and screenshots](design-alignment-batch1.md) record the rebuilt PDF-based shell/receiver Task screen, preserved draft/history/Calendar/Message/location entry and final real background FCM Conversation routing. These are additional AVD observations, not a full repetition of every screen below or physical-phone acceptance.
+
 Target: **Pixel_9_Pro / emulator-5554**, adb **device**, Android **16/API 36**, x86_64. Reinstalled standalone `team517 Preview` APK; Metro 8081/8099 and Firebase 9199/8280/5001/4300 stopped, adb reverse empty. This is cloud team517-dev, separate from historical LOCAL acceptance below. Initial offline transport required the user to restart the AVD; no wipe/reset performed.
 
 | Actually rendered/exercised | Result and limit |

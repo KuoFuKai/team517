@@ -1,15 +1,22 @@
 import React from 'react';
-import { View, Pressable, StyleSheet, Platform } from 'react-native';
-import { Text, Button } from './ui';
+import { View, Pressable, StyleSheet } from 'react-native';
+import Feather from '@expo/vector-icons/Feather';
+import { Text } from './ui';
 import { theme as t } from '../theme';
-export type MainTab = 'tasks' | 'calendar' | 'discover' | 'circle' | 'me' | 'community';
-const items: { id: MainTab; label: string; icon: string }[] = [{ id: 'tasks', label: 'Tasks', icon: '☷' }, { id: 'calendar', label: 'Calendar', icon: '▦' }, { id: 'discover', label: 'Find tasks', icon: '⌕' }, { id: 'community', label: 'Community', icon: '◇' }, { id: 'me', label: 'Me', icon: '○' }];
-export function BottomNavigation({ active, helper, disabled, change }: { active: MainTab; helper: boolean; disabled: boolean; change: (tab: MainTab) => void }) {
-  return <View style={s.nav}>{items.filter(i => helper || i.id !== 'discover').map(i => <Pressable key={i.id} accessibilityRole="tab" accessibilityLabel={i.label} accessibilityState={{ selected: active === i.id, disabled }} disabled={disabled} onPress={() => change(i.id)} style={[s.tab, active === i.id && s.active]}>
-    <Text style={[s.icon, active === i.id && s.selected]}>{i.icon}</Text><Text style={[s.label, active === i.id && s.selected]}>{i.label}</Text>
-  </Pressable>)}</View>;
+import { navigationItems, type MainTab } from '../navigation/tabs';
+export type { MainTab } from '../navigation/tabs';
+export function BottomNavigation({ active, helper, disabled, change, messageUnread = false }: { active: MainTab; helper: boolean; disabled: boolean; change: (tab: MainTab) => void; messageUnread?: boolean }) {
+  return <View style={s.nav}>{navigationItems(helper).map(item => {
+    const selected = item.id === active || active === 'calendar' && item.id === 'tasks';
+    const post = item.id === 'post';
+    return <Pressable key={item.id} accessibilityRole="tab" accessibilityLabel={item.label} accessibilityState={{ selected, disabled }} disabled={disabled} onPress={() => change(item.id)} style={s.tab}>
+      <View style={post ? s.post : s.iconSlot}><Feather name={item.icon} size={post ? 27 : 22} color={post ? t.colors.surface : selected ? t.colors.primary : t.colors.muted} />{messageUnread && (item.id === 'messages' || item.id === 'circle') && <View style={s.dot} />}</View>
+      <Text style={[s.label, (selected || post) && s.selected]}>{item.label}</Text>
+    </Pressable>;
+  })}</View>;
 }
-export function AppHeader({ title, subtitle, unread, notifications, disabled }: { title: string; subtitle?: string; unread: boolean; notifications?: () => void; disabled?: boolean }) {
-  return <View style={s.header}><View style={s.heading}><Text style={s.brand}>team517</Text><Text accessibilityRole="header">{title}</Text>{subtitle && <Text style={s.subtitle}>{subtitle}</Text>}</View>{notifications && <Button disabled={disabled} title={unread ? 'Inbox •' : 'Inbox'} accessibilityLabel={unread ? 'Inbox, unread messages or updates' : 'Inbox'} onPress={notifications} />}</View>;
+export function AppHeader({ title, contextLabel, changeContext, unread, notifications, disabled }: { title: string; contextLabel?: string; changeContext?: () => void; unread: boolean; notifications?: () => void; disabled?: boolean }) {
+  if (!contextLabel) return <View style={s.authHeader}><Text style={s.brand}>team517</Text></View>;
+  return <View style={s.header}><View style={s.top}><Pressable disabled={disabled} accessibilityRole="button" accessibilityLabel="Change care circle or role" onPress={changeContext} style={s.context}><Text style={s.contextText}>{contextLabel}</Text><Feather name="chevron-down" size={18} color={t.colors.muted} /></Pressable>{notifications && <Pressable accessibilityRole="button" accessibilityLabel={unread ? 'Notifications, unread updates' : 'Notifications'} disabled={disabled} onPress={notifications} style={s.bell}><Feather name="bell" size={23} color={t.colors.ink} />{unread && <View style={s.dot} />}</Pressable>}</View><Text accessibilityRole="header" style={s.title}>{title}</Text></View>;
 }
-const s = StyleSheet.create({ header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: t.screenPadding, gap: 12, backgroundColor: t.colors.canvas }, heading: { flex: 1 }, brand: { fontSize: 12, letterSpacing: 2, color: t.colors.primary, fontWeight: '700' }, subtitle: { color: t.colors.muted, fontSize: 12 }, nav: { flexDirection: 'row', backgroundColor: t.colors.surface, borderTopWidth: 1, borderColor: t.colors.border, paddingVertical: 8, paddingHorizontal: 8, paddingBottom: Platform.OS === 'android' ? t.space.xl : t.space.sm }, tab: { flex: 1, minHeight: 56, justifyContent: 'center', alignItems: 'center', borderRadius: 12, paddingVertical: 6 }, active: { backgroundColor: t.colors.primarySoft }, icon: { fontSize: 22, color: t.colors.muted, lineHeight: 25 }, label: { fontSize: 11, color: t.colors.muted }, selected: { color: t.colors.primary, fontWeight: '700' } });
+const s = StyleSheet.create({ header: { paddingHorizontal: t.screenPadding, paddingTop: 4, paddingBottom: 16, backgroundColor: t.colors.canvas }, top: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 }, context: { flexDirection: 'row', alignItems: 'center', gap: 8, flexShrink: 1, minHeight: 44 }, contextText: { fontSize: 17, lineHeight: 23, fontWeight: '700', color: t.colors.ink }, bell: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }, title: { color: t.colors.ink, fontSize: 24, lineHeight: 32, fontWeight: '700', marginTop: 8 }, authHeader: { padding: t.screenPadding, alignItems: 'center' }, brand: { color: t.colors.ink, fontSize: 18, fontWeight: '700' }, nav: { flexDirection: 'row', backgroundColor: t.colors.surface, borderTopWidth: StyleSheet.hairlineWidth, borderColor: t.colors.border, paddingVertical: 6, paddingHorizontal: 6 }, tab: { flex: 1, minHeight: 64, alignItems: 'center', justifyContent: 'center', gap: 3 }, iconSlot: { width: 44, height: 32, alignItems: 'center', justifyContent: 'center' }, post: { width: 48, height: 48, marginTop: -16, borderRadius: 24, backgroundColor: t.colors.primary, alignItems: 'center', justifyContent: 'center' }, label: { fontSize: 10, lineHeight: 14, color: t.colors.muted }, selected: { color: t.colors.primary, fontWeight: '600' }, dot: { position: 'absolute', top: 6, right: 7, width: 6, height: 6, borderRadius: 3, backgroundColor: t.colors.primary, borderWidth: 1, borderColor: t.colors.surface } });

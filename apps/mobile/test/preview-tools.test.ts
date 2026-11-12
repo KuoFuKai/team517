@@ -4,6 +4,7 @@ import { assertDeploymentUserEnvironment, assertPreviewTarget, PREVIEW_CONTEXT_I
 import { conversationSchema } from '../../../functions/src/validation/messaging';
 import { draftSchema } from '../../../functions/src/validation/tasks';
 import { readFileSync } from 'node:fs';
+import { URL } from 'node:url';
 test('cloud indexes support the existing filtered rating aggregate used by Offer summaries', () => {
   const manifest = JSON.parse(readFileSync(new URL('../../../firebase/firestore.indexes.json', import.meta.url), 'utf8'));
   assert.ok(manifest.indexes.some((index: any) => index.collectionGroup === 'reviews' && index.queryScope === 'COLLECTION' && index.fields.length === 2 && index.fields[0].fieldPath === 'revieweeId' && index.fields[0].order === 'ASCENDING' && index.fields[1].fieldPath === 'rating' && index.fields[1].order === 'ASCENDING'));

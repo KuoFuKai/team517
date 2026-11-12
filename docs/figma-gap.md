@@ -1,5 +1,9 @@
 # Figma alignment gaps — Sprint 7B
 
+Current implementation: [PDF-based batch 1](design-alignment-batch1.md) updates role navigation and receiver Tasks/By status, with native before/after evidence. Other body screens and exact original font/icon fidelity remain open. Do not treat the older approximation labels below as acceptance.
+
+**November 12 audit supersedes the unknown-visual-reference limitation for the sampled PDF pages:** the user supplied a 101-page Figma PDF export. All pages were inventoried; 16 were rendered/reviewed against actual Preview baselines and frontend code. The fresh Figma MCP requests still hit Starter-plan quota, so authoritative tokens/assets remain unavailable. See [alignment audit and implementation plan](figma-alignment-plan.md), [complete page inventory](design-audit/2026-11-12/page-inventory.csv) and labelled comparison boards there. The following Sprint 7B table is historical and its “close approximation” description is not current visual acceptance. No UI redesign was implemented in this audit.
+
 Source file: [Patient / Family — Schedule](https://www.figma.com/design/kRer5BBbNvdSdPkanLC6HT/Patient---Family-%E2%80%94-Schedule?node-id=0-1).
 
 Metadata and **145:3991 / V2 Caregiver Find tasks · List** design context were retrieved November 10, 2026. That response included a screenshot. The next Post-task request hit the Starter-plan quota. Metadata indicates frame names, not visual fidelity. No other V2 screenshot is claimed as inspected this sprint.

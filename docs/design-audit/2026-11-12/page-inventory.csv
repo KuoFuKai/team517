@@ -1,0 +1,102 @@
+pdf_page,width_pt,height_pt,first_text_lines,review_level
+1,359.0,44.0,Grocery pickup Grocery pickup,text inventory only
+2,390.0,844.0,Mom’s care / Your tasks / Calendar By status,rendered visual review
+3,390.0,844.0,Mom’s care / Your tasks / Calendar By status,text inventory only
+4,390.0,844.0,Mom’s care / Your tasks / Calendar By status,rendered visual review
+5,390.0,1286.0,Task details / Clinic visit with Mom / Posted by you · For Mom,rendered visual review
+6,391.0,1286.0,Task details / Clinic visit with Mom / Posted by you · For Mom,text inventory only
+7,391.0,1286.0,Task details / Clinic visit with Mom / Posted by you · For Mom,text inventory only
+8,350.0,310.969971,Step 1 of 5 · Your role / Step 2 of 5 · Your details / Step 3 of 5 · Verify identity,text inventory only
+9,1021.649414,225.692017,Profile photo · Optional / Add a photo / Profile photo · Optional,text inventory only
+10,390.0,844.0,Mom’s care / Your tasks / Calendar By status,text inventory only
+11,390.0,844.0,Switch role / How are you using Care  / circle?,rendered visual review
+12,390.0,844.0,Describe your task / Listening… / Speak naturally. AI will organize your request ,text inventory only
+13,390.0,940.0,Review AI draft / Your task is organized / Check the details before applying them.,rendered visual review
+14,390.0,1080.0,Task details / Clinic companion for  / Mom,rendered visual review
+15,390.0,1050.0,Edit task / Update by voice or ask AI to reorganize  / your changes.,text inventory only
+16,390.0,844.0,Caregiver · Grace / Your caregiving tasks / Calendar By status,rendered visual review
+17,390.0,844.0,Caregiver · Grace / Find nearby tasks / List Map,rendered visual review
+18,390.0,844.0,Caregiver · Grace / Tasks near you / List Map,text inventory only
+19,390.0,1100.0,Task details / PAID CAREGIVER / Clinic companion for ,rendered visual review
+20,390.0,844.0,Task accepted / You accepted the task / Added to your task calendar.,text inventory only
+21,390.0,844.0,Caregiver · Grace / Messages / Grace Reed 10:32 AM,rendered visual review
+22,390.0,844.0,Caregiver · Grace / Caregiver profile / Grace Reed,rendered visual review
+23,390.0,920.0,My points / Available to transfer / 860 points,text inventory only
+24,390.0,2050.0,"Mom’s care / Community / Near Ithaca · A little help, close to home.",rendered visual review
+25,390.0,940.0,"Mom’s care / Community / Near Ithaca · A little help, close to home.",text inventory only
+26,390.0,940.0,"Mom’s care / Community / Near Ithaca · A little help, close to home.",text inventory only
+27,390.0,940.0,"Mom’s care / Community / Near Ithaca · A little help, close to home.",text inventory only
+28,390.0,845.0,Care circle / Welcome back / Log in with your email.,rendered visual review
+29,390.0,844.0,Get started / Step 1 of 5 · Your role / How will you use this app?,text inventory only
+30,390.0,923.0,Your details / Step 2 of 5 · Your details / Let’s get to know you,text inventory only
+31,390.0,870.0,Your details / Step 2 of 5 · Your details / Let’s get to know you,text inventory only
+32,390.0,990.0,Your details / Step 2 of 5 · Your details / Who are you helping?,text inventory only
+33,390.0,844.0,Verify identity / Step 3 of 5 · Verify identity / Verify it’s you,text inventory only
+34,390.0,844.0,Verify identity / Step 3 of 5 · Verify identity / Identity verified,text inventory only
+35,390.0,844.0,Connect / Step 4 of 5 · Connect / Find people you know,text inventory only
+36,390.0,844.0,Connect / Step 4 of 5 · Connect / People you may know,text inventory only
+37,390.0,844.0,Connect / Step 4 of 5 · Connect / Your circle is growing,text inventory only
+38,390.0,844.0,Get started / Step 5 of 5 · All set / You’re all set!,text inventory only
+39,350.0,388.0,Find people I know / Choose where to look. / Phone contacts,text inventory only
+40,350.0,388.0,Invite someone / Choose how to send your invitation. / Text message,text inventory only
+41,390.0,1253.0,Post a task / Start with your voice or notes / Tell AI what you need. You can review every ,rendered visual review
+42,390.0,844.0,Mom’s care / Your profile / Grace ReedGR Care coordinator · Verified,text inventory only
+43,390.0,900.0,"My points / Available balance / 1,280 points",text inventory only
+44,390.0,844.0,Buy points / Choose a points package / Points are used to pay caregivers inside Care ,text inventory only
+45,390.0,844.0,Transfer out / Transfer points out / Choose how many points to transfer from your ,text inventory only
+46,390.0,844.0,Mom’s care / Your helpers / List Nearby map,text inventory only
+47,390.0,844.0,Nearby caregivers / Searching around you… / Looking for verified caregivers near Mom’s ,text inventory only
+48,390.0,844.0,Log in / Check your email / Enter your 6-digit email code.,text inventory only
+49,350.0,432.0,"Find an address / Search by street, city or postal code. / 123 Oak",text inventory only
+50,390.0,984.0,Your details / Step 2 of 5 · Your details / Let’s get to know you,text inventory only
+51,390.0,844.0,Verify identity / Step 3 of 5 · Verify identity / Confirm it’s you,text inventory only
+52,390.0,844.0,Verify identity / Step 3 of 5 · Verify identity / Confirm it’s you,text inventory only
+53,390.0,844.0,Verify identity / Step 3 of 5 · Verify identity / Confirm it’s you,text inventory only
+54,390.0,844.0,Invite / Step 4 of 5 · Connect / Invite someone you trust,text inventory only
+55,390.0,844.0,Invite / Step 4 of 5 · Connect / Invite someone you trust,text inventory only
+56,390.0,844.0,Invite / Step 4 of 5 · Connect / Invite someone you trust,text inventory only
+57,390.0,844.0,Connect / Step 4 of 5 · Connect / Invitation shared,text inventory only
+58,390.0,940.0,Nearby caregivers / LP / AC,text inventory only
+59,390.0,1196.0,Post a task / Task name / Clinic visit with Mom,text inventory only
+60,390.0,844.0,Post a task / Draft saved successfully / Your can review the draft anytime.,text inventory only
+61,390.0,844.0,Post a task / Task posted successfully / Your care circle can now offer to help.,text inventory only
+62,390.0,844.0,Log in / Check your email / Enter your 6-digit email code.,text inventory only
+63,390.0,923.0,Your details / Step 2 of 5 · Your details / Let’s get to know you,text inventory only
+64,390.0,870.0,Your details / Step 2 of 5 · Your details / Let’s get to know you,text inventory only
+65,390.0,844.0,Your details / Step 2 of 5 · Your details / What help do you need?,text inventory only
+66,350.0,310.0,Find your people / Allow Care circle to check your contacts  / for people who already use the app?,text inventory only
+67,350.0,310.0,Connect an account / Connect an account to find people you  / may know on Care circle.,text inventory only
+68,390.0,844.0,Another address / Step 2 of 5 · Your details / Add another location,text inventory only
+69,350.0,432.0,"Find an address / Search by street, city or postal code. / 123 Oak",text inventory only
+70,390.0,965.0,Your details / Step 2 of 5 · Your details / Let’s get to know you,text inventory only
+71,1740.0,2760.0,01 · View offers / Offers / Choose a caregiver,rendered visual review
+72,390.0,844.0,Mom’s care / Helpers Family & friends / Family & friends · 5,text inventory only
+73,390.0,941.0,Contact profile / MR / Marcus Reed,text inventory only
+74,390.0,1264.0,Task details / Local errands / Posted by you · For Mom,text inventory only
+75,390.0,844.0,"Marcus Reed / Your conversation with Marcus / Hi Grace, let me know what help Mom ",rendered visual review
+76,390.0,923.0,Your details / Step 2 of 5 · Your details / Let’s get to know you,text inventory only
+77,390.0,870.0,Your details / Step 2 of 5 · Your details / Let’s get to know you,text inventory only
+78,390.0,869.0,RR / Step 2 of 5 · Your details / How can you help?,text inventory only
+79,390.0,844.0,Verify identity / Step 3 of 5 · Verify identity / Verify it’s you,text inventory only
+80,390.0,844.0,Verify identity / Step 3 of 5 · Verify identity / Identity verified,text inventory only
+81,390.0,844.0,Connect / Step 4 of 5 · Connect / A good place to start,text inventory only
+82,390.0,844.0,Reach out / Step 4 of 5 · Connect / Say hello to Grace,text inventory only
+83,390.0,844.0,Connect / Step 4 of 5 · Connect / Message sent,text inventory only
+84,390.0,844.0,Another address / Step 2 of 5 · Your details / Add another location,text inventory only
+85,390.0,844.0,Mom’s care / Helpers / Helpers · 2,text inventory only
+86,390.0,1007.0,Contact profile / AC / Alex Chen,text inventory only
+87,390.0,1030.0,Review of Alex Chen / 4.8 / Based on 12 reviews,text inventory only
+88,390.0,1264.0,Task details / Local errands / Posted by you · For Mom,text inventory only
+89,390.0,844.0,"Alex Chen / Your conversation with Alex / Hi Grace, let me know what help Mom ",text inventory only
+90,350.0,432.0,"Find an address / Search by street, city or postal code. / 123 Oak",text inventory only
+91,390.0,965.0,Your details / Step 2 of 5 · Your details / Let’s get to know you,text inventory only
+92,350.0,274.0,Add a certificate / Upload a photo or PDF of your care or  / volunteer training certificate.,text inventory only
+93,350.0,222.0,Certificate added / Volunteer-training.pdf / PDF · Ready to save,text inventory only
+94,390.0,844.0,Verify identity / Step 3 of 5 · Verify identity / Confirm it’s you,text inventory only
+95,390.0,844.0,Verify identity / Step 3 of 5 · Verify identity / Confirm it’s you,text inventory only
+96,390.0,844.0,Verify identity / Step 3 of 5 · Verify identity / Confirm it’s you,text inventory only
+97,390.0,844.0,Reach out / Step 4 of 5 · Connect / Say hello to Sam,text inventory only
+98,390.0,844.0,Connect / Step 4 of 5 · Connect / Message sent,text inventory only
+99,390.0,869.0,Your details / Step 2 of 5 · Your details / How can you help?,text inventory only
+100,390.0,844.0,Another address / Step 2 of 5 · Your details / Add another location,text inventory only
+101,1740.0,2760.0,01 · View offers / Offers / Choose a caregiver,text inventory only

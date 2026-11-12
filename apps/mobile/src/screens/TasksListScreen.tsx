@@ -1,19 +1,23 @@
 import React, { useState } from 'react';
-import { View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
+import Feather from '@expo/vector-icons/Feather';
 import type { TaskSummaryDto } from '@team517/contracts';
-import { Text, Button, EmptyState, SectionHeader } from '../components/ui';
-import { TaskCard } from '../components/Cards';
-import { scheduledTime } from '../utils/presentation';
-export function TasksListScreen({ tasks, busy, open, post, refresh }: { tasks: TaskSummaryDto[]; busy: boolean; open: (id: string) => void; post: () => void; refresh: () => void }) {
-  const [filter, setFilter] = useState<'current' | 'drafts' | 'history'>('current');
-  const visible = tasks.filter(t => filter === 'drafts' ? t.status === 'DRAFT' : filter === 'history' ? ['COMPLETED', 'CANCELLED', 'DISPUTED'].includes(t.status) : !['DRAFT', 'COMPLETED', 'CANCELLED', 'DISPUTED'].includes(t.status));
-  return <><SectionHeader title="Everyday support" caption="A little planning. A little help. More peace of mind." /><Button variant="primary" disabled={busy} title="Post a task" onPress={post} />
-    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>{(['current', 'drafts', 'history'] as const).map(value => <Button key={value} disabled={busy} title={(filter === value ? '✓ ' : '') + value.charAt(0).toUpperCase() + value.slice(1)} onPress={() => setFilter(value)} />)}</View>
-    {!busy && visible.length === 0 && <EmptyState title={filter === 'drafts' ? 'No drafts yet' : filter === 'history' ? 'Nothing here yet' : 'A clear day ahead'} message={filter === 'current' ? 'Post a task when you need a hand.' : 'Your tasks will appear here.'} />}
-    {visible.slice().sort((a, b) => {
-      const priority = (status: string) => status === 'COMPLETION_PENDING' ? 0 : status === 'HAS_OFFERS' ? 1 : 2;
-      return priority(a.status) - priority(b.status) || scheduledTime(a.startAt) - scheduledTime(b.startAt);
-    }).map(task => <TaskCard key={task.id} task={task} busy={busy} open={() => open(task.id)} />)}
-    <Button variant="quiet" disabled={busy} title="Refresh tasks" onPress={refresh} />
+import { Text, Button, EmptyState } from '../components/ui';
+import { SegmentedControl } from '../components/SegmentedControl';
+import { dateLabel } from '../utils/presentation';
+import { groupTasks, taskRowNote, type TaskListFilter } from '../utils/task-groups';
+import { theme as t } from '../theme';
+export function TasksListScreen({ tasks, busy, open, post, refresh, calendar, locations }: { tasks: TaskSummaryDto[]; busy: boolean; open: (id: string) => void; post: () => void; refresh: () => void; calendar: () => void; locations: () => void }) {
+  const [filter, setFilter] = useState<TaskListFilter>('current');
+  const groups = groupTasks(tasks, filter);
+  const [showOptions, setShowOptions] = useState(false);
+  return <>
+    <SegmentedControl value="status" disabled={busy} options={[{ value: 'calendar', label: 'Calendar' }, { value: 'status', label: 'By status' }]} onChange={value => { if (value === 'calendar') calendar(); }} />
+    <Text style={s.caption}>Review offers and track help.</Text>
+    <View style={s.filters}>{([{ value: 'current', label: 'Active' }, { value: 'drafts', label: 'Drafts' }, { value: 'history', label: 'History' }] as const).map(item => <Pressable key={item.value} accessibilityRole="tab" accessibilityState={{ selected: item.value === filter, disabled: busy }} disabled={busy} onPress={() => setFilter(item.value)} style={[s.filter, item.value === filter && s.filterSelected]}><Text style={[s.filterText, item.value === filter && s.filterActive]}>{item.label}</Text></Pressable>)}<Pressable accessibilityRole="button" accessibilityLabel="Task options" accessibilityState={{ expanded: showOptions, disabled: busy }} disabled={busy} onPress={() => setShowOptions(!showOptions)} style={{ minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center', marginLeft: 'auto' }}><Feather name="more-horizontal" size={22} color={t.colors.muted} /></Pressable></View>
+    {showOptions && <View style={{ borderWidth: 1, borderColor: t.colors.border, borderRadius: 12, backgroundColor: t.colors.surface }}><Button variant="quiet" disabled={busy} title="Refresh tasks" onPress={refresh} /><Button variant="quiet" disabled={busy} title="Locations" onPress={locations} /><Button variant="quiet" disabled={busy} title="Post a task" onPress={post} /></View>}
+    {!busy && !groups.length && <EmptyState title={filter === 'drafts' ? 'No drafts yet' : filter === 'history' ? 'Nothing here yet' : 'A clear day ahead'} message={filter === 'current' ? 'Post a task when you need a hand.' : 'Your tasks will appear here.'} />}
+    {groups.map(group => <View key={group.title} style={s.group}><Text style={s.groupTitle}>{group.title} · {group.tasks.length}</Text>{group.tasks.map(task => <Pressable key={task.id} accessibilityRole="button" accessibilityLabel={`Open task: ${task.title || 'Untitled draft'}`} accessibilityState={{ disabled: busy }} disabled={busy} onPress={() => open(task.id)} style={({ pressed }) => [s.row, pressed && s.pressed]}><View style={s.rowContent}><Text style={s.title}>{task.title || 'Untitled draft'}</Text><Text style={s.when}>{task.startAt ? dateLabel(task.startAt) : 'Time to be arranged'}</Text>{taskRowNote(task) && <Text style={[s.note, task.status === 'HAS_OFFERS' && s.choice, task.status === 'OPEN' && task.urgency === 'URGENT' && s.urgent]}>{taskRowNote(task)}</Text>}</View><Feather name="chevron-right" size={18} color={t.colors.ink} /></Pressable>)}</View>)}
   </>;
 }
+const s = StyleSheet.create({ caption: { color: t.colors.muted, fontSize: 14, marginTop: 2 }, filters: { flexDirection: 'row', gap: 8 }, filter: { minHeight: 44, paddingHorizontal: 14, justifyContent: 'center', borderRadius: 22 }, filterSelected: { backgroundColor: t.colors.primarySoft }, filterText: { color: t.colors.muted, fontSize: 12 }, filterActive: { color: t.colors.primary, fontWeight: '600' }, group: { gap: 2, marginTop: 4 }, groupTitle: { color: t.colors.muted, fontSize: 12, fontWeight: '600', lineHeight: 18, marginBottom: 4 }, row: { flexDirection: 'row', gap: 12, alignItems: 'center', minHeight: 72, paddingVertical: 13, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: t.colors.border }, rowContent: { flex: 1, gap: 3 }, title: { color: t.colors.ink, fontWeight: '600', fontSize: 16, lineHeight: 22 }, when: { color: t.colors.muted, fontSize: 13, lineHeight: 19 }, note: { color: t.colors.primary, fontSize: 12, lineHeight: 18 }, choice: { color: t.colors.warning }, urgent: { color: t.colors.error }, pressed: { opacity: 0.65 }, utilities: { flexDirection: 'row', justifyContent: 'space-between', flexWrap: 'wrap', marginTop: 12 } });

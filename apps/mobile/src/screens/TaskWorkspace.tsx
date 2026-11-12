@@ -18,7 +18,7 @@ import { OffersWorkspace } from './OffersWorkspace';
 import { CircleOfferPanel } from './CircleOfferPanel';
 
 // Feature coordinator: screens receive public DTOs and actions, never storage.
-export function TaskWorkspace({ context, back, viewerId, helper = false }: { context: CareContextDto; back: () => void; viewerId?: string; helper?: boolean }) {
+export function TaskWorkspace({ context, back, viewerId, helper = false, calendar, createOnOpen = false, initialDraftId, onDraftCreated, finishPost, createDraftRequest }: { context: CareContextDto; back: () => void; viewerId?: string; helper?: boolean; calendar: () => void; createOnOpen?: boolean; initialDraftId?: string | null; onDraftCreated?: (id: string) => void; finishPost?: () => void; createDraftRequest?: () => Promise<TaskDetailDto> }) {
   const [screen, setScreen] = useState<'list' | 'edit' | 'detail' | 'locations' | 'offers'>('list');
   useScreenTop(screen);
   const [locationsReturn, setLocationsReturn] = useState<'list' | 'edit'>('list');
@@ -57,20 +57,22 @@ export function TaskWorkspace({ context, back, viewerId, helper = false }: { con
       } : item));
     } finally { inFlight.current = false; setBusy(false); }
   };
-  useEffect(() => { void run(load); }, []);
+  const createDraft = async () => {
+    const draft = createOnOpen && createDraftRequest ? await createDraftRequest() : await api.createTaskDraft(context.id, {});
+    if (createOnOpen) onDraftCreated?.(draft.id);
+    setTask(draft); setScreen('edit');
+    await refresh();
+  };
+  useEffect(() => { void run(async () => { await load(); if (createOnOpen) { if (initialDraftId) { setTask(await api.getTask(initialDraftId)); setScreen('edit'); } else await createDraft(); } }); }, []);
+  const post = () => void run(createDraft);
   useHardwareBack(() => { if (screen === 'list') return false; if (!busy) { setScreen(screen === 'offers' ? 'detail' : 'list'); setError(''); } return true; });
   return <>
     {busy && <ActivityIndicator accessibilityLabel="Task request in progress" />}
     {error ? <Text accessibilityRole="alert" style={{ color: theme.colors.error }}>{error}</Text> : null}
     {screen === 'list' && <>
-      <TasksListScreen tasks={tasks} busy={busy} refresh={() => void run(load)}
-        post={() => void run(async () => {
-          const draft = await api.createTaskDraft(context.id, {});
-          setTask(draft); setScreen('edit');
-          await refresh();
-        })}
+      <TasksListScreen tasks={tasks} busy={busy} refresh={() => void run(load)} calendar={calendar} locations={() => { setError(''); setLocationsReturn('list'); setScreen('locations'); }}
+        post={post}
         open={id => void run(async () => { setTask(await api.getTask(id)); setScreen('detail'); })} />
-      <Button variant="quiet" disabled={busy} title="Locations" onPress={() => { setError(''); setLocationsReturn('list'); setScreen('locations'); }} />
     </>}
     {screen === 'edit' && task && <EditTaskScreen key={task.id} task={task} locations={locations} busy={busy}
       applyAi={applyAi}
@@ -81,6 +83,7 @@ export function TaskWorkspace({ context, back, viewerId, helper = false }: { con
         }
         setScreen('list');
         await refresh();
+        if (createOnOpen) finishPost?.();
       })}
       locationsScreen={() => { setLocationsReturn('edit'); setScreen('locations'); }}
       back={() => { setError(''); setScreen('list'); }} />}

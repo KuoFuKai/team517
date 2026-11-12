@@ -1,5 +1,7 @@
 # team517
 
+UI alignment batch 1 (November 12): compact receiver Tasks/status rows, role-specific navigation, Tasks Calendar entry and Post draft-intent protection are implemented and tested on API 36. The standalone APK was rebuilt; [batch report / before-and-after evidence](docs/design-alignment-batch1.md) records the new hash, tests and remaining design work. PDF-based approximation was explicitly approved; whole-app Figma parity is not claimed.
+
 For a private GitHub handoff, see [repository sharing](docs/repository-sharing.md): source/docs/lockfile are included; local credentials, Preview passwords, native build output and APKs remain excluded.
 
 November 12 Preview update: Blaze is confirmed. Firebase CLI Google-user login deploys separately from runtime ADC. Native Firestore in us-central1, rules/20 READY indexes, `api` and `deliverNotification` are deployed; Email/password Auth and synthetic Preview accounts are ready. Extended cloud smoke passed. Actual API 36 standalone cloud login, Message send, background FCM/Task/Assignment/Conversation routes, Assignment confirmation/start/completion request, refreshed location clearing and cold-relaunch Auth persistence passed. Physical-phone/disconnected-USB/class rehearsal remains pending. See [Android Preview](docs/android-preview.md) and [native evidence](docs/native-evidence/2026-11-12-preview-cloud/README.md).

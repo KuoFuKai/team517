@@ -2,10 +2,10 @@ import React, { useRef, useState } from 'react';
 import * as api from '../api/client';
 import { Button, ErrorState } from '../components/ui';
 import { friendlyError } from '../utils/presentation';
-import { ConversationScreen } from './MessagingScreen';
+import { ConversationModal } from '../components/ConversationModal';
 export function MessageEntry({ taskId, careContextId, otherUserId }: { taskId?: string; careContextId?: string; otherUserId?: string }) {
   const [id, setId] = useState<string | null>(null), [busy, setBusy] = useState(false), [error, setError] = useState(''); const lock = useRef(false);
-  if (id) return <ConversationScreen key={id} id={id} backLabel={taskId ? 'Back to task' : 'Back to circle'} back={() => setId(null)} />;
+  if (id) return <ConversationModal key={id} id={id} close={() => setId(null)} />;
   return <><Button title="Message" disabled={busy} onPress={() => {
     if (lock.current) return; lock.current = true; setBusy(true); setError('');
     const start = taskId ? api.startTaskConversation(taskId, otherUserId) : api.getOrCreateConversation({ scope: 'CARE_CONTEXT', careContextId: careContextId!, otherUserId: otherUserId! });

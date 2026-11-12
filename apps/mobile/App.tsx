@@ -104,7 +104,7 @@ function AppContent() {
         </View></ScrollResetContext.Provider>
       </ScrollView>
     </KeyboardAvoidingView>
-    {user && profile && <BottomNavigation active={tab} helper={helperMode} disabled={busy} messageUnread={messageUnread} change={navigate} />}
+    {user && profile && !header?.back && <BottomNavigation active={tab} helper={helperMode} disabled={busy} messageUnread={messageUnread} change={navigate} />}
   </SafeAreaView></ScreenHeaderProvider>;
 }
 const s = StyleSheet.create({ safe: { flex: 1, backgroundColor: t.colors.canvas }, flex: { flex: 1 }, scroll: { flexGrow: 1, paddingHorizontal: t.screenPadding, paddingBottom: 32 }, content: { width: '100%', maxWidth: t.contentWidth, alignSelf: 'center', gap: 14 } });

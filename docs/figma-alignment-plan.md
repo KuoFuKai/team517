@@ -1,6 +1,6 @@
 # Figma alignment audit and implementation plan — November 12, 2026
 
-November 12 whole-app UI overhaul: [implementation, native evidence and remaining visual differences](design-overhaul.md). Shared typography, focused headers, forms/native scheduling, Offers, Discovery, account/roles, Community and Messaging were reworked; exact Figma parity and ordinary software-keyboard acceptance are not claimed. Earlier batch/test notes below remain historical.
+November 12 whole-app UI overhaul: [implementation, native evidence and remaining visual differences](design-overhaul.md). Shared typography, focused headers, forms/native scheduling, Offers, Discovery, account/roles, Community and Messaging were reworked; exact Figma parity and docked software-keyboard acceptance are not claimed. Earlier batch/test notes below remain historical.
 
 Batch 2: [Calendar month grid/daily agenda](design-alignment-batch2.md) now completes that missing presentation slice using existing APIs. Broader body-screen work remains planned. Batch 1 publication at `aaf7297` was verified and hosted CI passed.
 

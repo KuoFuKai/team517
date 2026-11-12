@@ -5,7 +5,7 @@ export function AuthScreen({ busy, authenticate }: { busy: boolean; authenticate
   const [validation, setValidation] = useState('');
   return <>
     <SectionHeader title={register ? 'A little help starts here.' : 'Welcome back.'} caption="Make room for care, together." />
-    <Card><Text accessibilityRole="header">{register ? 'Create your account' : 'Sign in to team517'}</Text>
+    <Card><Text accessibilityRole="header">{register ? 'Create your account' : 'Sign in to 517'}</Text>
       <TextInput accessibilityLabel="Email address" placeholder="you@example.com" autoCapitalize="none" autoComplete="email" keyboardType="email-address" value={email} onChangeText={setEmail} editable={!busy} />
       <TextInput accessibilityLabel="Password" placeholder="At least 6 characters" secureTextEntry autoComplete={register ? 'new-password' : 'current-password'} value={password} onChangeText={setPassword} editable={!busy} />
       {validation ? <Text accessibilityRole="alert">{validation}</Text> : null}

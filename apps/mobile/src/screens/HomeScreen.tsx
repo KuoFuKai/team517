@@ -4,7 +4,7 @@ import { Text, Button, Card, SectionHeader, StatusBadge, Avatar } from '../compo
 import { roleLabel } from '../utils/presentation';
 export function HomeScreen({ busy, profile, initialize, loadUser, switchRole }: { busy: boolean; profile: UserDto | null; initialize: (role: UserRole) => void; loadUser: () => void; switchRole: (role: UserRole) => void }) {
   const [role, setRole] = useState<UserRole>('CARE_MANAGER');
-  if (!profile) return <><SectionHeader title="How will you use team517?" caption="Choose how you would like to get started." />
+  if (!profile) return <><SectionHeader title="How will you use 517?" caption="Choose how you would like to get started." />
     {(['CARE_MANAGER', 'CARE_RECEIVER', 'HELPER'] as UserRole[]).map(value => <Button key={value} disabled={busy} title={(role === value ? '✓ ' : '') + roleLabel(value)} onPress={() => setRole(value)} />)}
     <Button variant="primary" disabled={busy} title="Continue" onPress={() => initialize(role)} />
   </>;

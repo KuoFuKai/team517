@@ -7,6 +7,9 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ScrollResetContext } from './src/navigation/scroll';
 import { ScrollView, StyleSheet, KeyboardAvoidingView, View, StatusBar } from 'react-native';
 import { SafeAreaProvider, SafeAreaView, initialWindowMetrics } from 'react-native-safe-area-context';
+import { useFonts } from 'expo-font';
+import { Fraunces_600SemiBold, Fraunces_700Bold } from '@expo-google-fonts/fraunces';
+import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold } from '@expo-google-fonts/inter';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from 'firebase/auth';
 import type { CareContextDto, TaskDetailDto } from '@team517/contracts';
 import { auth } from './src/auth/firebase';
@@ -28,7 +31,11 @@ import { DiscoveryWorkspace } from './src/screens/DiscoveryWorkspace';
 import { MyWorkScreen } from './src/screens/MyWorkScreen';
 import { SupportScreen } from './src/screens/SupportScreen';
 
+// Brand faces load before the first paint so text never reflows from a
+// fallback. A load failure is not fatal: the platform default still renders.
 export default function App() {
+  const [fontsReady, fontError] = useFonts({ Fraunces_600SemiBold, Fraunces_700Bold, Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold });
+  if (!fontsReady && !fontError) return <SafeAreaProvider initialMetrics={initialWindowMetrics}><SafeAreaView style={s.safe} /></SafeAreaProvider>;
   return <SafeAreaProvider initialMetrics={initialWindowMetrics}><AppContent /></SafeAreaProvider>;
 }
 
@@ -74,7 +81,7 @@ function AppContent() {
   const navigate = (next: MainTab) => { if (next === 'post' && tab !== 'post') { setPostDraftId(null); postDraftSession.reset(); } setTab(next); setOverlay(null); setError(''); setCircleTasks(false); };
   useHardwareBack(() => { if (overlay) { setOverlay(null); return true; } if (tab !== 'tasks') { navigate('tasks'); return true; } return false; });
   const titles: Record<MainTab, string> = { community: 'Community', tasks: helperMode ? 'Your caregiving tasks' : 'Your tasks', calendar: 'Your tasks', discover: 'Find nearby tasks', circle: 'Your circle', me: 'Your profile', post: 'Post a task', messages: 'Messages' };
-  const title = !user ? 'Care starts together' : !profile ? 'Welcome to team517' : overlay === 'inbox' ? 'Inbox' : overlay === 'notifications' ? 'Notifications' : overlay === 'verification' ? 'Verification' : overlay === 'create' ? 'Create your circle' : titles[tab];
+  const title = !user ? 'Care starts together' : !profile ? 'Welcome to 517' : overlay === 'inbox' ? 'Inbox' : overlay === 'notifications' ? 'Notifications' : overlay === 'verification' ? 'Verification' : overlay === 'create' ? 'Create your circle' : titles[tab];
   return <SafeAreaView style={s.safe}><StatusBar barStyle="dark-content" backgroundColor={t.colors.canvas} />
     <AppHeader title={title} contextLabel={profile ? helperMode ? 'Caregiver' : context?.name ?? 'Your care circle' : undefined} changeContext={() => navigate(helperMode ? 'me' : 'circle')} unread={unread} notifications={profile ? () => { setOverlay('notifications'); setError(''); } : undefined} disabled={busy} />
     <KeyboardAvoidingView style={s.flex} behavior="padding">

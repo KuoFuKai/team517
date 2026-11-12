@@ -1,0 +1,11 @@
+{
+  "cli": { "version": ">= 16.0.0" },
+  "build": {
+    "preview": {
+      "distribution": "internal",
+      "developmentClient": false,
+      "android": { "buildType": "apk" },
+      "env": { "EXPO_PUBLIC_APP_ENV": "PREVIEW", "EXPO_NO_DOTENV": "1" }
+    }
+  }
+}

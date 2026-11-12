@@ -1,0 +1,11 @@
+// React Native 0.83's resolver 0.5.0 references IBM_SEMERU, removed in Gradle 9.
+// Scope the compatibility override to that exact plugin/version, including
+// composite builds. Remove when the installed RN plugin uses resolver >= 1.0.
+gradle.beforeSettings { settings ->
+    settings.pluginManagement.resolutionStrategy.eachPlugin {
+        if (requested.id.id == 'org.gradle.toolchains.foojay-resolver-convention'
+                && requested.version == '0.5.0') {
+            useVersion('1.0.0')
+        }
+    }
+}

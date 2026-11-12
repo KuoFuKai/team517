@@ -1,0 +1,11 @@
+{
+  "name": "@team517/contracts",
+  "version": "0.1.0",
+  "private": true,
+  "engines": { "node": "22.x" },
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  }
+}

@@ -1,0 +1,48 @@
+name: Node 22 CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CI: 'true'
+      EXPO_NO_TELEMETRY: '1'
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '21'
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run test:mobile
+      # Demo project; no Firebase account, credentials or deployment required.
+      # Run emulator suites serially so they cannot compete for local ports.
+      - run: npm run test:integration
+      - run: npm run test:smoke
+      - run: npm run test:e2e
+      - name: AI mock publication through Assignment completion
+        run: npm run test:e2e
+        env:
+          AI_PROVIDER: mock
+          EXPECT_AI_MODE: MOCK
+      - run: npm run mobile:export

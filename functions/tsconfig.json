@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "strict": true,
+    "esModuleInterop": true,
+    "outDir": "lib",
+    "rootDir": "src",
+    "skipLibCheck": true,
+    "paths": {
+      "@team517/contracts": [
+        "../packages/contracts/lib/index.d.ts"
+      ]
+    }
+  },
+  "include": [
+    "src"
+  ]
+}

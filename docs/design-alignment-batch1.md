@@ -45,7 +45,7 @@ Local ignored artifact: `artifacts/android/team517-preview.apk`, **39,990,716 by
 
 SHA256: `8510aff3478725df1ad33057684b79c620ae4578082eda856410d094242efaa2`.
 
-Same package/internal signing identity as existing Preview; install as an update. It bundles JS, uses team517-dev cloud services and requires no Metro/local emulator at runtime. Physical installation and disconnected-USB/laptop-closed acceptance remain pending. This is not production/store distribution. Source changes have not been automatically pushed to GitHub.
+Same package/internal signing identity as existing Preview; install as an update. It bundles JS, uses team517-dev cloud services and requires no Metro/local emulator at runtime. Physical installation and disconnected-USB/laptop-closed acceptance remain pending. This is not production/store distribution. Batch 1 was subsequently pushed by explicit user request at `aaf7297`; hosted CI passed. Later Calendar work is documented in batch 2.
 
 ## Remaining alignment
 

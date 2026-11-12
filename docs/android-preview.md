@@ -1,5 +1,7 @@
 # Android Preview — Sprint 7B.1
 
+Current Calendar UI artifact: [batch 2](design-alignment-batch2.md), 39,998,872 bytes, SHA256 `02f64f6e7a4b106f4a262c6db3520424d70e2d67b413fc2004c22a175c188b6f`. Installed/rendered on API 36; no new backend deployment. Earlier APK hashes below are historical.
+
 Latest UI artifact: [design alignment batch 1](design-alignment-batch1.md) rebuilt the same Preview APK on November 12, SHA256 `8510aff3478725df1ad33057684b79c620ae4578082eda856410d094242efaa2`, 39,990,716 bytes. Its scoped native tests passed against the existing cloud backend; older APK hash/launch records below are historical. No new backend deployment occurred for the UI batch; physical acceptance remains pending.
 
 ## Purpose and current status

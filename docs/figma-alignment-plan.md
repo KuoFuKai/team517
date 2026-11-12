@@ -1,5 +1,7 @@
 # Figma alignment audit and implementation plan — November 12, 2026
 
+Batch 2: [Calendar month grid/daily agenda](design-alignment-batch2.md) now completes that missing presentation slice using existing APIs. Broader body-screen work remains planned. Batch 1 publication at `aaf7297` was verified and hosted CI passed.
+
 Implementation follow-up: the user explicitly approved PDF-based approximate implementation. [Batch 1](design-alignment-batch1.md) now implements the role shell and receiver By status slice, with rebuilt APK and actual AVD evidence. The audit-phase deliverables/limits below remain historical; Calendar grid and the rest of the planned body screens are not complete.
 
 The dominant gap is **screen composition and navigation**, followed by information density, typography and icon/asset fidelity. The shared warm canvas/teal palette already resembles the reference; recoloring the current generic screens will not resolve the mismatch. This audit does not claim visual parity or implement new business features.

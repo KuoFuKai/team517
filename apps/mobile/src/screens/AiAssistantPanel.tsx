@@ -1,3 +1,8 @@
+import { useScreenHeader } from '../components/ScreenHeader';
+import { useHardwareBack } from '../navigation/useHardwareBack';
+import { useScreenTop } from '../navigation/scroll';
+import { SegmentedControl } from '../components/SegmentedControl';
+import { TonePanel, Disclosure } from '../components/Details';
 import { Card } from '../components/ui';
 import { friendlyError, fieldLabel, validationSummary } from '../utils/presentation';
 import { theme } from '../theme';
@@ -39,11 +44,13 @@ export function AiAssistantPanel({ task, disabled, onBusy, apply }: Props) {
     finally { inFlight.current = false; setBusy(false); onBusy(false); }
   };
   const locked = busy || disabled;
+  useScreenHeader({ title: 'Review AI draft', back: () => setSuggestion(null), disabled: locked, priority: 4, enabled: Boolean(suggestion) });
+  useScreenTop(suggestion ? 'suggestion-review' : 'assistant-input');
+  useHardwareBack(() => { if (!suggestion) return false; if (!locked) setSuggestion(null); return true; }, 4);
   return <>
-    <Text accessibilityRole="header">AI input assistant — optional</Text>
+    {!suggestion && <><Text accessibilityRole="header">Describe your task</Text>
     <Text>Uses the last saved draft. Save manual changes first. Review every proposed value; AI never publishes.</Text>
-    <Button disabled={locked} title="Describe with AI" onPress={() => { setMode('TEXT'); setSuggestion(null); }} />
-    <Button disabled={locked} title="Voice input / manual transcript fallback" onPress={() => { setMode('TRANSCRIPT'); setReviewed(false); setSuggestion(null); }} />
+    <SegmentedControl value={mode} options={[{ value: 'TEXT', label: 'Notes' }, { value: 'TRANSCRIPT', label: 'Transcript' }]} disabled={locked} onChange={value => { setMode(value); setReviewed(false); setSuggestion(null); }} />
     {mode === 'TRANSCRIPT' && <Text>Speech recording/transcription is not configured. Enter or paste a transcript, review it, then generate a suggestion. No audio is recorded or uploaded.</Text>}
     <TextInput multiline accessibilityLabel={mode === 'TEXT' ? 'AI description or editing instruction' : 'Manual transcript'}
       placeholder={mode === 'TEXT' ? 'Describe a task, or say Make it urgent / Make this clearer' : 'Paste a transcript here'}
@@ -57,28 +64,28 @@ export function AiAssistantPanel({ task, disabled, onBusy, apply }: Props) {
       const proposed = await api.improveTaskSuggestion(task.id, { text, timezone });
       setSuggestion(proposed); setSelected(Object.keys(proposed.fields));
     })} />
-    {busy && <ActivityIndicator accessibilityLabel="AI request in progress" />}
+    </>}{busy && <ActivityIndicator accessibilityLabel="AI request in progress" />}
     {error ? <Text accessibilityRole="alert" style={styles.error}>{error}</Text> : null}
-    {suggestion && <Card>
+    {suggestion && <>
       <Text accessibilityRole="header">Your draft suggestion · {suggestion.providerMode}</Text>
       {suggestion.providerMode === 'MOCK' && <Text>Explicit deterministic development mock, not a real AI result.</Text>}
       {suggestion.summary && <Text>Derived summary: {suggestion.summary}</Text>}
       {suggestion.locationText && <Text>Location wording: {suggestion.locationText}. Confirm the selected location.</Text>}
       <Text>Fields needing completion/review: {suggestion.missingFields.map(fieldLabel).join(', ') || 'None detected; still review before publishing.'}</Text>
       {suggestion.warnings.map((warning, index) => <Text key={index}>{warning}</Text>)}
-      {Object.entries(suggestion.fields).map(([key, value]) => <View key={key}>
-        <Text selectable>{fieldLabel(key)}: {value === null ? '(clear)' : String(value)}</Text>
+      {Object.entries(suggestion.fields).map(([key, value]) => <Card key={key}><Text style={{ fontSize: 12, color: theme.colors.muted }}>{fieldLabel(key)}</Text>
+        <Text selectable style={{ fontWeight: '600' }}>{value === null ? '(clear)' : String(value)}</Text>
         <Button disabled={locked} title={`${selected.includes(key) ? '✓ Accept' : 'Skip'} ${fieldLabel(key)}`}
           onPress={() => setSelected(current => current.includes(key) ? current.filter(field => field !== key) : [...current, key])} />
-      </View>)}
-      <Button disabled={locked || !selected.length} title="Apply selected fields" onPress={() => void run(async () => {
+      </Card>)}
+      <Button disabled={locked || !selected.length} variant="primary" title="Apply selected fields" onPress={() => void run(async () => {
         if (!suggestion.sourceTaskUpdatedAt) throw new Error('Suggestion has no draft version. Generate it again.');
         const fields = Object.fromEntries(Object.entries(suggestion.fields).filter(([key]) => selected.includes(key))) as TaskDraftFields;
         await apply(fields, suggestion.sourceTaskUpdatedAt);
         setSuggestion(null); setText(''); setReviewed(false);
       })} />
       <Button disabled={locked} title="Discard suggestion" onPress={() => { setSuggestion(null); setError(''); }} />
-    </Card>}
+    </>}
   </>;
 }
 const styles = StyleSheet.create({ input: { borderWidth: 1, borderColor: theme.colors.border, padding: 12, borderRadius: 6 }, error: { color: theme.colors.error } });

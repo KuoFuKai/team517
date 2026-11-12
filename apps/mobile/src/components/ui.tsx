@@ -3,7 +3,9 @@ import { ActivityIndicator, Pressable, StyleSheet, Text as NativeText, TextInput
 import { theme as t } from '../theme';
 import { statusLabel, statusLabels } from '../utils/presentation';
 export function Text({ style, accessibilityRole, ...props }: TextProps) {
-  return <NativeText {...props} accessibilityRole={accessibilityRole} style={[s.text, accessibilityRole === 'header' && s.heading, accessibilityRole === 'alert' && s.error, style]} />;
+  const weight = StyleSheet.flatten(style)?.fontWeight ?? (accessibilityRole === 'header' ? '700' : '400');
+  const family = Number(weight) >= 700 || weight === 'bold' ? 'DMSans_700Bold' : Number(weight) >= 600 ? 'DMSans_600SemiBold' : Number(weight) >= 500 ? 'DMSans_500Medium' : 'DMSans_400Regular';
+  return <NativeText {...props} accessibilityRole={accessibilityRole} style={[s.text, accessibilityRole === 'header' && s.heading, accessibilityRole === 'alert' && s.error, style, { fontFamily: family, fontWeight: 'normal' }]} />;
 }
 export function Button({ title, disabled, onPress, accessibilityLabel, testID, variant }: ButtonProps & { variant?: 'primary' | 'secondary' | 'quiet' | 'danger' }) {
   const selected = title.startsWith('✓ ');
@@ -36,17 +38,17 @@ export function Avatar({ label }: { label: string }) { return <View accessibilit
 export function EmptyState({ title, message }: { title: string; message?: string }) { return <View style={s.empty}><Text accessibilityRole="header">{title}</Text>{message && <Text style={s.muted}>{message}</Text>}</View>; }
 export function LoadingState({ label = 'Loading your information…' }: { label?: string }) { return <View style={s.loading}><ActivityIndicator color={t.colors.primary} /><Text>{label}</Text></View>; }
 export function ErrorState({ message }: { message: string }) { return <View style={s.errorBox}><Text accessibilityRole="alert">{message}</Text></View>; }
-export function InfoRow({ label, value }: { label: string; value?: string }) { return <View style={s.row}><Text style={s.muted}>{label}</Text><Text>{value || 'Not provided'}</Text></View>; }
+export function InfoRow({ label, value }: { label: string; value?: string }) { return <View style={s.row}><Text style={[s.muted, { width: 88 }]}>{label}</Text><Text style={{ flex: 1 }}>{value || 'Not provided'}</Text></View>; }
 const s = StyleSheet.create({
-  text: { color: t.colors.text, fontSize: t.type.body, lineHeight: 23, flexShrink: 1 }, heading: { color: t.colors.ink, fontSize: t.type.heading, lineHeight: 30, fontWeight: t.weight.bold, marginTop: t.space.sm },
-  error: { color: t.colors.error }, button: { minHeight: 48, borderRadius: t.radius.sm, paddingHorizontal: 16, paddingVertical: 13, alignItems: 'center', justifyContent: 'center', borderWidth: 1 },
+  text: { color: t.colors.text, fontSize: t.type.body, lineHeight: 21, flexShrink: 1 }, heading: { color: t.colors.ink, fontSize: t.type.section, lineHeight: 25, fontWeight: t.weight.bold, marginTop: 0 },
+  error: { color: t.colors.error }, button: { minHeight: 44, borderRadius: t.radius.sm, paddingHorizontal: 16, paddingVertical: 11, alignItems: 'center', justifyContent: 'center', borderWidth: 1 },
   primary: { backgroundColor: t.colors.primary, borderColor: t.colors.primary }, secondary: { backgroundColor: t.colors.surface, borderColor: t.colors.border }, quiet: { backgroundColor: 'transparent', borderColor: 'transparent' },
   danger: { backgroundColor: t.colors.errorSoft, borderColor: t.colors.errorSoft }, selected: { backgroundColor: t.colors.primarySoft, borderColor: t.colors.primary }, dim: { opacity: 0.5 },
-  buttonText: { fontSize: t.type.label, fontWeight: t.weight.semibold, color: t.colors.primary, textAlign: 'center', flexShrink: 1 },
-  field: { gap: 6 }, fieldLabel: { fontSize: t.type.caption, fontWeight: t.weight.semibold, color: t.colors.muted }, input: { backgroundColor: t.colors.surface, minHeight: 50, borderWidth: 1, borderColor: t.colors.border, borderRadius: t.radius.sm, padding: 14, color: t.colors.ink, fontSize: t.type.body }, area: { minHeight: 112, textAlignVertical: 'top' },
-  card: { backgroundColor: t.colors.surface, borderRadius: t.radius.md, borderWidth: 1, borderColor: t.colors.border, padding: t.space.lg, gap: t.space.md, ...t.shadow },
+  buttonText: { fontFamily: 'DMSans_600SemiBold', fontSize: t.type.label, fontWeight: t.weight.semibold, color: t.colors.primary, textAlign: 'center', flexShrink: 1 },
+  field: { gap: 6 }, fieldLabel: { fontSize: t.type.caption, fontWeight: t.weight.semibold, color: t.colors.muted }, input: { backgroundColor: t.colors.surface, minHeight: 46, borderWidth: 1, borderColor: t.colors.border, borderRadius: t.radius.sm, padding: 12, fontFamily: 'DMSans_400Regular', color: t.colors.ink, fontSize: t.type.body }, area: { minHeight: 96, textAlignVertical: 'top' },
+  card: { backgroundColor: t.colors.surface, borderRadius: t.radius.md, borderWidth: 1, borderColor: t.colors.border, padding: 14, gap: 10 },
   section: { gap: 5, marginTop: t.space.lg }, muted: { color: t.colors.muted, fontSize: t.type.label }, badge: { alignSelf: 'flex-start', backgroundColor: t.colors.primarySoft, borderRadius: t.radius.pill, paddingHorizontal: 12, paddingVertical: 5 }, badgeText: { color: t.colors.primary, fontWeight: t.weight.semibold, fontSize: t.type.caption },
-  avatar: { width: 48, height: 48, borderRadius: t.radius.pill, backgroundColor: t.colors.accent, alignItems: 'center', justifyContent: 'center' }, avatarText: { color: t.colors.primary, fontSize: 21, fontWeight: t.weight.bold },
+  avatar: { width: 40, height: 40, borderRadius: t.radius.pill, backgroundColor: t.colors.accent, alignItems: 'center', justifyContent: 'center' }, avatarText: { color: t.colors.primary, fontSize: 18, fontWeight: t.weight.bold },
   empty: { padding: t.space.xl, gap: t.space.sm, backgroundColor: t.colors.surface, borderRadius: t.radius.md, borderWidth: 1, borderStyle: 'dashed', borderColor: t.colors.border },
-  loading: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 12 }, errorBox: { backgroundColor: t.colors.errorSoft, borderRadius: t.radius.sm, padding: 14 }, row: { gap: 3 },
+  loading: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 12 }, errorBox: { backgroundColor: t.colors.errorSoft, borderRadius: t.radius.sm, padding: 14 }, row: { gap: 10, flexDirection: 'row', alignItems: 'flex-start', paddingVertical: 3 },
 });

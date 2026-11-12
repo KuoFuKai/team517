@@ -65,7 +65,7 @@ export function TaskWorkspace({ context, back, viewerId, helper = false, calenda
   };
   useEffect(() => { void run(async () => { await load(); if (createOnOpen) { if (initialDraftId) { setTask(await api.getTask(initialDraftId)); setScreen('edit'); } else await createDraft(); } }); }, []);
   const post = () => void run(createDraft);
-  useHardwareBack(() => { if (screen === 'list') return false; if (!busy) { setScreen(screen === 'offers' ? 'detail' : 'list'); setError(''); } return true; });
+  useHardwareBack(() => { if (screen === 'list') return false; if (!busy) { setScreen(screen === 'offers' ? 'detail' : 'list'); setError(''); } return true; }, 1);
   return <>
     {busy && <ActivityIndicator accessibilityLabel="Task request in progress" />}
     {error ? <Text accessibilityRole="alert" style={{ color: theme.colors.error }}>{error}</Text> : null}
@@ -87,7 +87,7 @@ export function TaskWorkspace({ context, back, viewerId, helper = false, calenda
       })}
       locationsScreen={() => { setLocationsReturn('edit'); setScreen('locations'); }}
       back={() => { setError(''); setScreen('list'); }} />}
-    {screen === 'detail' && task && <>{task.status !== 'DRAFT' && <Button variant="primary" disabled={busy} title="Offers & arrangement" onPress={() => setScreen('offers')} />}<TaskDetailScreen task={task} locations={locations} busy={busy}
+    {screen === 'detail' && task && <><TaskDetailScreen task={task} locations={locations} busy={busy} viewOffers={() => setScreen('offers')}
       edit={() => { setError(''); setScreen('edit'); }}
       cancel={() => Alert.alert('Cancel this task?', 'This task will no longer accept help. Any pending or scheduled arrangement will also be cancelled.', [{ text: 'Keep task', style: 'cancel' }, { text: 'Cancel task', style: 'destructive', onPress: () => void run(async () => { setTask(await api.cancelTask(task.id)); await refresh(); }) }])}
       back={() => { setError(''); setScreen('list'); }} />

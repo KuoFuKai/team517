@@ -1,5 +1,7 @@
 # Android Preview — Sprint 7B.1
 
+Current whole-app UI artifact: [overhaul](design-overhaul.md), 40,852,436 bytes, SHA256 `b53811a1e693f0e878b6bb9dbebe959b623cf7de86c65b1a3d5d517dfc652835`. Final APK installed on Pixel_9_Pro Android16/API36; nested Back fix retested. Earlier artifact hashes below are historical.
+
 Current Calendar UI artifact: [batch 2](design-alignment-batch2.md), 39,998,872 bytes, SHA256 `02f64f6e7a4b106f4a262c6db3520424d70e2d67b413fc2004c22a175c188b6f`. Installed/rendered on API 36; no new backend deployment. Earlier APK hashes below are historical.
 
 Latest UI artifact: [design alignment batch 1](design-alignment-batch1.md) rebuilt the same Preview APK on November 12, SHA256 `8510aff3478725df1ad33057684b79c620ae4578082eda856410d094242efaa2`, 39,990,716 bytes. Its scoped native tests passed against the existing cloud backend; older APK hash/launch records below are historical. No new backend deployment occurred for the UI batch; physical acceptance remains pending.

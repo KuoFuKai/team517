@@ -1,3 +1,6 @@
+import { SegmentedControl } from '../components/SegmentedControl';
+import { Choices, TonePanel, Disclosure, Action } from '../components/Details';
+import { useScreenHeader } from '../components/ScreenHeader';
 import { MessageEntry } from './MessageEntry';
 import { useScreenTop } from '../navigation/scroll';
 import { TaskPreviewCard } from '../components/Cards';
@@ -22,6 +25,7 @@ export function DiscoveryWorkspace({ back }: { back: () => void }) {
   const [latitude, setLatitude] = useState(''), [longitude, setLongitude] = useState(''), [radius, setRadius] = useState('');
   const [urgency, setUrgency] = useState<TaskUrgency | undefined>(), [compensation, setCompensation] = useState<TaskCompensationType | undefined>();
   const [message, setMessage] = useState(''), [error, setError] = useState(''), [busy, setBusy] = useState(false);
+  useScreenHeader({ title: task ? 'Task details' : 'Find tasks', back: task ? () => { setTask(null); setMine(null); setAssignment(null); setError(''); } : undefined, disabled: busy, priority: 2, enabled: Boolean(task) });
   const inFlight = useRef(false);
   useScreenTop(task?.id ?? 'list');
   const run = async (work: () => Promise<void>) => {
@@ -47,41 +51,38 @@ export function DiscoveryWorkspace({ back }: { back: () => void }) {
     if (assignment || task) { if (!busy) { setAssignment(null); setTask(null); setMine(null); setError(''); } return true; }
     if (filters) { if (!busy) setFilters(false); return true; }
     return false;
-  });
+  }, 1);
   return <>
-<SectionHeader title="Find nearby tasks" caption="A little help goes a long way." />
+
     {busy && <ActivityIndicator accessibilityLabel="Marketplace request in progress" />}
     {error ? <Text accessibilityRole="alert">{error}</Text> : null}
     {!task ? <>
-      <Text>Find support requests shared with verified helpers. Circle tasks are also available in your Circle.</Text>
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.space.sm }}><Button title={filters ? 'Hide filters' : 'Filter tasks'} onPress={() => setFilters(!filters)} /><Button disabled={busy} title="Refresh discovery / apply filters" onPress={() => void run(load)} /></View>
+      <SegmentedControl value={mode} options={[{ value: 'LIST', label: 'List' }, { value: 'MAP', label: 'Map' }]} onChange={setMode} />
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.space.sm }}><Action icon="sliders" title={filters ? 'Hide filters' : 'Filter tasks'} onPress={() => setFilters(!filters)} /><Action icon="refresh-cw" disabled={busy} title="Apply / refresh" onPress={() => void run(load)} /></View>
       {filters && <Card>
       <TextInput accessibilityLabel="Discovery latitude" placeholder="Latitude (optional)" value={latitude} onChangeText={setLatitude} editable={!busy} />
       <TextInput accessibilityLabel="Discovery longitude" placeholder="Longitude (optional)" value={longitude} onChangeText={setLongitude} editable={!busy} />
       <TextInput accessibilityLabel="Discovery radius" placeholder="Radius km (optional, max 100)" value={radius} onChangeText={setRadius} editable={!busy} />
-      <Text>Urgency filter</Text><Button disabled={busy} title="All urgency" onPress={() => setUrgency(undefined)} />
-      {(['PLANNED', 'URGENT'] as TaskUrgency[]).map(value => <Button key={value} disabled={busy} title={(urgency === value ? '✓ ' : '') + value} onPress={() => setUrgency(value)} />)}
-      <Text>Compensation</Text><Button disabled={busy} title="All compensation" onPress={() => setCompensation(undefined)} />
-      {(['VOLUNTEER', 'POINTS', 'PAID'] as TaskCompensationType[]).map(value => <Button key={value} disabled={busy} title={(compensation === value ? '✓ ' : '') + value} onPress={() => setCompensation(value)} />)}
+      <Text>Priority</Text><Choices value={urgency ?? 'ALL'} options={[{ value: 'ALL', label: 'All' }, { value: 'PLANNED', label: 'Planned' }, { value: 'URGENT', label: 'Urgent' }]} disabled={busy} change={value => setUrgency(value === 'ALL' ? undefined : value)} />
+      <Text>Compensation</Text><Choices value={compensation ?? 'ALL'} options={[{ value: 'ALL', label: 'All' }, { value: 'VOLUNTEER', label: 'Volunteer' }, { value: 'POINTS', label: 'Points' }, { value: 'PAID', label: 'Paid' }]} disabled={busy} change={value => setCompensation(value === 'ALL' ? undefined : value)} />
       </Card>}
-      <Button disabled={busy} title={mode === 'LIST' ? 'Map preview · coming later' : 'Switch to List'} onPress={() => setMode(mode === 'LIST' ? 'MAP' : 'LIST')} />
-      {mode === 'MAP' && <Text>Map preview is not available yet. These are approximate area coordinates from the same task list, not exact addresses.</Text>}
+      {mode === 'MAP' && <TonePanel title="Map view is coming later">Explore the same tasks below. Only approximate areas are available before confirmation.</TonePanel>}
       {data?.tasks.length === 0 && <Text>No tasks found. Try different filters or check back soon.</Text>}
       {data?.truncated && <Text>Showing a limited set of tasks. Refine your filters to find more relevant results.</Text>}
       {data?.tasks.slice().sort((a, b) => scheduledTime(a.startAt) - scheduledTime(b.startAt)).map(item => <TaskPreviewCard key={item.id} status={item.compensationType} title={item.title} when={dateLabel(item.startAt)} detail={`${item.approximateLocation.areaLabel}${item.distanceKm !== undefined ? ` · about ${item.distanceKm} km` : ''}`} busy={busy} action="Open discovery detail" open={() => void run(async () => {
           setMine(null); setAssignment(null); setMessage(''); setTask(await api.getDiscoveredTask(item.id)); await refreshMine(item.id);
         })}>
         {item.pointReward !== undefined && <Text>{item.pointReward} points</Text>}{item.cashAmount !== undefined && <Text>{item.cashAmount} {item.currency ?? ''}</Text>}
-        {mode === 'MAP' && <Text>Coarse point: {item.approximateLocation.latitude ?? 'unknown'}, {item.approximateLocation.longitude ?? 'unknown'}</Text>}
+
       </TaskPreviewCard>)}
     </> : <>
       <Text accessibilityRole="header">{task.title}</Text><StatusBadge status={mine?.taskStatus ?? task.status} />
-      <Text>{task.publicInstructions}</Text>
+      <Card><SectionHeader title="About this task" /><Text>{task.publicInstructions || 'No additional public instructions.'}</Text></Card>
       <Text>{task.helpType} · {statusLabel(task.urgency)}</Text><Text>{dateLabel(task.startAt)} → {dateLabel(task.endAt)}</Text>
       <Text>{statusLabel(task.compensationType)} {task.pointReward ?? task.cashAmount ?? ''} {task.currency ?? ''}</Text>
-      <Text>{task.approximateLocation.areaLabel}. Exact address and private instructions are withheld.</Text>
-      <Text>Offers: {task.offerCount}</Text>
-      <TextInput accessibilityLabel="Offer message" placeholder="Optional Offer message" value={message} onChangeText={setMessage} maxLength={1000} multiline editable={!busy} />
+      <TonePanel title={task.approximateLocation.areaLabel}>The exact address and arrival instructions unlock only for the confirmed helper.</TonePanel>
+      <Text style={{ color: theme.colors.muted }}>{task.offerCount} offers</Text>
+      {(!mine?.offer || ['WITHDRAWN', 'NOT_SELECTED'].includes(mine.offer.status)) && <TextInput accessibilityLabel="Offer message" placeholder="Tell the requester how you can help (optional)" value={message} onChangeText={setMessage} maxLength={1000} multiline editable={!busy} />}
       {(!mine?.offer || ['WITHDRAWN', 'NOT_SELECTED'].includes(mine.offer.status)) && ['OPEN', 'HAS_OFFERS'].includes(mine?.taskStatus ?? task.status) &&
         <Button disabled={busy} title="Offer to help" onPress={() => void run(async () => { await api.offerHelp(task.id, { message }); await refreshMine(task.id); })} />}
       {mine?.offer && <MessageEntry taskId={task.id} />}

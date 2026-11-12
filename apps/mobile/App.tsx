@@ -1,3 +1,6 @@
+import { useFonts, DMSans_400Regular, DMSans_500Medium, DMSans_600SemiBold, DMSans_700Bold } from '@expo-google-fonts/dm-sans';
+import { ScreenHeaderProvider, useHeaderRegistry } from './src/components/ScreenHeader';
+import { MenuRow, Disclosure } from './src/components/Details';
 import { MessagingScreen } from './src/screens/MessagingScreen';
 import { PushSettings } from './src/screens/PushSettings';
 import { usePush } from './src/hooks/usePush';
@@ -27,12 +30,12 @@ import { TaskWorkspace } from './src/screens/TaskWorkspace';
 import { DiscoveryWorkspace } from './src/screens/DiscoveryWorkspace';
 import { MyWorkScreen } from './src/screens/MyWorkScreen';
 import { SupportScreen } from './src/screens/SupportScreen';
-
 export default function App() {
-  return <SafeAreaProvider initialMetrics={initialWindowMetrics}><AppContent /></SafeAreaProvider>;
+  const [fontsLoaded, fontError] = useFonts({ DMSans_400Regular, DMSans_500Medium, DMSans_600SemiBold, DMSans_700Bold });
+  return <SafeAreaProvider initialMetrics={initialWindowMetrics}>{fontsLoaded || fontError ? <AppContent /> : <LoadingState label="Preparing your experience…" />}</SafeAreaProvider>;
 }
-
 function AppContent() {
+  const { register, header } = useHeaderRegistry();
   const scroll = useRef<ScrollView>(null);
   const resetScroll = useCallback(() => scroll.current?.scrollTo({ y: 0, animated: false }), []);
   const session = useSession();
@@ -75,8 +78,8 @@ function AppContent() {
   useHardwareBack(() => { if (overlay) { setOverlay(null); return true; } if (tab !== 'tasks') { navigate('tasks'); return true; } return false; });
   const titles: Record<MainTab, string> = { community: 'Community', tasks: helperMode ? 'Your caregiving tasks' : 'Your tasks', calendar: 'Your tasks', discover: 'Find nearby tasks', circle: 'Your circle', me: 'Your profile', post: 'Post a task', messages: 'Messages' };
   const title = !user ? 'Care starts together' : !profile ? 'Welcome to team517' : overlay === 'inbox' ? 'Inbox' : overlay === 'notifications' ? 'Notifications' : overlay === 'verification' ? 'Verification' : overlay === 'create' ? 'Create your circle' : titles[tab];
-  return <SafeAreaView style={s.safe}><StatusBar barStyle="dark-content" backgroundColor={t.colors.canvas} />
-    <AppHeader title={title} contextLabel={profile ? helperMode ? 'Caregiver' : context?.name ?? 'Your care circle' : undefined} changeContext={() => navigate(helperMode ? 'me' : 'circle')} unread={unread} notifications={profile ? () => { setOverlay('notifications'); setError(''); } : undefined} disabled={busy} />
+  return <ScreenHeaderProvider value={register}><SafeAreaView style={s.safe}><StatusBar barStyle="dark-content" backgroundColor={t.colors.canvas} />
+    <AppHeader detail={header} title={title} contextLabel={profile ? helperMode ? 'Caregiver' : context?.name ?? 'Your care circle' : undefined} changeContext={() => navigate(helperMode ? 'me' : 'circle')} unread={unread} notifications={profile ? () => { setOverlay('notifications'); setError(''); } : undefined} disabled={busy} />
     <KeyboardAvoidingView style={s.flex} behavior="padding">
       <ScrollView ref={scroll} nestedScrollEnabled keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag" contentContainerStyle={s.scroll}>
         <ScrollResetContext.Provider value={resetScroll}><View style={s.content}>
@@ -93,8 +96,8 @@ function AppContent() {
               {tab === 'discover' && <DiscoveryWorkspace back={() => navigate('tasks')} />}
               {tab === 'calendar' && <><SegmentedControl value="calendar" options={[{ value: 'calendar', label: 'Calendar' }, { value: 'status', label: 'By status' }]} onChange={value => { if (value === 'status') navigate('tasks'); }} /><SupportScreen mode="calendar" back={() => navigate('tasks')} /></>}
               {tab === 'messages' && <MessagingScreen back={() => navigate('tasks')} updates={() => setOverlay('notifications')} />}
-              {tab === 'circle' && <><Button title="Messages" onPress={() => setOverlay('inbox')} /><CareContextsScreen contexts={contexts} busy={busy} canCreate={profile.roles.includes('CARE_MANAGER')} refresh={() => void run(loadContexts)} create={() => setOverlay('create')} open={id => void run(async () => { setContext(await api.getCareContext(id)); setCircleTasks(true); setTab('tasks'); })} /></>}
-              {tab === 'me' && <><Card><Text accessibilityRole="header">{user.email}</Text><Text>Your account and care preferences.</Text></Card><HomeScreen busy={busy} profile={profile} initialize={() => {}} loadUser={() => void run(async () => setProfile(await api.getCurrentUser()))} switchRole={role => void run(async () => { setProfile(await api.updateRolePreference({ lastActiveRole: role })); navigate('tasks'); })} /><Button title="Your care circle" onPress={() => navigate('circle')} /><Button title="Messages" onPress={() => setOverlay('inbox')} /><PushSettings /><Button title="Verification status" onPress={() => setOverlay('verification')} /><Button title="Notifications" onPress={() => setOverlay('notifications')} /><Button title="Sign out" disabled={busy} onPress={() => void run(async () => { await beforeLogout(); await signOut(auth); })} /></>}
+              {tab === 'circle' && <><MenuRow title="Messages" onPress={() => setOverlay('inbox')} /><CareContextsScreen contexts={contexts} busy={busy} canCreate={profile.roles.includes('CARE_MANAGER')} refresh={() => void run(loadContexts)} create={() => setOverlay('create')} open={id => void run(async () => { setContext(await api.getCareContext(id)); setCircleTasks(true); setTab('tasks'); })} /></>}
+              {tab === 'me' && <><HomeScreen email={user.email} busy={busy} profile={profile} initialize={() => {}} loadUser={() => void run(async () => setProfile(await api.getCurrentUser()))} switchRole={role => void run(async () => { setProfile(await api.updateRolePreference({ lastActiveRole: role })); navigate('tasks'); })}><MenuRow title="Your care circle" onPress={() => navigate('circle')} /><MenuRow title="Messages" onPress={() => setOverlay('inbox')} /><Disclosure title="Device notification settings"><PushSettings /></Disclosure><MenuRow title="Verification status" onPress={() => setOverlay('verification')} /><MenuRow title="Notifications" onPress={() => setOverlay('notifications')} /><Button title="Sign out" disabled={busy} onPress={() => void run(async () => { await beforeLogout(); await signOut(auth); })} /></HomeScreen></>}
             </>}
           </>}
           {busy && <LoadingState label="One moment…" />}{error ? <ErrorState message={error} /> : null}
@@ -102,6 +105,6 @@ function AppContent() {
       </ScrollView>
     </KeyboardAvoidingView>
     {user && profile && <BottomNavigation active={tab} helper={helperMode} disabled={busy} messageUnread={messageUnread} change={navigate} />}
-  </SafeAreaView>;
+  </SafeAreaView></ScreenHeaderProvider>;
 }
 const s = StyleSheet.create({ safe: { flex: 1, backgroundColor: t.colors.canvas }, flex: { flex: 1 }, scroll: { flexGrow: 1, paddingHorizontal: t.screenPadding, paddingBottom: 32 }, content: { width: '100%', maxWidth: t.contentWidth, alignSelf: 'center', gap: 14 } });

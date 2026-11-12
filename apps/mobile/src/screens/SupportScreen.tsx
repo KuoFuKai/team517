@@ -1,3 +1,5 @@
+import { Action, MenuRow, Disclosure } from '../components/Details';
+import { useScreenHeader } from '../components/ScreenHeader';
 import { ConversationScreen } from './MessagingScreen';
 import { CalendarGrid } from '../components/CalendarGrid';
 import { CalendarTaskRow } from '../components/CalendarTaskRow';
@@ -25,6 +27,7 @@ export function SupportScreen({ mode, back, onNotificationsLoaded, pushId, consu
   const [calendarLoading, setCalendarLoading] = useState(false), [calendarError, setCalendarError] = useState(''), [calendarRefresh, setCalendarRefresh] = useState(0);
   const [assignment, setAssignment] = useState<AssignmentDto | null>(null), [task, setTask] = useState<TaskDetailDto | null>(null), [offersVisible, setOffersVisible] = useState(false);
   const [busy, setBusy] = useState(false), [error, setError] = useState(''); const lock = useRef(false);
+  useScreenHeader({ title: task || assignment ? 'Task details' : mode === 'verification' ? 'Verification' : mode === 'notifications' ? 'Notifications' : 'Your tasks', back: task || assignment ? () => { setTask(null); setAssignment(null); } : mode !== 'calendar' ? back : undefined, disabled: busy, priority: mode === 'calendar' && !task && !assignment ? -1 : 2 });
   useScreenTop(conversationId ?? (offersVisible ? 'offers' : assignment?.id ?? task?.id ?? mode));
   const run = async (work: () => Promise<void>) => { if (lock.current) return; lock.current = true; setBusy(true); setError(''); try { await work(); } catch (e) { setError(friendlyError(e)); } finally { lock.current = false; setBusy(false); } };
   const load = async () => {
@@ -64,10 +67,10 @@ export function SupportScreen({ mode, back, onNotificationsLoaded, pushId, consu
     if (offersVisible) { if (!busy) setOffersVisible(false); return true; }
     if (task || assignment) { if (!busy) { setTask(null); setAssignment(null); } return true; }
     return false;
-  });
+  }, 1);
   if (conversationId) return <ConversationScreen id={conversationId} backLabel="Back to notifications" back={() => setConversationId(null)} />;
   if (offersVisible && task) return <OffersWorkspace taskId={task.id} back={() => setOffersVisible(false)} />;
-  if (task || assignment) return <><Button disabled={busy} title="Back to list" onPress={() => { setTask(null); setAssignment(null); }} />
+  if (task || assignment) return <>
     {assignment && <AssignmentPanel key={assignment.id} assignment={assignment} />}
     {task && <><Card><StatusBadge status={task.status} /><Text accessibilityRole="header">{task.title}</Text><InfoRow label="When" value={dateLabel(task.startAt)} /><Text>{task.publicInstructions}</Text><Button title="View offers & arrangement" onPress={() => setOffersVisible(true)} /></Card><TimelinePanel taskId={task.id} /></>}
     {error ? <ErrorState message={error} /> : null}
@@ -93,13 +96,10 @@ export function SupportScreen({ mode, back, onNotificationsLoaded, pushId, consu
       {calendar?.truncated && <Text>Showing a limited agenda. Narrow the date range to find more tasks.</Text>}
     </>}
     {mode === 'notifications' && <>
-      <SectionHeader title="Your updates" caption="Updates from the people and tasks you care about." />
+
       <Button disabled={busy} title="Mark all recent updates read" onPress={() => void run(async () => { const result = await api.markAllNotificationsRead(); await load(); if (result.truncated) setError('Only the most recent 200 updates were marked. Older unread updates may remain.'); })} />
       {!busy && notifications?.notifications.length === 0 && <EmptyState title="You’re all caught up" message="New offers and task updates will appear here." />}
-      {notifications?.notifications.map(n => <Card key={n.id}><StatusBadge status={n.readAt ? 'READ' : 'UNREAD'} /><Text accessibilityRole="header">{n.title}</Text><Text>{dateLabel(n.createdAt)}</Text><Text>{n.body}</Text>
-        {!n.readAt && <Button variant="quiet" disabled={busy} title="Mark as read" onPress={() => void run(async () => { await api.markNotificationRead(n.id); await load(); })} />}
-        <Button disabled={busy} title="View update" onPress={() => void run(async () => { await api.markNotificationRead(n.id); await load(); setTask(null); setAssignment(null); if (n.resourceType === 'CONVERSATION') setConversationId(n.resourceId); else if (n.resourceType === 'ASSIGNMENT') setAssignment(await api.getAssignment(n.resourceId)); else setTask(await api.getTask(n.resourceId)); })} />
-      </Card>)}
+      {notifications?.notifications.map(n => <View key={n.id}><MenuRow disabled={busy} title={n.title} subtitle={`${dateLabel(n.createdAt)} · ${n.body}`} trailing={!n.readAt ? <View style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: t.colors.primary }} /> : undefined} onPress={() => void run(async () => { await api.markNotificationRead(n.id); await load(); setTask(null); setAssignment(null); if (n.resourceType === 'CONVERSATION') setConversationId(n.resourceId); else if (n.resourceType === 'ASSIGNMENT') setAssignment(await api.getAssignment(n.resourceId)); else setTask(await api.getTask(n.resourceId)); })} /></View>)}
       {notifications?.truncated && <Text>Showing the most recent 50 updates.</Text>}<Text>These in-app updates remain available regardless of device push permission. Manage device notifications in Me.</Text>
     </>}
     {mode === 'verification' && verification && <Card><StatusBadge status={verification.status} /><Text accessibilityRole="header">{verification.canDiscover ? 'Ready to help beyond your circle' : 'Build trust, share support'}</Text><Text>{verification.canDiscover ? 'Your account can explore tasks shared with verified helpers.' : 'External task discovery requires a verified helper account. Trusted-circle tasks may still be available.'}</Text><Text>Identity check submission is not available in this version. Development accounts use explicitly seeded verification states.</Text></Card>}

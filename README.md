@@ -1,5 +1,7 @@
 # team517
 
+November 12 whole-app UI overhaul: [implementation, native evidence and remaining visual differences](docs/design-overhaul.md). Shared typography, focused headers, forms/native scheduling, Offers, Discovery, account/roles, Community and Messaging were reworked; exact Figma parity and ordinary software-keyboard acceptance are not claimed. Earlier batch/test notes below remain historical.
+
 UI alignment batch 2: Tasks now has a functional month grid, marked dates, compact daily rows and bounded month/custom-range queries with local-time/DST handling. The [Calendar report](docs/design-alignment-batch2.md) records the new APK, 55 client tests and actual API 36 evidence. Batch 1 was pushed at `aaf7297` and hosted CI passed; broader form/Offer/Assignment visual alignment remains in progress.
 
 UI alignment batch 1 (November 12): compact receiver Tasks/status rows, role-specific navigation, Tasks Calendar entry and Post draft-intent protection are implemented and tested on API 36. The standalone APK was rebuilt; [batch report / before-and-after evidence](docs/design-alignment-batch1.md) records the new hash, tests and remaining design work. PDF-based approximation was explicitly approved; whole-app Figma parity is not claimed.

@@ -1,3 +1,4 @@
+import { Disclosure, TonePanel } from '../components/Details';
 import { MessageEntry } from './MessageEntry';
 import { Card, StatusBadge } from '../components/ui';
 import { personLabel, dateLabel, assignmentNextAction } from '../utils/presentation';
@@ -33,11 +34,12 @@ export function AssignmentPanel({ assignment, refresh }: { assignment: Assignmen
   return <>
     <StatusBadge status={current.status} />
     <Text accessibilityRole="header">{publicTask?.title || 'Your arrangement'}</Text><Text>{publicTask?.publicInstructions}</Text>
-    <Card><Text accessibilityRole="header">What happens next</Text><Text>{assignmentNextAction(current.status, helper)}</Text></Card>
-    <Text>{personLabel(current.helperId)}</Text><Text>Selected {dateLabel(current.selectedAt)}</Text>
+    <TonePanel title="What happens next">{assignmentNextAction(current.status, helper)}</TonePanel>
+    <Card><Text style={{ fontWeight: '600' }}>{personLabel(current.helperId)}</Text><Text style={{ fontSize: 12 }}>Selected {dateLabel(current.selectedAt)}</Text></Card><Disclosure title="Arrangement history">
     {current.confirmedAt && <Text>Confirmed: {dateLabel(current.confirmedAt)}</Text>}
     {current.startedAt && <Text>Started: {dateLabel(current.startedAt)}</Text>}
     {current.completedAt && <Text>Completed: {dateLabel(current.completedAt)}</Text>}
+    </Disclosure>
     {button('Refresh Assignment', () => api.getAssignment(current.id))}
     {helper && current.status === 'PENDING_CONFIRMATION' && <>
       {button('Confirm Assignment', () => api.confirmAssignment(current.id))}
@@ -60,8 +62,8 @@ export function AssignmentPanel({ assignment, refresh }: { assignment: Assignmen
     {current.status === 'COMPLETION_PENDING' && <Text>Waiting for requester review. Helpers cannot approve their own completion.</Text>}
     {current.status === 'DISPUTED' && <Text>An issue has been reported. Resolution is not yet available in this version.</Text>}
     <MessageEntry taskId={current.taskId} otherUserId={helper ? undefined : current.helperId} />
-    <TimelinePanel taskId={current.taskId} />
-    <ReviewsPanel key={current.id} helperId={current.helperId} assignmentId={!helper && current.status === 'COMPLETED' ? current.id : undefined} />
+    <Disclosure title="Task activity"><TimelinePanel compact taskId={current.taskId} /></Disclosure>
+    <Disclosure title="Reviews" initialOpen={!helper && current.status === 'COMPLETED'}><ReviewsPanel key={current.id} helperId={current.helperId} assignmentId={!helper && current.status === 'COMPLETED' ? current.id : undefined} /></Disclosure>
     {error ? <Text accessibilityRole="alert">{error}</Text> : null}
   </>;
 }

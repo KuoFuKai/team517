@@ -1,5 +1,7 @@
 # Sprint 7B.1 standalone cloud acceptance — November 12, 2026
 
+November 12 whole-app UI overhaul: [implementation, native evidence and remaining visual differences](design-overhaul.md). Shared typography, focused headers, forms/native scheduling, Offers, Discovery, account/roles, Community and Messaging were reworked; exact Figma parity and ordinary software-keyboard acceptance are not claimed. Earlier batch/test notes below remain historical.
+
 Calendar follow-up: [UI batch 2](design-alignment-batch2.md) adds actual API 36 month/day grid, task markers/rows, Task/Assignment opening and preserved date, next/empty month and selected/all-date toggle. Circle clipping was fixed/re-rendered. Native invalid-input submission was interrupted by Android stylus onboarding and remains unclaimed; deterministic validation/DST tests passed. Not a full native or physical acceptance rerun.
 
 Later UI batch 1: [scoped native results and screenshots](design-alignment-batch1.md) record the rebuilt PDF-based shell/receiver Task screen, preserved draft/history/Calendar/Message/location entry and final real background FCM Conversation routing. These are additional AVD observations, not a full repetition of every screen below or physical-phone acceptance.

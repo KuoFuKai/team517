@@ -1,3 +1,4 @@
+import { Choices } from '../components/Details';
 import { Card, EmptyState, LoadingState } from '../components/ui';
 import { countLabel, dateLabel } from '../utils/presentation';
 import { friendlyError } from '../utils/presentation';
@@ -20,7 +21,7 @@ export function ReviewsPanel({ helperId, assignmentId }: { helperId: string; ass
       {data.truncated && <Text>Showing 20 recent Reviews.</Text>}</>}
     {assignmentId && !submitted && <>
       <Text>How did it go? Your review is final once submitted. Please leave out addresses and private care or health details.</Text>
-      {[1, 2, 3, 4, 5].map(n => <Button key={n} disabled={busy} title={(rating === n ? 'Selected ' : '') + countLabel(n, 'star')} onPress={() => setRating(n)} />)}
+      <Choices value={String(rating)} options={[1, 2, 3, 4, 5].map(n => ({ value: String(n), label: `${n} stars` }))} disabled={busy} change={value => setRating(Number(value))} />
       <TextInput accessibilityLabel="Review comment" placeholder="Optional comment" maxLength={1000} value={comment} onChangeText={setComment} editable={!busy} />
       <Button disabled={busy} title="Submit Review" onPress={() => void run(async () => { await api.submitReview(assignmentId, { rating, ...(comment.trim() ? { comment: comment.trim() } : {}) }); setSubmitted(true); setData(await api.getHelperReviews(helperId)); })} />
     </>}

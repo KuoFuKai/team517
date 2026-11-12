@@ -1,3 +1,5 @@
+import { SegmentedControl } from '../components/SegmentedControl';
+import { useScreenHeader } from '../components/ScreenHeader';
 import React, { useEffect, useRef, useState } from 'react';
 import { useScreenTop } from '../navigation/scroll';
 import { useHardwareBack } from '../navigation/useHardwareBack';
@@ -22,10 +24,9 @@ export function MyWorkScreen({ back }: { back: () => void }) {
   };
   const run = async (work: () => Promise<void>) => { if (lock.current) return; lock.current = true; setBusy(true); setError(''); try { await work(); } catch (e) { setError(friendlyError(e)); } finally { lock.current = false; setBusy(false); } };
   useEffect(() => { void run(load); }, []);
-  useHardwareBack(() => { if (!selected) return false; if (!busy) setSelected(null); return true; });
-  if (selected) return <><Button disabled={busy} title="Back to my tasks" onPress={() => setSelected(null)} /><AssignmentPanel key={selected.id} assignment={selected} refresh={load} /></>;
-  return <><SectionHeader title="Care you make possible" caption="Your offers and confirmed support, all in one place." />
-    <Button title={(section === 'assignments' ? '✓ ' : '') + 'My tasks'} onPress={() => setSection('assignments')} /><Button title={(section === 'offers' ? '✓ ' : '') + 'My offers'} onPress={() => setSection('offers')} />
+  useHardwareBack(() => { if (!selected) return false; if (!busy) setSelected(null); return true; }, 1);
+  if (selected) return <SelectedWork assignment={selected} back={() => setSelected(null)} refresh={load} />;
+  return <><SegmentedControl value={section} options={[{ value: 'assignments', label: 'My tasks' }, { value: 'offers', label: 'My offers' }]} onChange={setSection} />
     {busy && <LoadingState />}{error ? <ErrorState message={error} /> : null}
     {section === 'offers' && <>{!busy && offers?.offers.length === 0 && <EmptyState title="Ready to lend a hand?" message="Find a task and send your first offer." />}
       {offers?.offers.map(offer => <Card key={offer.id}><StatusBadge status={offer.status} /><Text accessibilityRole="header">{titles[offer.taskId] || (offer.assignmentId ? titles[offer.assignmentId] : undefined) || 'Your offer'}</Text><Text>{offer.message || 'You offered to help with this task.'}</Text><Text>Sent {dateLabel(offer.createdAt)}</Text>
@@ -40,3 +41,5 @@ export function MyWorkScreen({ back }: { back: () => void }) {
     <Button title="Refresh my tasks" disabled={busy} onPress={() => void run(load)} />
   </>;
 }
+
+function SelectedWork({ assignment, back, refresh }: { assignment: AssignmentDto; back: () => void; refresh: () => Promise<void> }) { useScreenHeader({ title: 'Your arrangement', back, priority: 3 }); return <AssignmentPanel assignment={assignment} refresh={refresh} />; }

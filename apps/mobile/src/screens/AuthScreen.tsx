@@ -1,11 +1,12 @@
+import { View } from 'react-native';
 import React, { useState } from 'react';
 import { Text, TextInput, Button, Card, SectionHeader } from '../components/ui';
 export function AuthScreen({ busy, authenticate }: { busy: boolean; authenticate: (email: string, password: string, register: boolean) => void }) {
   const [email, setEmail] = useState(''), [password, setPassword] = useState(''), [register, setRegister] = useState(false);
   const [validation, setValidation] = useState('');
-  return <>
-    <SectionHeader title={register ? 'A little help starts here.' : 'Welcome back.'} caption="Make room for care, together." />
-    <Card><Text accessibilityRole="header">{register ? 'Create your account' : 'Sign in to team517'}</Text>
+  return <View style={{ gap: 18, paddingTop: 30, paddingBottom: 24 }}>
+    <Text accessibilityRole="header" style={{ fontSize: 27, lineHeight: 35 }}>{register ? 'A little help starts here.' : 'Welcome back.'}</Text><Text>Make room for care, together.</Text>
+    <View style={{ gap: 18, paddingTop: 12 }}>
       <TextInput accessibilityLabel="Email address" placeholder="you@example.com" autoCapitalize="none" autoComplete="email" keyboardType="email-address" value={email} onChangeText={setEmail} editable={!busy} />
       <TextInput accessibilityLabel="Password" placeholder="At least 6 characters" secureTextEntry autoComplete={register ? 'new-password' : 'current-password'} value={password} onChangeText={setPassword} editable={!busy} />
       {validation ? <Text accessibilityRole="alert">{validation}</Text> : null}
@@ -14,6 +15,6 @@ export function AuthScreen({ busy, authenticate }: { busy: boolean; authenticate
         setValidation(''); authenticate(email.trim(), password, register);
       }} />
       <Button variant="quiet" disabled={busy} title={register ? 'Already have an account? Sign in' : 'New here? Create an account'} onPress={() => { setRegister(!register); setValidation(''); }} />
-    </Card><Text>Connect with your circle and find support for everyday tasks.</Text>
-  </>;
+    </View><Text style={{ fontSize: 12, textAlign: 'center' }}>Connect with your circle and find support for everyday tasks.</Text>
+  </View>;
 }

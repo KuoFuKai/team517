@@ -59,7 +59,7 @@ export function AiAssistantPanel({ task, disabled, onBusy, apply, initialMode = 
     {!suggestion && <><PageHeading title={mode === 'TRANSCRIPT' ? 'Voice input preview' : 'Organize your notes'} />
     <Text>Uses the last saved draft. Save manual changes first. Review every proposed value; AI never publishes.</Text>
     <SegmentedControl value={mode} options={[{ value: 'TEXT', label: 'Notes' }, { value: 'TRANSCRIPT', label: 'Transcript' }]} disabled={locked} onChange={value => { setMode(value); setReviewed(false); setSuggestion(null); }} />
-    {mode === 'TRANSCRIPT' && <><View style={{ alignItems: 'center', paddingVertical: 20 }}><View style={{ width: 96, height: 96, borderRadius: 48, backgroundColor: theme.colors.primary, alignItems: 'center', justifyContent: 'center' }}><Feather name="mic" size={44} color={theme.colors.surface} /></View></View><Text>Recording is not connected. Type or paste a transcript below. No audio is recorded or uploaded.</Text></>}
+    {mode === 'TRANSCRIPT' && <><View style={{ alignItems: 'center', paddingVertical: 20 }}><View style={{ width: 96, height: 96, borderRadius: 48, backgroundColor: theme.colors.primary, alignItems: 'center', justifyContent: 'center' }}><Feather name="mic" size={44} color={theme.colors.surface} /></View></View><Text>Type or paste your transcript below.</Text></>}
     <TextInput multiline accessibilityLabel={mode === 'TEXT' ? 'AI description or editing instruction' : 'Manual transcript'}
       placeholder={mode === 'TEXT' ? 'Describe a task, or say Make it urgent / Make this clearer' : 'Paste a transcript here'}
       maxLength={5000} value={text} editable={!locked} onChangeText={value => { setText(value); setReviewed(false); setSuggestion(null); }} />
@@ -72,7 +72,7 @@ export function AiAssistantPanel({ task, disabled, onBusy, apply, initialMode = 
       const proposed = await api.improveTaskSuggestion(task.id, { text, timezone });
       setSuggestion(proposed); setSelected(Object.keys(proposed.fields));
     })} />
-    <Button variant="quiet" disabled={locked} title="Preview review layout · no changes" onPress={() => setPreviewReview(true)} /></>}{busy && <ActivityIndicator accessibilityLabel="AI request in progress" />}
+    <Button variant="quiet" disabled={locked} title="Review saved draft" onPress={() => setPreviewReview(true)} /></>}{busy && <ActivityIndicator accessibilityLabel="AI request in progress" />}
     {error ? <Text accessibilityRole="alert" style={styles.error}>{error}</Text> : null}
     {suggestion && <>
       <PageHeading title="Your task is organized" caption="Check the details before applying them." />
@@ -106,5 +106,5 @@ function suggestedValue(key: string, value: unknown, location?: string) {
   return String(value);
 }
 function DraftReviewPreview({ task, close }: { task: TaskDetailDto; close: () => void }) {
-  return <><PageHeading title="Your task is organized" caption="Layout preview only · this is not an AI suggestion." />{[{ title: 'Task', value: task.title || 'Untitled draft' }, { title: 'When', value: taskWhenLabel(task.startAt, task.endAt) }, { title: 'Caregiver', value: task.compensationType ? statusLabel(task.compensationType) : 'Not selected' }, { title: 'Budget', value: compensationLabel(task) }, { title: 'Instructions', value: task.publicInstructions || 'No public instructions yet' }].map(field => <Card key={field.title}><Text style={{ fontSize: 13.5, color: theme.colors.muted }}>{field.title}</Text><Text style={{ fontSize: 18, fontWeight: '600' }}>{field.value}</Text></Card>)}<Button variant="primary" title="Apply to task · preview only" disabled /><Button variant="quiet" title="Keep editing notes" onPress={close} /></>;
+  return <><PageHeading title="Review your saved draft" />{[{ title: 'Task', value: task.title || 'Untitled draft' }, { title: 'When', value: taskWhenLabel(task.startAt, task.endAt) }, { title: 'Caregiver', value: task.compensationType ? statusLabel(task.compensationType) : 'Not selected' }, { title: 'Budget', value: compensationLabel(task) }, { title: 'Instructions', value: task.publicInstructions || 'No public instructions yet' }].map(field => <Card key={field.title}><Text style={{ fontSize: 13.5, color: theme.colors.muted }}>{field.title}</Text><Text style={{ fontSize: 18, fontWeight: '600' }}>{field.value}</Text></Card>)}<Button variant="primary" title="Apply to task" disabled /><Button variant="quiet" title="Keep editing notes" onPress={close} /></>;
 }

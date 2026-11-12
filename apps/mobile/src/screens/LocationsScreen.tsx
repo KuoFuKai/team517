@@ -19,6 +19,6 @@ export function LocationsScreen({ locations, busy, create, back }: {
     </Disclosure><TextInput accessibilityLabel="Location name" placeholder="Home" maxLength={80} value={label} onChangeText={setLabel} editable={!busy} />
     <TextInput accessibilityLabel="Address" placeholder="Street address" maxLength={500} value={address} onChangeText={setAddress} editable={!busy} />
     <Button disabled={busy || !label.trim() || !address.trim()} variant="primary" title="Add this address" onPress={() => create({ label: label.trim(), formattedAddress: address.trim() })} />
-    <Text style={{ color: theme.colors.muted, fontSize: 13.5 }}>Enter the address manually. Search suggestions are not connected.</Text>
+    <Text style={{ color: theme.colors.muted, fontSize: 13.5 }}>Enter the address manually.</Text>
   </>;
 }

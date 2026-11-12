@@ -82,7 +82,7 @@ export function DiscoveryWorkspace({ back }: { back: () => void }) {
     </> : <>
       {assignment ? <AssignmentPanel assignment={assignment} /> : <>
       <StatusBadge status={task.compensationType} /><PageHeading title={task.title} caption="Shared with verified caregivers" />
-      <TonePanel title={compensationLabel(task)}>Task compensation details only. Payments and points are not connected.</TonePanel>
+      <TonePanel title={compensationLabel(task)} />
       <Card><Text style={{ fontSize: 18, fontWeight: '600' }}>Quick summary</Text><Text>{task.publicInstructions || 'No additional public instructions.'}</Text><Text style={{ fontSize: 13.5, color: theme.colors.primary }}>{taskWhenLabel(task.startAt, task.endAt)}</Text></Card>
       <Card><Text style={{ fontSize: 13.5, color: theme.colors.muted }}>Location</Text><Text style={{ fontWeight: '600' }}>{discoveryAreaLabel(task.approximateLocation.areaLabel)}</Text><IllustrativeMap compact /><Text style={{ fontSize: 13.5, color: theme.colors.primary }}>Exact address unlocks only for the confirmed helper.</Text></Card>
       {(!mine?.offer || ['WITHDRAWN', 'NOT_SELECTED'].includes(mine.offer.status)) && <><Disclosure title="Add an offer message"><TextInput accessibilityLabel="Offer message" placeholder="Tell the requester how you can help (optional)" value={message} onChangeText={setMessage} maxLength={1000} multiline editable={!busy} /></Disclosure>{['OPEN', 'HAS_OFFERS'].includes(mine?.taskStatus ?? task.status) && <Button variant="primary" disabled={busy} title="Offer to help" onPress={() => void run(async () => { await api.offerHelp(task.id, { message }); await refreshMine(task.id); setOfferSent(true); })} />}</>}

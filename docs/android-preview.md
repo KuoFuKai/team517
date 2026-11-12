@@ -1,5 +1,7 @@
 # Android Preview — Sprint 7B.1
 
+User-requested clean presentation follow-up: removed visible Design preview / service-not-connected labels and technical placeholder captions; use natural empty states and ordinary button labels. Unimplemented writes remain disabled, balances stay unknown, saved-draft review does not claim generated AI output, and no backend/provider behavior changed. New APK SHA256 `ee14824b172578c1714735d4bdc9b7a7fae5bc1ed7776508b73471afe65468a1`. Typecheck /65 client tests and Android release/Hermes build passed; profile/points rendered on API36. [Evidence](native-evidence/2026-11-12-clean-presentation/README.md). Previous labeled-preview screenshots and artifact hashes below are historical.
+
 Current measured-PDF UI artifact: [fidelity report](design-fidelity.md), 40,887,312 bytes, SHA256 `3179eb3576df7b0db28fba50773ab7aa3a1bffbf1ebda7e82d8d2b565a19ec3b`. Final APK installed and cold-relaunch Auth/detail/Community fixes checked on Pixel_9_Pro Android16/API36. Earlier artifact hashes below are historical; no new backend deployment.
 
 Current whole-app UI artifact: [overhaul](design-overhaul.md), 40,853,600 bytes, SHA256 `7d282c03ad0bd76ac284cc5fc854ab3da99845ae7ce946527750ab8f88ace7a2`. Final APK installed on Pixel_9_Pro Android16/API36; nested Back, focused task-chat return and caption wrapping retested. Earlier artifact hashes below are historical.

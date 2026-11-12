@@ -1,5 +1,7 @@
 # PDF fidelity pass — November 12, 2026
 
+User-requested clean presentation follow-up: removed visible Design preview / service-not-connected labels and technical placeholder captions; use natural empty states and ordinary button labels. Unimplemented writes remain disabled, balances stay unknown, saved-draft review does not claim generated AI output, and no backend/provider behavior changed. New APK SHA256 `ee14824b172578c1714735d4bdc9b7a7fae5bc1ed7776508b73471afe65468a1`. Typecheck /65 client tests and Android release/Hermes build passed; profile/points rendered on API36. [Evidence](native-evidence/2026-11-12-clean-presentation/README.md). Previous labeled-preview screenshots and artifact hashes below are historical.
+
 Scope confirmed by the user: align every existing functional page; unimplemented capabilities may have clearly labeled visual previews. No backend/domain/API changes or service deployments were made. This pass supersedes the earlier [whole-app overhaul](design-overhaul.md) for current source/artifact status; earlier evidence remains historical.
 
 ## Reference and measured foundation

@@ -1,5 +1,7 @@
 # team517
 
+Current PDF fidelity pass: [page-by-page coverage, native evidence and validation](docs/design-fidelity.md). Existing functional layouts were aligned using measured PDF typography and composition; explicitly labeled future-service previews remain nonfunctional. Final APK SHA256 `3179eb3576df7b0db28fba50773ab7aa3a1bffbf1ebda7e82d8d2b565a19ec3b`; Node22 full suite passed (22 unit / 65 client / 92 integration, smoke/default + AI-mock HTTP, Hermes). Pixel_9_Pro API36 rendered the documented paths; exact original assets, docked-keyboard/physical acceptance remain pending. Older UI checkpoints below are historical.
+
 November 12 whole-app UI overhaul: [implementation, native evidence and remaining visual differences](docs/design-overhaul.md). Shared typography, focused headers, forms/native scheduling, Offers, Discovery, account/roles, Community and Messaging were reworked; exact Figma parity and docked software-keyboard acceptance are not claimed. Earlier batch/test notes below remain historical.
 
 UI alignment batch 2: Tasks now has a functional month grid, marked dates, compact daily rows and bounded month/custom-range queries with local-time/DST handling. The [Calendar report](docs/design-alignment-batch2.md) records the new APK, 55 client tests and actual API 36 evidence. Batch 1 was pushed at `aaf7297` and hosted CI passed; broader form/Offer/Assignment visual alignment remains in progress.

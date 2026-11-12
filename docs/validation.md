@@ -1,5 +1,7 @@
 # Sprint 7B.1 Preview cloud/native follow-up — November 12, 2026
 
+Latest PDF fidelity pass: [report](design-fidelity.md). Final source passed Node22 typecheck, 22 backend unit, 65 client, 92 emulator integration, smoke, default HTTP, AI-mock HTTP including Community/Messaging, and Hermes export. Zero-match frontend business Firestore boundary scan; secret preflight clean. npm audit remains 28 (1 low /20 moderate /7 high /0 critical). Final APK installed on API36; native evidence and limits are separate from automation.
+
 November 12 whole-app UI overhaul: [implementation, native evidence and remaining visual differences](design-overhaul.md). Shared typography, focused headers, forms/native scheduling, Offers, Discovery, account/roles, Community and Messaging were reworked; exact Figma parity and docked software-keyboard acceptance are not claimed. Earlier batch/test notes below remain historical.
 
 Calendar UI batch 2: full Node 22 suite passed with **22 backend unit / 55 client / 92 integration**, typecheck, first-run smoke, default/AI-mock HTTP and Hermes. Final clipping refinement passed focused checks/export/native recheck. Month/day navigation, Task opening/return, empty month and date-mode restoration are scoped in the [report](design-alignment-batch2.md); native invalid-date submission and physical-phone acceptance are not claimed. No backend changes. Batch 1 hosted CI was successful; batch 2 CI is separate.

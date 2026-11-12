@@ -1,4 +1,5 @@
-import { Card, SectionHeader } from '../components/ui';
+import { Disclosure } from '../components/Details';
+import { Card, SectionHeader, PageHeading } from '../components/ui';
 import { useScreenHeader } from '../components/ScreenHeader';
 import { theme } from '../theme';
 import { Button, Text, TextInput } from '../components/ui';
@@ -13,12 +14,11 @@ export function LocationsScreen({ locations, busy, create, back }: {
   const [label, setLabel] = useState('');
   const [address, setAddress] = useState('');
   return <>
-    <Text style={{ color: theme.colors.muted }}>Private locations for your care circle.</Text>
+    <PageHeading title="Add another location" caption="Add another place for help." /><Disclosure title="Saved locations">
     {locations.map(location => <Card key={location.id}><Text style={{ fontWeight: '600' }}>{location.label}</Text><Text>{location.formattedAddress}</Text></Card>)}
-    <SectionHeader title="Add a location" /><TextInput accessibilityLabel="Location label" placeholder="Home" maxLength={80} value={label} onChangeText={setLabel} editable={!busy} />
-    <TextInput accessibilityLabel="Formatted address" placeholder="Street address" maxLength={500} value={address} onChangeText={setAddress} editable={!busy} />
-    <Button disabled={busy || !label.trim() || !address.trim()} title="Create location" onPress={() => create({ label: label.trim(), formattedAddress: address.trim() })} />
-    <Button disabled={busy} title="Back" onPress={back} />
-    <Text>No maps or geocoding. Addresses are entered manually.</Text>
+    </Disclosure><TextInput accessibilityLabel="Location name" placeholder="Home" maxLength={80} value={label} onChangeText={setLabel} editable={!busy} />
+    <TextInput accessibilityLabel="Address" placeholder="Street address" maxLength={500} value={address} onChangeText={setAddress} editable={!busy} />
+    <Button disabled={busy || !label.trim() || !address.trim()} variant="primary" title="Add this address" onPress={() => create({ label: label.trim(), formattedAddress: address.trim() })} />
+    <Text style={{ color: theme.colors.muted, fontSize: 13.5 }}>Enter the address manually. Search suggestions are not connected.</Text>
   </>;
 }

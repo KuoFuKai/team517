@@ -1,6 +1,7 @@
+import { SuccessScreen } from '../components/Feedback';
 import { Disclosure, TonePanel } from '../components/Details';
 import { MessageEntry } from './MessageEntry';
-import { Card, StatusBadge } from '../components/ui';
+import { Card, StatusBadge, PageHeading } from '../components/ui';
 import { personLabel, dateLabel, assignmentNextAction } from '../utils/presentation';
 import { AppState } from 'react-native';
 import { friendlyError } from '../utils/presentation';
@@ -13,6 +14,7 @@ import type { AssignmentDto, AssignmentExecutionDto, AssignmentPublicTaskDto } f
 import * as api from '../api/client';
 import { auth } from '../auth/firebase';
 export function AssignmentPanel({ assignment, refresh }: { assignment: AssignmentDto; refresh?: () => Promise<void> }) {
+  const [confirmedFeedback, setConfirmedFeedback] = useState(false);
   const [publicTask, setPublicTask] = useState<AssignmentPublicTaskDto | null>(null);
   const [current, setCurrent] = useState(assignment);
   const [execution, setExecution] = useState<AssignmentExecutionDto | null>(null);
@@ -26,16 +28,17 @@ export function AssignmentPanel({ assignment, refresh }: { assignment: Assignmen
   const run = async (work: () => Promise<AssignmentDto>, refreshAfter = true) => {
     if (lock.current) return;
     lock.current = true; executionEpoch.current++; setBusy(true); setError(''); setExecution(null);
-    try { setCurrent(await work()); if (refreshAfter) await refresh?.(); }
+    try { const next = await work(); setCurrent(next); if (current.status === 'PENDING_CONFIRMATION' && next.status === 'CONFIRMED') setConfirmedFeedback(true); if (refreshAfter) await refresh?.(); }
     catch (failure) { setError(friendlyError(failure)); }
     finally { lock.current = false; setBusy(false); }
   };
   const button = (title: string, work: () => Promise<AssignmentDto>) => <Button disabled={busy} title={title} onPress={() => void run(work)} />;
+  if (confirmedFeedback) return <SuccessScreen header="Task confirmed" title="You confirmed the task" message="Your arrangement is confirmed. Arrival details are now available through the task." action="View arrangement" done={() => setConfirmedFeedback(false)} />;
   return <>
     <StatusBadge status={current.status} />
-    <Text accessibilityRole="header">{publicTask?.title || 'Your arrangement'}</Text><Text>{publicTask?.publicInstructions}</Text>
+    <PageHeading title={publicTask?.title || 'Your arrangement'} /><Text>{publicTask?.publicInstructions}</Text>
     <TonePanel title="What happens next">{assignmentNextAction(current.status, helper)}</TonePanel>
-    <Card><Text style={{ fontWeight: '600' }}>{personLabel(current.helperId)}</Text><Text style={{ fontSize: 12 }}>Selected {dateLabel(current.selectedAt)}</Text></Card><Disclosure title="Arrangement history">
+    <Card><Text style={{ fontWeight: '600' }}>{personLabel(current.helperId)}</Text><Text style={{ fontSize: 13.5 }}>Selected {dateLabel(current.selectedAt)}</Text></Card><Disclosure title="Arrangement history">
     {current.confirmedAt && <Text>Confirmed: {dateLabel(current.confirmedAt)}</Text>}
     {current.startedAt && <Text>Started: {dateLabel(current.startedAt)}</Text>}
     {current.completedAt && <Text>Completed: {dateLabel(current.completedAt)}</Text>}
@@ -63,7 +66,7 @@ export function AssignmentPanel({ assignment, refresh }: { assignment: Assignmen
     {current.status === 'DISPUTED' && <Text>An issue has been reported. Resolution is not yet available in this version.</Text>}
     <MessageEntry taskId={current.taskId} otherUserId={helper ? undefined : current.helperId} />
     <Disclosure title="Task activity"><TimelinePanel compact taskId={current.taskId} /></Disclosure>
-    <Disclosure title="Reviews" initialOpen={!helper && current.status === 'COMPLETED'}><ReviewsPanel key={current.id} helperId={current.helperId} assignmentId={!helper && current.status === 'COMPLETED' ? current.id : undefined} /></Disclosure>
+    <Disclosure keepMounted title="Reviews" initialOpen={!helper && current.status === 'COMPLETED'}><ReviewsPanel key={current.id} helperId={current.helperId} assignmentId={!helper && current.status === 'COMPLETED' ? current.id : undefined} /></Disclosure>
     {error ? <Text accessibilityRole="alert">{error}</Text> : null}
   </>;
 }

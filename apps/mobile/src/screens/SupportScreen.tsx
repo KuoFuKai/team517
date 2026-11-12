@@ -1,3 +1,5 @@
+import { TaskDetailScreen } from './TaskDetailScreen';
+import { VerificationPresentation } from './VerificationPresentation';
 import { Action, MenuRow, Disclosure } from '../components/Details';
 import { useScreenHeader } from '../components/ScreenHeader';
 import { ConversationScreen } from './MessagingScreen';
@@ -10,7 +12,7 @@ import { resolvePushNotification } from '../push/resolve';
 import { useHardwareBack } from '../navigation/useHardwareBack';
 import React, { useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
-import type { CalendarDto, CalendarTaskDto, NotificationsDto, AssignmentDto, TaskDetailDto, VerificationStatusDto } from '@team517/contracts';
+import type { LocationDto, CalendarDto, CalendarTaskDto, NotificationsDto, AssignmentDto, TaskDetailDto, VerificationStatusDto } from '@team517/contracts';
 import * as api from '../api/client';
 import { AssignmentPanel } from './AssignmentPanel';
 import { TimelinePanel } from './TimelinePanel';
@@ -26,6 +28,8 @@ export function SupportScreen({ mode, back, onNotificationsLoaded, pushId, consu
   const [range, setRange] = useState(() => monthRange(localDateKey(new Date()).slice(0, 7)));
   const [calendarLoading, setCalendarLoading] = useState(false), [calendarError, setCalendarError] = useState(''), [calendarRefresh, setCalendarRefresh] = useState(0);
   const [assignment, setAssignment] = useState<AssignmentDto | null>(null), [task, setTask] = useState<TaskDetailDto | null>(null), [offersVisible, setOffersVisible] = useState(false);
+  const [taskLocations, setTaskLocations] = useState<LocationDto[]>([]);
+  useEffect(() => { let active = true; setTaskLocations([]); if (task) void api.listLocations(task.careContextId).then(result => { if (active) setTaskLocations(result.locations); }).catch(() => {}); return () => { active = false; }; }, [task?.id]);
   const [busy, setBusy] = useState(false), [error, setError] = useState(''); const lock = useRef(false);
   useScreenHeader({ title: task || assignment ? 'Task details' : mode === 'verification' ? 'Verification' : mode === 'notifications' ? 'Notifications' : 'Your tasks', back: task || assignment ? () => { setTask(null); setAssignment(null); } : mode !== 'calendar' ? back : undefined, disabled: busy, priority: mode === 'calendar' && !task && !assignment ? -1 : 2 });
   useScreenTop(conversationId ?? (offersVisible ? 'offers' : assignment?.id ?? task?.id ?? mode));
@@ -69,10 +73,9 @@ export function SupportScreen({ mode, back, onNotificationsLoaded, pushId, consu
     return false;
   }, 1);
   if (conversationId) return <ConversationScreen id={conversationId} backLabel="Back to notifications" back={() => setConversationId(null)} />;
-  if (offersVisible && task) return <OffersWorkspace taskId={task.id} back={() => setOffersVisible(false)} />;
+  if (offersVisible && task) return <OffersWorkspace task={task} taskId={task.id} back={() => setOffersVisible(false)} />;
   if (task || assignment) return <>
-    {assignment && <AssignmentPanel key={assignment.id} assignment={assignment} />}
-    {task && <><Card><StatusBadge status={task.status} /><Text accessibilityRole="header">{task.title}</Text><InfoRow label="When" value={dateLabel(task.startAt)} /><Text>{task.publicInstructions}</Text><Button title="View offers & arrangement" onPress={() => setOffersVisible(true)} /></Card><TimelinePanel taskId={task.id} /></>}
+    {assignment ? <><AssignmentPanel key={assignment.id} assignment={assignment} />{task && <Button title="View offers" onPress={() => setOffersVisible(true)} />}</> : task && <TaskDetailScreen task={task} locations={taskLocations} busy={busy} back={() => { setTask(null); setAssignment(null); }} viewOffers={() => setOffersVisible(true)} />}
     {error ? <ErrorState message={error} /> : null}
   </>;
   const groups = groupCalendarTasks(calendar?.tasks ?? []);
@@ -83,26 +86,28 @@ export function SupportScreen({ mode, back, onNotificationsLoaded, pushId, consu
     {busy && <LoadingState />}{error ? <ErrorState message={error} /> : null}
     {mode === 'calendar' && <>
       <CalendarGrid month={month} selected={date === 'all' ? '' : selectedDate} range={range} taskCounts={new Map(groups.map(group => [group.date, group.tasks.length]))} busy={calendarBusy} changeMonth={changeMonth} select={value => { setDate(value); setLastDay(value); }} />
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', flexWrap: 'wrap' }}><Button variant="quiet" disabled={calendarBusy} title="Today" onPress={() => { const today = localDateKey(new Date()); changeMonth(today.slice(0, 7), today); }} /><Button variant="quiet" disabled={calendarBusy} title={date === 'all' ? 'Show selected day' : 'All loaded dates'} onPress={() => setDate(date === 'all' ? selectedDate : 'all')} /><Button variant="quiet" title={rangeVisible ? 'Hide date range' : 'Date range'} onPress={() => { if (!rangeVisible) { setStart(range.start); setEnd(range.end); } setRangeVisible(!rangeVisible); }} /></View>
-      {rangeVisible && <Card><TextInput accessibilityLabel="From date" value={start} onChangeText={setStart} placeholder="YYYY-MM-DD" /><TextInput accessibilityLabel="Until date (not included)" value={end} onChangeText={setEnd} placeholder="YYYY-MM-DD" /><Button disabled={calendarBusy} title="Apply dates" onPress={() => { if (!calendarQuery({ start, end })) { setCalendarError('Choose an end date after the start, within 93 days. Use YYYY-MM-DD.'); return; } setRange({ start, end }); setMonth(start.slice(0, 7)); setDate('all'); setLastDay(start); setCalendarError(''); }} /></Card>}
       {calendarLoading && <LoadingState label="Loading this calendar…" />}
       {calendarError ? <ErrorState message={calendarError} /> : null}
       {!calendarLoading && calendar && <>
-        {date !== 'all' && <Text style={{ color: t.colors.ink, fontSize: 16, fontWeight: '600', marginTop: 8 }}>{calendarDateLabel(selectedDate)} · {countLabel(visibleGroups.reduce((count, group) => count + group.tasks.length, 0), 'task')}{calendar.truncated ? ' shown' : ''}</Text>}
+        {date !== 'all' && <Text style={{ color: t.colors.ink, fontSize: 18, fontWeight: '600', marginTop: 8 }}>{calendarDateLabel(selectedDate)} · {countLabel(visibleGroups.reduce((count, group) => count + group.tasks.length, 0), 'task')}{calendar.truncated ? ' shown' : ''}</Text>}
         {!visibleGroups.length && <EmptyState title={date === 'all' ? 'A clear calendar' : calendar.truncated ? 'No loaded tasks on this day' : 'No tasks on this day'} message="Choose a marked date or another month to see scheduled tasks." />}
-        {visibleGroups.map(group => <View key={group.date}>{date === 'all' && <Text style={{ color: t.colors.ink, fontSize: 16, fontWeight: '600', marginTop: 8 }}>{calendarDateLabel(group.date)} · {countLabel(group.tasks.length, 'task')}</Text>}{group.tasks.map(item => <CalendarTaskRow key={item.taskId} task={item} busy={calendarBusy} open={() => void run(() => open(item))} />)}</View>)}
+        {visibleGroups.map(group => <View key={group.date}>{date === 'all' && <Text style={{ color: t.colors.ink, fontSize: 18, fontWeight: '600', marginTop: 8 }}>{calendarDateLabel(group.date)} · {countLabel(group.tasks.length, 'task')}</Text>}{group.tasks.map(item => <CalendarTaskRow key={item.taskId} task={item} busy={calendarBusy} open={() => void run(() => open(item))} />)}</View>)}
       </>}
       <Text style={{ fontSize: 12, color: t.colors.muted }}>Times shown in {deviceTimeZone()}. Dots mark loaded tasks by start date.</Text>
       {calendar?.truncated && <Text>Showing a limited agenda. Narrow the date range to find more tasks.</Text>}
+      <Disclosure title="Calendar options">      <View style={{ flexDirection: 'row', justifyContent: 'space-between', flexWrap: 'wrap' }}><Button variant="quiet" disabled={calendarBusy} title="Today" onPress={() => { const today = localDateKey(new Date()); changeMonth(today.slice(0, 7), today); }} /><Button variant="quiet" disabled={calendarBusy} title={date === 'all' ? 'Show selected day' : 'All loaded dates'} onPress={() => setDate(date === 'all' ? selectedDate : 'all')} /><Button variant="quiet" title={rangeVisible ? 'Hide date range' : 'Date range'} onPress={() => { if (!rangeVisible) { setStart(range.start); setEnd(range.end); } setRangeVisible(!rangeVisible); }} /></View>
+      {rangeVisible && <Card><TextInput accessibilityLabel="From date" value={start} onChangeText={setStart} placeholder="YYYY-MM-DD" /><TextInput accessibilityLabel="Until date (not included)" value={end} onChangeText={setEnd} placeholder="YYYY-MM-DD" /><Button disabled={calendarBusy} title="Apply dates" onPress={() => { if (!calendarQuery({ start, end })) { setCalendarError('Choose an end date after the start, within 93 days. Use YYYY-MM-DD.'); return; } setRange({ start, end }); setMonth(start.slice(0, 7)); setDate('all'); setLastDay(start); setCalendarError(''); }} /></Card>}
+<Button variant="quiet" disabled={calendarBusy} title="Refresh calendar" onPress={() => setCalendarRefresh(value => value + 1)} /></Disclosure>
     </>}
     {mode === 'notifications' && <>
 
-      <Button disabled={busy} title="Mark all recent updates read" onPress={() => void run(async () => { const result = await api.markAllNotificationsRead(); await load(); if (result.truncated) setError('Only the most recent 200 updates were marked. Older unread updates may remain.'); })} />
+
       {!busy && notifications?.notifications.length === 0 && <EmptyState title="You’re all caught up" message="New offers and task updates will appear here." />}
-      {notifications?.notifications.map(n => <View key={n.id}><MenuRow disabled={busy} title={n.title} subtitle={`${dateLabel(n.createdAt)} · ${n.body}`} trailing={!n.readAt ? <View style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: t.colors.primary }} /> : undefined} onPress={() => void run(async () => { await api.markNotificationRead(n.id); await load(); setTask(null); setAssignment(null); if (n.resourceType === 'CONVERSATION') setConversationId(n.resourceId); else if (n.resourceType === 'ASSIGNMENT') setAssignment(await api.getAssignment(n.resourceId)); else setTask(await api.getTask(n.resourceId)); })} /></View>)}
+      {notifications?.notifications.map(n => <View key={n.id}><MenuRow contained disabled={busy} title={n.title} subtitle={`${dateLabel(n.createdAt)} · ${n.body}`} trailing={!n.readAt ? <View style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: t.colors.primary }} /> : undefined} onPress={() => void run(async () => { await api.markNotificationRead(n.id); await load(); setTask(null); setAssignment(null); if (n.resourceType === 'CONVERSATION') setConversationId(n.resourceId); else if (n.resourceType === 'ASSIGNMENT') setAssignment(await api.getAssignment(n.resourceId)); else setTask(await api.getTask(n.resourceId)); })} /></View>)}
       {notifications?.truncated && <Text>Showing the most recent 50 updates.</Text>}<Text>These in-app updates remain available regardless of device push permission. Manage device notifications in Me.</Text>
+      <Disclosure title="Notification options">      <Button disabled={busy} title="Mark all recent updates read" onPress={() => void run(async () => { const result = await api.markAllNotificationsRead(); await load(); if (result.truncated) setError('Only the most recent 200 updates were marked. Older unread updates may remain.'); })} /><Button variant="quiet" disabled={busy} title="Refresh notifications" onPress={() => void run(load)} /></Disclosure>
     </>}
-    {mode === 'verification' && verification && <Card><StatusBadge status={verification.status} /><Text accessibilityRole="header">{verification.canDiscover ? 'Ready to help beyond your circle' : 'Build trust, share support'}</Text><Text>{verification.canDiscover ? 'Your account can explore tasks shared with verified helpers.' : 'External task discovery requires a verified helper account. Trusted-circle tasks may still be available.'}</Text><Text>Identity check submission is not available in this version. Development accounts use explicitly seeded verification states.</Text></Card>}
-    <Button variant="quiet" disabled={calendarBusy} title="Refresh" onPress={() => { if (mode === 'calendar') setCalendarRefresh(value => value + 1); else void run(load); }} /><Button variant="quiet" disabled={busy} title="Back" onPress={back} />
+    {mode === 'verification' && verification && <VerificationPresentation value={verification} back={back} />}
+
   </>;
 }

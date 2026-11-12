@@ -1,3 +1,4 @@
+import { Choices, TonePanel } from '../components/Details';
 import { SegmentedControl } from '../components/SegmentedControl';
 import { useScreenHeader } from '../components/ScreenHeader';
 import React, { useEffect, useRef, useState } from 'react';
@@ -26,7 +27,7 @@ export function MyWorkScreen({ back }: { back: () => void }) {
   useEffect(() => { void run(load); }, []);
   useHardwareBack(() => { if (!selected) return false; if (!busy) setSelected(null); return true; }, 1);
   if (selected) return <SelectedWork assignment={selected} back={() => setSelected(null)} refresh={load} />;
-  return <><SegmentedControl value={section} options={[{ value: 'assignments', label: 'My tasks' }, { value: 'offers', label: 'My offers' }]} onChange={setSection} />
+  return <><Choices value={section} options={[{ value: 'assignments', label: 'My tasks' }, { value: 'offers', label: 'My offers' }]} change={setSection} />
     {busy && <LoadingState />}{error ? <ErrorState message={error} /> : null}
     {section === 'offers' && <>{!busy && offers?.offers.length === 0 && <EmptyState title="Ready to lend a hand?" message="Find a task and send your first offer." />}
       {offers?.offers.map(offer => <Card key={offer.id}><StatusBadge status={offer.status} /><Text accessibilityRole="header">{titles[offer.taskId] || (offer.assignmentId ? titles[offer.assignmentId] : undefined) || 'Your offer'}</Text><Text>{offer.message || 'You offered to help with this task.'}</Text><Text>Sent {dateLabel(offer.createdAt)}</Text>
@@ -34,11 +35,11 @@ export function MyWorkScreen({ back }: { back: () => void }) {
         {offer.assignmentId && <Button title="View assignment" disabled={busy} onPress={() => void run(async () => setSelected(await api.getAssignment(offer.assignmentId!)))} />}
       </Card>)}
     </>}
-    {section === 'assignments' && <>{!busy && assignments?.assignments.length === 0 && <EmptyState title="No assignments yet" message="When a requester selects your offer, it will appear here for you to confirm." />}
+    {section === 'assignments' && <><Text accessibilityRole="header">Your tasks</Text>{!busy && assignments?.assignments.length === 0 && <EmptyState title="No assignments yet" message="When a requester selects your offer, it will appear here for you to confirm." />}
       {assignments?.assignments.slice().sort((a, b) => workPriority(a.status) - workPriority(b.status)).map(a => <TaskPreviewCard key={a.id} status={a.status} title={titles[a.id] || 'Your task'} when={'Selected ' + dateLabel(a.selectedAt)} detail={assignmentNextAction(a.status, true)} busy={busy} open={() => setSelected(a)} />)}
     </>}
     {(offers?.truncated || assignments?.truncated) && <Text>Showing your 50 most recently updated items.</Text>}
-    <Button title="Refresh my tasks" disabled={busy} onPress={() => void run(load)} />
+    <Button variant="quiet" title="Refresh my tasks" disabled={busy} onPress={() => void run(load)} />
   </>;
 }
 

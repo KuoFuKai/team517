@@ -1,3 +1,5 @@
+import { FormSelect, ScheduleChooser } from '../components/FormSelect';
+import { SegmentedControl } from '../components/SegmentedControl';
 import { useHardwareBack } from '../navigation/useHardwareBack';
 import { useScreenTop } from '../navigation/scroll';
 import { TaskDateTimeField } from '../components/TaskDateTimeField';
@@ -21,6 +23,7 @@ interface Props {
 }
 export function EditTaskScreen({ task, locations, busy: requestBusy, save, locationsScreen, back, applyAi }: Props) {
   const [assistantOpen, setAssistantOpen] = useState(false);
+  const [assistantMode, setAssistantMode] = useState<'TEXT' | 'TRANSCRIPT'>('TEXT');
   const [aiBusy, setAiBusy] = useState(false);
   const busy = requestBusy || aiBusy;
   useScreenHeader({ title: assistantOpen ? 'Task assistant' : task.title ? 'Edit task' : 'Post a task', back: assistantOpen ? () => setAssistantOpen(false) : back, disabled: busy, priority: 2 });
@@ -61,9 +64,9 @@ export function EditTaskScreen({ task, locations, busy: requestBusy, save, locat
     <TextInput accessibilityLabel={label} value={value} onChangeText={change} editable={!busy} maxLength={maxLength} multiline={multiline} />
   </>;
   return <>
-    {!assistantOpen && <TonePanel title="Let’s make care a little easier">Describe what you need, or use the optional writing assistant.</TonePanel>}
-    <Button disabled={busy} title={assistantOpen ? 'Back to manual form' : 'Describe with AI · optional'} onPress={() => setAssistantOpen(!assistantOpen)} />
-    {assistantOpen && <AiAssistantPanel task={task} disabled={requestBusy} onBusy={setAiBusy} apply={async (fields, sourceVersion) => {
+    {!assistantOpen && <View style={{ backgroundColor: theme.colors.primarySoft, borderRadius: 12, padding: 14, gap: 12 }}><Text style={{ fontWeight: '600', fontSize: 18 }}>Start with your voice or notes</Text><Text>Tell AI what you need. You can review every field before posting.</Text><View style={{ flexDirection: 'row', gap: 8 }}><View style={{ flex: 1 }}><Button title="Describe by voice" disabled={busy} onPress={() => { setAssistantMode('TRANSCRIPT'); setAssistantOpen(true); }} /></View><View style={{ flex: 1 }}><Button title="Organize notes" disabled={busy} onPress={() => { setAssistantMode('TEXT'); setAssistantOpen(true); }} /></View></View></View>}
+    {assistantOpen && <Button variant="quiet" title="Back to manual form" disabled={busy} onPress={() => setAssistantOpen(false)} />}
+    {assistantOpen && <AiAssistantPanel close={() => setAssistantOpen(false)} initialMode={assistantMode} task={task} disabled={requestBusy} onBusy={setAiBusy} apply={async (fields, sourceVersion) => {
       await applyAi(fields, sourceVersion);
       // Only accepted fields replace local inputs. Other unsaved manual edits survive.
       if ('title' in fields) setTitle(fields.title ?? '');
@@ -79,29 +82,22 @@ export function EditTaskScreen({ task, locations, busy: requestBusy, save, locat
       if ('cashAmount' in fields) setCash(fields.cashAmount?.toString() ?? '');
       if ('currency' in fields) setCurrency(fields.currency ?? '');
     }} />}
-    {!assistantOpen && <><SectionHeader title="What do you need?" />
-    {input('Title', title, setTitle, 120)}
-    {input('Help type', helpType, setHelpType, 80)}
-    <Text style={{ fontSize: 12, color: theme.colors.muted }}>Public details are visible to potential helpers. Keep addresses, access codes and private health details out.</Text>
-    {input('Public details', publicInstructions, setPublicInstructions, 2000, true)}
-    <Disclosure title="Private arrival details">{input('Arrival details · confirmed helper only', privateInstructions, setPrivateInstructions, 2000, true)}</Disclosure>
-    {(task.instructions || instructions) && input('Existing private circle notes', instructions, setInstructions, 5000, true)}
-    <SectionHeader title="When & where" caption={`Times shown in ${deviceTimeZone()}`} />
-    <TaskDateTimeField label="Start time" value={startAt} change={setStartAt} disabled={busy} />
-    <TaskDateTimeField label="End time" value={endAt} change={setEndAt} disabled={busy} />
-    <Text style={{ fontWeight: '600' }}>Location</Text>
-    <Choices value={locationId} disabled={busy} options={[{ value: '', label: 'Not selected' }, ...locations.map(location => ({ value: location.id, label: location.label }))]} change={setLocationId} />
-    <Button variant="quiet" disabled={busy} title="Manage locations (save changes first)" onPress={locationsScreen} />
-    <SectionHeader title="Priority" />
-    <Choices value={urgency} options={[{ value: 'PLANNED', label: 'Planned' }, { value: 'URGENT', label: 'Urgent' }]} disabled={busy} change={setUrgency} />
-    <SectionHeader title="Who can offer?" caption="External helpers see an approximate area until you confirm an arrangement." />
-    <Choices value={visibility} options={[{ value: 'CARE_CIRCLE', label: 'My care circle' }, { value: 'VERIFIED_HELPERS', label: 'Verified helpers' }]} disabled={busy} change={setVisibility} />
-    <SectionHeader title="Compensation" caption="Displayed details only. No payments or points are transferred." />
-    <Choices value={compensationType} options={[{ value: 'VOLUNTEER', label: 'Volunteer' }, { value: 'POINTS', label: 'Points' }, { value: 'PAID', label: 'Paid' }]} disabled={busy} change={setCompensation} />
+    {!assistantOpen && <>
+    {input('Task name', title, setTitle, 120)}
+    {input('Type of help', helpType, setHelpType, 80)}
+    <ScheduleChooser start={startAt} end={endAt} changeStart={setStartAt} changeEnd={setEndAt} disabled={busy} />
+    <FormSelect label="Location" value={locationId} options={[{ value: '', label: 'Choose a location' }, ...locations.map(value => ({ value: value.id, label: value.label }))]} change={setLocationId} disabled={busy}><Button variant="quiet" title="Manage locations" onPress={locationsScreen} disabled={busy} /></FormSelect>
+    {input('What should the caregiver do?', publicInstructions, setPublicInstructions, 2000, true)}
+    <Text style={{ fontSize: 13.5, color: theme.colors.muted }}>Keep addresses, access codes and private health details out of public instructions.</Text>
+    <FormSelect label="How soon is help needed?" value={urgency} options={[{ value: 'PLANNED', label: 'Planned' }, { value: 'URGENT', label: 'Urgent' }]} change={setUrgency} disabled={busy} />
+    <Text style={{ fontSize: 13.5, color: theme.colors.muted, fontWeight: '600' }}>Who can help?</Text>
+    <SegmentedControl value={compensationType ?? 'NONE'} options={[{ value: 'VOLUNTEER', label: 'Volunteer' }, { value: 'POINTS', label: 'Points' }, { value: 'PAID', label: 'Paid caregiver' }]} disabled={busy} onChange={value => { if (value !== 'NONE') setCompensation(value); }} />
     {compensationType === 'POINTS' && input('Point reward', points, setPoints, 12)}
     {compensationType === 'PAID' && <>{input('Cash amount (major currency units)', cash, setCash, 12)}{input('Currency (three uppercase letters)', currency, setCurrency, 3)}</>}
+    <FormSelect label="Who can see it" value={visibility} options={[{ value: 'CARE_CIRCLE', label: 'Care circle only' }, { value: 'VERIFIED_HELPERS', label: 'Care circle + verified caregivers' }]} change={setVisibility} disabled={busy} />
+    <Disclosure title="Private arrival details">{input('Confirmed helper only', privateInstructions, setPrivateInstructions, 2000, true)}{(task.instructions || instructions) && input('Existing private circle notes', instructions, setInstructions, 5000, true)}</Disclosure>
     {formError ? <Text accessibilityRole="alert">{formError}</Text> : null}
-    <View style={{ gap: 10, marginTop: 12 }}><Button variant="primary" disabled={busy} title="Save and publish task" onPress={() => submit(true)} /><Button disabled={busy} title="Save draft" onPress={() => submit(false)} /></View>
-    <Button disabled={busy} title="Back to tasks (discard unsaved edits)" onPress={back} /></>}
+    <View style={{ gap: 10, marginTop: 12 }}><Button variant="primary" disabled={busy} title="Post task" onPress={() => submit(true)} /><Button disabled={busy} title="Save draft" onPress={() => submit(false)} /></View>
+    <Button disabled={busy} variant="quiet" title="Cancel editing" onPress={back} /></>}
   </>;
 }

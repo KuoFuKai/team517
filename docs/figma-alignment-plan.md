@@ -1,5 +1,7 @@
 # Figma alignment audit and implementation plan — November 12, 2026
 
+Current checkpoint: [measured-PDF fidelity pass](design-fidelity.md) covers existing functional page layouts and explicitly labeled future previews, with actual API36 screenshots and scoped test results. Previous gap/plan entries below are historical; original Figma assets and full native state variants remain unverified.
+
 November 12 whole-app UI overhaul: [implementation, native evidence and remaining visual differences](design-overhaul.md). Shared typography, focused headers, forms/native scheduling, Offers, Discovery, account/roles, Community and Messaging were reworked; exact Figma parity and docked software-keyboard acceptance are not claimed. Earlier batch/test notes below remain historical.
 
 Batch 2: [Calendar month grid/daily agenda](design-alignment-batch2.md) now completes that missing presentation slice using existing APIs. Broader body-screen work remains planned. Batch 1 publication at `aaf7297` was verified and hosted CI passed.

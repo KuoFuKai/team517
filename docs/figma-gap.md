@@ -1,5 +1,7 @@
 # Figma alignment gaps — Sprint 7B
 
+Current checkpoint: [measured-PDF fidelity pass](design-fidelity.md) covers existing functional page layouts and explicitly labeled future previews, with actual API36 screenshots and scoped test results. Previous gap/plan entries below are historical; original Figma assets and full native state variants remain unverified.
+
 Current implementation: [PDF-based batch 1](design-alignment-batch1.md) updates role navigation and receiver Tasks/By status, with native before/after evidence. Other body screens and exact original font/icon fidelity remain open. Do not treat the older approximation labels below as acceptance.
 
 **November 12 audit supersedes the unknown-visual-reference limitation for the sampled PDF pages:** the user supplied a 101-page Figma PDF export. All pages were inventoried; 16 were rendered/reviewed against actual Preview baselines and frontend code. The fresh Figma MCP requests still hit Starter-plan quota, so authoritative tokens/assets remain unavailable. See [alignment audit and implementation plan](figma-alignment-plan.md), [complete page inventory](design-audit/2026-11-12/page-inventory.csv) and labelled comparison boards there. The following Sprint 7B table is historical and its “close approximation” description is not current visual acceptance. No UI redesign was implemented in this audit.

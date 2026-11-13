@@ -32,25 +32,24 @@ export function AssignmentPanel({ assignment, refresh }: { assignment: Assignmen
     catch (failure) { setError(friendlyError(failure)); }
     finally { lock.current = false; setBusy(false); }
   };
-  const button = (title: string, work: () => Promise<AssignmentDto>) => <Button disabled={busy} title={title} onPress={() => void run(work)} />;
+  const button = (title: string, work: () => Promise<AssignmentDto>) => <Button variant={['Confirm', 'Start helping', 'Mark done', 'Confirm completion'].includes(title) ? 'primary' : 'secondary'} disabled={busy} title={title} onPress={() => void run(work)} />;
   if (confirmedFeedback) return <SuccessScreen header="Task confirmed" title="You confirmed the task" message="Your arrangement is confirmed. Arrival details are now available through the task." action="View arrangement" done={() => setConfirmedFeedback(false)} />;
   return <>
     <StatusBadge status={current.status} />
     <PageHeading title={publicTask?.title || 'Your arrangement'} /><Text>{publicTask?.publicInstructions}</Text>
     <TonePanel title="What happens next">{assignmentNextAction(current.status, helper)}</TonePanel>
-    <Card><Text style={{ fontWeight: '600' }}>{personLabel(current.helperId)}</Text><Text style={{ fontSize: 13.5 }}>Selected {dateLabel(current.selectedAt)}</Text></Card><Disclosure title="Arrangement history">
+    <Card><Text style={{ fontWeight: '600' }}>{personLabel(current.helperId)}</Text><Text style={{ fontSize: 13.5 }}>Chosen by {personLabel(current.selectedBy)}</Text></Card><Disclosure title="Arrangement history">
     {current.confirmedAt && <Text>Confirmed: {dateLabel(current.confirmedAt)}</Text>}
     {current.startedAt && <Text>Started: {dateLabel(current.startedAt)}</Text>}
     {current.completedAt && <Text>Completed: {dateLabel(current.completedAt)}</Text>}
     </Disclosure>
-    {button('Refresh Assignment', () => api.getAssignment(current.id))}
     {helper && current.status === 'PENDING_CONFIRMATION' && <>
-      {button('Confirm Assignment', () => api.confirmAssignment(current.id))}
-      {button('Decline Assignment', () => api.declineAssignment(current.id))}
+      {button('Confirm', () => api.confirmAssignment(current.id))}
+      {button('Decline', () => api.declineAssignment(current.id))}
     </>}
     {((!helper && current.status === 'PENDING_CONFIRMATION') || current.status === 'CONFIRMED') && button('Cancel arrangement · keep Task needed', () => api.cancelAssignment(current.id))}
-    {helper && current.status === 'CONFIRMED' && button('Start Task', () => api.startTask(current.id))}
-    {helper && current.status === 'IN_PROGRESS' && button('Request completion review', () => api.requestCompletion(current.id))}
+    {helper && current.status === 'CONFIRMED' && button('Start helping', () => api.startTask(current.id))}
+    {helper && current.status === 'IN_PROGRESS' && button('Mark done', () => api.requestCompletion(current.id))}
     {!helper && current.status === 'COMPLETION_PENDING' && <>
       {button('Confirm completion', () => api.confirmCompletion(current.id))}
       <TextInput accessibilityLabel="Optional dispute reason" placeholder="Optional short reason" maxLength={500} value={reason} onChangeText={setReason} />
@@ -62,11 +61,12 @@ export function AssignmentPanel({ assignment, refresh }: { assignment: Assignmen
       const details = await api.getExecutionDetails(current.id); if (AppState.currentState === 'active' && epoch === executionEpoch.current) setExecution(details); return latest;
     }, false)} />}
     {execution && <Card><Text accessibilityRole="header">Arrival details</Text><Text>{execution.publicInstructions}</Text><Text>{execution.privateInstructions}</Text><Text>{execution.location.label}: {execution.location.formattedAddress}</Text></Card>}
-    {current.status === 'COMPLETION_PENDING' && <Text>Waiting for requester review. Helpers cannot approve their own completion.</Text>}
+    {current.status === 'COMPLETION_PENDING' && <Text>The requester will review and confirm completion.</Text>}
     {current.status === 'DISPUTED' && <Text>An issue has been reported. Resolution is not yet available in this version.</Text>}
     <MessageEntry taskId={current.taskId} otherUserId={helper ? undefined : current.helperId} />
     <Disclosure title="Task activity"><TimelinePanel compact taskId={current.taskId} /></Disclosure>
     <Disclosure keepMounted title="Reviews" initialOpen={!helper && current.status === 'COMPLETED'}><ReviewsPanel key={current.id} helperId={current.helperId} assignmentId={!helper && current.status === 'COMPLETED' ? current.id : undefined} /></Disclosure>
+    <Button variant="quiet" disabled={busy} title="Refresh" onPress={() => void run(() => api.getAssignment(current.id))} />
     {error ? <Text accessibilityRole="alert">{error}</Text> : null}
   </>;
 }

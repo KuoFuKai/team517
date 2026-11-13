@@ -1,3 +1,4 @@
+import { demoPerson } from '../demo/maker-day3';
 import React, { useEffect, useState } from 'react';
 import { View, Pressable } from 'react-native';
 import type { UserDto, UserRole, HelperRatingSummaryDto } from '@team517/contracts';
@@ -22,7 +23,7 @@ export function HomeScreen({ busy, profile, initialize, loadUser, switchRole, ch
   if (rolesOpen) return <RolePicker profile={profile} busy={busy} switchRole={switchRole} contextName={contextName} back={() => setRolesOpen(false)} />;
   const title = name || email || 'Your account';
   return <>
-    <Card>{helper ? <Text accessibilityRole="header" style={{ fontSize: 28, lineHeight: 34 }}>{title}</Text> : <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}><Avatar label={title} /><Text accessibilityRole="header" style={{ flex: 1, fontSize: 22, lineHeight: 28 }}>{title}</Text></View>}<Text style={{ color: t.colors.muted }}>{roleName(profile.lastActiveRole ?? profile.primaryOnboardingRole)} · {statusLabel(profile.verificationStatus ?? 'UNVERIFIED')}</Text>
+    <Card>{helper ? <Text accessibilityRole="header" style={{ fontSize: 28, lineHeight: 34 }}>{title}</Text> : <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}><Avatar label={title} /><Text accessibilityRole="header" style={{ flex: 1, fontSize: 22, lineHeight: 28 }}>{title}</Text></View>}<Text style={{ color: t.colors.muted }}>{demoPerson(profile.id)?.relationship ?? `${roleName(profile.lastActiveRole ?? profile.primaryOnboardingRole)} · ${statusLabel(profile.verificationStatus ?? 'UNVERIFIED')}`}</Text>
       {helper && <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingTop: 8 }}>{[[rating?.averageRating?.toFixed(1) ?? '—', 'Rating'], [rating?.reviewCount?.toString() ?? '—', 'Reviews'], [statusLabel(profile.verificationStatus ?? 'UNVERIFIED'), 'Identity']].map(([value,label]) => <View key={label} style={{ gap: 4, flex: 1 }}><Text style={{ color: t.colors.primary, fontSize: 18, fontWeight: '600' }}>{value}</Text><Text style={{ fontSize: 13.5, color: t.colors.muted }}>{label}</Text></View>)}</View>}
     </Card>
     <Pressable accessibilityRole="button" accessibilityLabel="My points" onPress={() => setPreview('points')}><TonePanel title="My points">— points available</TonePanel></Pressable>

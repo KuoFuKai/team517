@@ -1,3 +1,4 @@
+import { Disclosure } from '../components/Details';
 import { useScreenHeader } from '../components/ScreenHeader';
 import { useScreenTop } from '../navigation/scroll';
 import { useHardwareBack } from '../navigation/useHardwareBack';
@@ -99,7 +100,7 @@ export function EditTaskScreen({ task, locations, busy: requestBusy, save, locat
   };
 
   return <View style={s.form}>
-    {!assistantOpen && <View style={{ backgroundColor: t.colors.primarySoft, borderRadius: 12, padding: 14, gap: 12 }}><Text accessibilityRole="header">Start with your voice or notes</Text><Text>Tell AI what you need. Review every field before posting.</Text><ResponsiveActions><Button title="Voice notes" accessibilityLabel="Add a voice transcript" disabled={busy} onPress={() => { setAssistantMode('TRANSCRIPT'); setAssistantOpen(true); }} /><Button title="Organize notes" disabled={busy} onPress={() => { setAssistantMode('TEXT'); setAssistantOpen(true); }} /></ResponsiveActions></View>}
+
     {assistantOpen && <AiAssistantPanel close={() => setAssistantOpen(false)} initialMode={assistantMode} task={task} disabled={requestBusy} onBusy={setAiBusy} apply={async (fields, sourceVersion) => {
       await applyAi(fields, sourceVersion);
       // Only accepted fields replace local inputs. Other unsaved manual edits survive.
@@ -136,16 +137,16 @@ export function EditTaskScreen({ task, locations, busy: requestBusy, save, locat
 
     <LocationField label="Where is help needed?" places={locations} value={locationId} disabled={busy} change={setLocationId} manage={locationsScreen} />
 
-    <Field label="How soon is help needed?">
-      <SegmentedControl value={urgency ?? 'PLANNED'} disabled={busy} options={[{ value: 'PLANNED' as TaskUrgency, label: 'Planned' }, { value: 'URGENT' as TaskUrgency, label: 'Urgent' }]} onChange={setUrgency} />
-    </Field>
-
-    <TextInput accessibilityLabel="What should the helper do?" hint="Public details help people decide whether to offer. Keep addresses and access codes out of them, and leave out medical records, diagnoses and medication lists."
+    <TextInput accessibilityLabel="What should the helper do?" hint="Keep addresses, access codes and medical details private."
       value={publicInstructions} onChangeText={setPublicInstructions} editable={!busy} maxLength={2000} multiline placeholder="Meet Mom in the clinic lobby, stay for her appointment, and ride home together. No medical care needed." />
 
     <Field label="Who can see it">
       <OptionCard title="Care circle only" selected={visibility === 'CARE_CIRCLE'} disabled={busy} choose={() => setVisibility('CARE_CIRCLE')} />
       <OptionCard title="Verified helpers" caption="People outside your circle see public information only." selected={visibility === 'VERIFIED_HELPERS'} disabled={busy} choose={() => setVisibility('VERIFIED_HELPERS')} />
+    </Field>
+
+    <Field label="How soon is help needed?">
+      <SegmentedControl value={urgency ?? 'PLANNED'} disabled={busy} options={[{ value: 'PLANNED' as TaskUrgency, label: 'Planned' }, { value: 'URGENT' as TaskUrgency, label: 'Urgent' }]} onChange={setUrgency} />
     </Field>
 
     <TextInput accessibilityLabel="Arrival details" hint="Shared only with your confirmed helper." value={privateInstructions} onChangeText={setPrivateInstructions} editable={!busy} maxLength={2000} multiline placeholder="Door code, parking, who to ask for" />
@@ -162,16 +163,17 @@ export function EditTaskScreen({ task, locations, busy: requestBusy, save, locat
     </>}
 
     {formError ? <Text accessibilityRole="alert">{formError}</Text> : null}
+    {!assistantOpen && <Disclosure title="Writing assistant"><View style={{ backgroundColor: t.colors.primarySoft, borderRadius: 12, padding: 14, gap: 12 }}><Text accessibilityRole="header">Start with your voice or notes</Text><Text>Tell AI what you need. Review every field before posting.</Text><ResponsiveActions><Button title="Voice notes" accessibilityLabel="Add a voice transcript" disabled={busy} onPress={() => { setAssistantMode('TRANSCRIPT'); setAssistantOpen(true); }} /><Button title="Organize notes" disabled={busy} onPress={() => { setAssistantMode('TEXT'); setAssistantOpen(true); }} /></ResponsiveActions></View></Disclosure>}
     <FooterActions>
       <Button variant="secondary" disabled={busy} title="Save Draft" onPress={() => submit(false)} />
-      <Button variant="primary" disabled={busy} title="Post" onPress={() => submit(true)} />
+      <Button variant="primary" disabled={busy} title="Post request" onPress={() => submit(true)} />
     </FooterActions>
     <Button disabled={busy} variant="quiet" title="Back to tasks (discard unsaved edits)" onPress={back} />
     </>}
   </View>;
 }
 const s = StyleSheet.create({
-  form: { gap: 20 },
+  form: { gap: 14 },
   pair: { flexDirection: 'row', gap: 12 }, half: { flex: 1 },
   note: { marginTop: -12, fontSize: 13.5, lineHeight: 19.5, color: t.colors.muted },
 });

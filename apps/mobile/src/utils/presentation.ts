@@ -1,3 +1,4 @@
+import { displayPerson } from '../demo/maker-day3';
 import type { UserRole } from '@team517/contracts';
 export const statusLabels: Record<string, string> = {
   READ: 'Read', UNREAD: 'New', DRAFT: 'Draft', OPEN: 'Open for offers', HAS_OFFERS: 'Offers received', AWAITING_CONFIRMATION: 'Waiting for helper confirmation',
@@ -9,7 +10,7 @@ export const statusLabels: Record<string, string> = {
 };
 export const statusLabel = (status: string) => statusLabels[status] ?? status.toLowerCase().replace(/_/g, ' ');
 export const roleLabel = (role: UserRole) => ({ CARE_MANAGER: 'Family & care manager', CARE_RECEIVER: 'Care receiver', HELPER: 'Helper' })[role];
-export const personLabel = (id: string) => 'Helper ' + id.slice(-4).toUpperCase(); // Identifier alias, never a fabricated profile name.
+export const personLabel = (id: string) => displayPerson(id, 'Helper ' + id.slice(-4).toUpperCase()); // Ordinary sessions retain identifier aliases; explicit LOCAL presentation uses documented fictional identities.
 export const countLabel = (count: number, singular: string, plural = singular + 's') => `${count} ${count === 1 ? singular : plural}`;
 export function scheduledTime(value?: string) {
   const time = value ? Date.parse(value) : NaN;

@@ -1,3 +1,4 @@
+import { demoPerson } from './src/demo/maker-day3';
 import { ScreenHeaderProvider, useHeaderRegistry } from './src/components/ScreenHeader';
 import { MenuRow, Disclosure } from './src/components/Details';
 import { MessagingScreen } from './src/screens/MessagingScreen';
@@ -84,7 +85,7 @@ function AppContent() {
   const titles: Record<MainTab, string> = { community: 'Community', tasks: helperMode ? 'Your caregiving tasks' : 'Your tasks', calendar: 'Your tasks', discover: 'Find nearby tasks', circle: '', me: helperMode ? 'Caregiver profile' : 'Your profile', post: 'Post a task', messages: 'Messages' };
   const title = !user ? 'Care starts together' : !profile ? 'Welcome to 517' : overlay === 'inbox' ? 'Inbox' : overlay === 'notifications' ? 'Notifications' : overlay === 'verification' ? 'Verification' : overlay === 'create' ? 'Create your circle' : titles[tab];
   return <ScreenHeaderProvider value={register}><SafeAreaView style={s.safe}><StatusBar barStyle="dark-content" backgroundColor={t.colors.canvas} />
-    <AppHeader titleSize={!helperMode && (tab === 'tasks' || tab === 'calendar') ? 26 : 28} detail={header} title={title} contextLabel={profile ? helperMode ? `Caregiver${user?.displayName || user?.email ? ' · ' + (user.displayName || user.email?.split('@')[0]) : ''}` : context?.name ?? 'Your care circle' : undefined} changeContext={() => navigate(helperMode ? 'me' : 'circle')} unread={unread} notifications={profile ? () => { setOverlay('notifications'); setError(''); } : undefined} disabled={busy} />
+    <AppHeader identityLabel={demoPerson(profile?.id) ? `${demoPerson(profile?.id)!.name} · ${demoPerson(profile?.id)!.relationship}` : undefined} titleSize={!helperMode && (tab === 'tasks' || tab === 'calendar') ? 26 : 28} detail={header} title={title} contextLabel={profile ? helperMode ? `Caregiver${user?.displayName || user?.email ? ' · ' + (user.displayName || user.email?.split('@')[0]) : ''}` : context?.name ?? 'Your care circle' : undefined} changeContext={() => navigate(helperMode ? 'me' : 'circle')} unread={unread} notifications={profile ? () => { setOverlay('notifications'); setError(''); } : undefined} disabled={busy} />
     <KeyboardAvoidingView style={s.flex} behavior="padding">
       <ScrollView ref={scroll} nestedScrollEnabled keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag" contentContainerStyle={s.scroll}>
         <ScrollResetContext.Provider value={resetScroll}><View style={s.content}>

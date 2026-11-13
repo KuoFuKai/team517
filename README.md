@@ -255,3 +255,7 @@ Header **Inbox** now opens real conversations. **Task updates & notifications** 
 Only conversations/messages collections are added; Community comments and Review comments remain separate. Conversations store relationship IDs, safe short user-authored previews and counters, never automatic Task addresses/private instructions/medical data. Do not use chat as a medical-record or identity-document store. Users can manually type sensitive text; no content scanning, reporting/blocking, moderation or retention/deletion policy is implemented. No full Message body is copied into Notifications or routine logs.
 
 Native chat keyboard, scrolling, safe areas and Inbox navigation remain untested without a configured Android SDK/AVD/phone. Existing approximate theme is reused; exact Figma parity is not claimed. Points/Payments, providers, Maps, no-show/dispute/post-start cancellation and deployment remain deferred.
+
+## Maker Day 3 / Crit #3 presentation package (2026-11-13)
+
+Eight reproducible native Android screenshots illustrate a fictional trusted-circle appointment story: ASK → CLAIM → CONFIRM. See [setup and scope](docs/maker-day-3-demo.md) and [screenshots / exact reproduction steps](artifacts/maker-day-3-screenshots/SCREENSHOT_README.md). The explicit LOCAL presentation build is separate from cloud Preview; no cloud data, domain transitions or authorization rules were changed. These screens demonstrate the product, not research findings. Maps and new feature work remain out of scope.

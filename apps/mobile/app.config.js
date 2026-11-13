@@ -3,6 +3,7 @@ const path = require('node:path');
 module.exports = ({ config }) => {
   const environment = process.env.EXPO_PUBLIC_APP_ENV ?? 'LOCAL';
   const preview = environment === 'PREVIEW';
+  const localPresentation = environment === 'LOCAL' && process.env.EXPO_PUBLIC_DEMO_SCENARIO === 'maker-day-3';
   if (!['LOCAL', 'development', 'PREVIEW'].includes(environment)) throw new Error('Only LOCAL and PREVIEW builds are enabled.');
   const googleFile = process.env.TEAM517_GOOGLE_SERVICES_FILE || process.env.GOOGLE_SERVICES_JSON || (preview ? './google-services.json' : undefined);
   let firebase;
@@ -13,7 +14,7 @@ module.exports = ({ config }) => {
     firebase = { projectId: 'team517-dev', apiKey: client.api_key[0].current_key, appId: client.client_info.mobilesdk_app_id, authDomain: 'team517-dev.firebaseapp.com' };
   }
   return { ...config, name: preview ? 'team517 Preview' : config.name,
-    plugins: [...(config.plugins || []), '@react-native-community/datetimepicker', ['expo-notifications', { defaultChannel: 'updates' }], ...(!preview ? ['expo-dev-client'] : []), './plugins/withNotificationLaunch'],
+    plugins: [...(config.plugins || []), '@react-native-community/datetimepicker', ['expo-notifications', { defaultChannel: 'updates' }], ...(!preview && !localPresentation ? ['expo-dev-client'] : []), './plugins/withNotificationLaunch', './plugins/withLocalPresentationNetwork'],
     extra: { ...config.extra, team517Environment: preview ? 'PREVIEW' : 'LOCAL', ...(firebase ? { team517Firebase: firebase } : {}) },
     android: { ...config.android, ...(googleFile ? { googleServicesFile: googleFile } : {}) },
   };

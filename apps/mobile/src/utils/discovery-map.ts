@@ -1,6 +1,7 @@
 import type { TaskDiscoveryItemDto } from '@team517/contracts';
 export interface TaskAreaMarker { id: string; title: string; urgent: boolean; coordinate: { latitude: number; longitude: number } }
 export const defaultDiscoveryRegion = { latitude: 40.75, longitude: -73.96, latitudeDelta: .1, longitudeDelta: .1 };
+export const selectedDiscoveryTask = (tasks: readonly TaskDiscoveryItemDto[], id: string | null) => tasks.find(task => task.id === id);
 // This adapter accepts only the existing safe projection. Never read a Location
 // document or Assignment execution details, and never round exact coordinates here.
 export function taskAreaMarkers(tasks: readonly TaskDiscoveryItemDto[]): TaskAreaMarker[] {

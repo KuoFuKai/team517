@@ -58,6 +58,7 @@ export function DiscoveryWorkspace({ back }: { back: () => void }) {
   useHardwareBack(() => {
     if (assignment || task) { if (!busy) { setAssignment(null); setTask(null); setMine(null); setError(''); } return true; }
     if (filters) { if (!busy) setFilters(false); return true; }
+    if (mode === 'MAP') { setMode('LIST'); return true; }
     return false;
   }, 1);
   if (offerSent) return <SuccessScreen header="Offer sent" title="Your offer has been sent" message="The requester will review your offer. You can follow its status in My offers." action="View task" done={() => setOfferSent(false)} />;
@@ -75,7 +76,7 @@ export function DiscoveryWorkspace({ back }: { back: () => void }) {
       <Text>Priority</Text><Choices value={urgency ?? 'ALL'} options={[{ value: 'ALL', label: 'All' }, { value: 'PLANNED', label: 'Planned' }, { value: 'URGENT', label: 'Urgent' }]} disabled={busy} change={value => setUrgency(value === 'ALL' ? undefined : value)} />
       <Text>Compensation</Text><Choices value={compensation ?? 'ALL'} options={[{ value: 'ALL', label: 'All' }, { value: 'VOLUNTEER', label: 'Volunteer' }, { value: 'POINTS', label: 'Points' }, { value: 'PAID', label: 'Paid' }]} disabled={busy} change={value => setCompensation(value === 'ALL' ? undefined : value)} />
       <Button title="Apply filters" variant="primary" disabled={busy} onPress={() => void run(load)} /></Card>}
-      {mode === 'MAP' && <DiscoveryMap tasks={data?.tasks ?? []} />}
+      {mode === 'MAP' && <DiscoveryMap tasks={data?.tasks ?? []} busy={busy} open={item => void run(async () => { setMine(null); setAssignment(null); setMessage(''); setTask(await api.getDiscoveredTask(item.id)); await refreshMine(item.id); })} />}
       {data?.tasks.length === 0 && <EmptyState title="No tasks found" message="Try different filters or check back soon." />}
       {data?.truncated && <Text>Showing a limited set of tasks. Refine your filters to find more relevant results.</Text>}
       {mode === 'LIST' && data?.tasks.slice().sort((a, b) => scheduledTime(a.startAt) - scheduledTime(b.startAt)).map(item => <DiscoveryTaskCard key={item.id} task={item} busy={busy} open={() => void run(async () => { setMine(null); setAssignment(null); setMessage(''); setTask(await api.getDiscoveredTask(item.id)); await refreshMine(item.id); })} />)}

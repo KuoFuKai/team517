@@ -28,5 +28,3 @@ try {
   Copy-Item -LiteralPath apps/mobile/android/app/build/outputs/apk/release/app-release.apk -Destination artifacts/android/team517-maker-day3.apk
   node -e "const fs=require('node:fs'),c=require('node:crypto');console.log('SHA256 '+c.createHash('sha256').update(fs.readFileSync(process.argv[1])).digest('hex'));" artifacts/android/team517-maker-day3.apk
 } finally {Pop-Location}
-
-

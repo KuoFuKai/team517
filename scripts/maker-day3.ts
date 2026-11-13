@@ -86,5 +86,3 @@ async function main() {
   console.log(JSON.stringify({ title: task.title, status: task.status, date: task.startAt, context: 'Mom’s Care' }));
 }
 main().catch(error => { console.error(error); process.exitCode = 1; });
-
-

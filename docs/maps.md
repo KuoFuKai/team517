@@ -25,7 +25,7 @@ Exact synthetic arrival data was denied before Assignment confirmation, unlocked
 
 ## Optional foreground location
 
-Nothing requests GPS at startup. **Use my location** explicitly requests foreground permission if needed and takes one sensor reading to center the camera. It does not change the query or publish/store the point. No background permission, foreground service, watcher, geofencing, location history, helper pin or continuous tracking is enabled. The device's continuously updating blue-dot layer is intentionally off.
+Nothing requests GPS at startup. **Use my location** explicitly requests foreground permission if needed and takes one sensor reading to center the camera. It does not change the query or publish/store the point. No background permission, foreground service, watcher, geofencing, location history, helper pin or continuous tracking is enabled. The device's continuously updating blue-dot layer is intentionally off. Final APK permission inspection confirmed no ACCESS_BACKGROUND_LOCATION or FOREGROUND_SERVICE_LOCATION. A generic FOREGROUND_SERVICE permission is merged by AndroidX WorkManager; this feature does not start a location service.
 
 Permission denial leaves Map/List/tasks/offers usable and is remembered for this app session to avoid repeated prompts. A later grant in Android Settings is respected. Sensor reads time out after 12 seconds; the person's permission decision is not timed out. Provider-settings prompts are disabled; errors/unavailable GPS show a small non-blocking message. Background/unmount guards prevent stale results from moving a departed screen. No GPS or raw provider error is logged by this feature.
 

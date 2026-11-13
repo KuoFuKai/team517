@@ -1,4 +1,5 @@
 import { SuccessScreen } from '../components/Feedback';
+import { DiscoveryMap } from '../components/DiscoveryMap';
 import { DiscoveryTaskCard, FilterPill, IllustrativeMap } from '../components/DiscoveryPresentation';
 import { PageHeading } from '../components/ui';
 import { taskWhenLabel, compensationLabel, discoveryAreaLabel } from '../utils/design-presentation';
@@ -74,7 +75,7 @@ export function DiscoveryWorkspace({ back }: { back: () => void }) {
       <Text>Priority</Text><Choices value={urgency ?? 'ALL'} options={[{ value: 'ALL', label: 'All' }, { value: 'PLANNED', label: 'Planned' }, { value: 'URGENT', label: 'Urgent' }]} disabled={busy} change={value => setUrgency(value === 'ALL' ? undefined : value)} />
       <Text>Compensation</Text><Choices value={compensation ?? 'ALL'} options={[{ value: 'ALL', label: 'All' }, { value: 'VOLUNTEER', label: 'Volunteer' }, { value: 'POINTS', label: 'Points' }, { value: 'PAID', label: 'Paid' }]} disabled={busy} change={value => setCompensation(value === 'ALL' ? undefined : value)} />
       <Button title="Apply filters" variant="primary" disabled={busy} onPress={() => void run(load)} /></Card>}
-      {mode === 'MAP' && <IllustrativeMap tasks={data?.tasks} open={item => void run(async () => { setMine(null); setAssignment(null); setMessage(''); setTask(await api.getDiscoveredTask(item.id)); await refreshMine(item.id); })} />}
+      {mode === 'MAP' && <DiscoveryMap />}
       {data?.tasks.length === 0 && <EmptyState title="No tasks found" message="Try different filters or check back soon." />}
       {data?.truncated && <Text>Showing a limited set of tasks. Refine your filters to find more relevant results.</Text>}
       {data?.tasks.slice().sort((a, b) => scheduledTime(a.startAt) - scheduledTime(b.startAt)).map(item => <DiscoveryTaskCard key={item.id} task={item} busy={busy} open={() => void run(async () => { setMine(null); setAssignment(null); setMessage(''); setTask(await api.getDiscoveredTask(item.id)); await refreshMine(item.id); })} />)}

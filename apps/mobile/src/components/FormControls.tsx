@@ -135,7 +135,7 @@ export function LocationField({ label, places, value, disabled, change, manage }
       </Pressable>)}
       {!places.length && <Text style={s.hint}>You have no saved places yet.</Text>}
       {value ? <Pressable accessibilityRole="button" accessibilityLabel="Clear location" onPress={() => { change(''); setOpen(false); }} style={({ pressed }) => [s.choice, pressed && s.pressed]}><Text style={s.choiceText}>Clear location</Text></Pressable> : null}
-      <Pressable accessibilityRole="button" accessibilityLabel="Manage locations, save changes first" onPress={() => { setOpen(false); manage(); }} style={({ pressed }) => [s.choice, pressed && s.pressed]}><Text style={s.action}>Manage locations (save changes first) ›</Text></Pressable>
+      <Pressable accessibilityRole="button" accessibilityLabel="Manage locations" onPress={() => { setOpen(false); manage(); }} style={({ pressed }) => [s.choice, pressed && s.pressed]}><Text style={s.action}>Manage locations ›</Text></Pressable>
     </Sheet>
   </View>;
 }

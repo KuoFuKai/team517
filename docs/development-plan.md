@@ -58,3 +58,9 @@ Native chat keyboard/scroll/safe-area/navigation acceptance, current Figma compa
 # Native acceptance checkpoint — November 6, 2026
 
 Native acceptance/UI stabilization is blocked by absent Android SDK/adb/emulator/AVD. No screen has rendered and no native pass is claimed. Follow [setup and the screen-by-screen matrix](native-acceptance.md), then exercise core lifecycle, privacy transitions, keyboard-dependent Community/Messaging and network failure before Push/Maps. Fresh automated regressions are green (see validation); no backend changes or product expansion were made.
+
+## Sprint 7C — Native Maps + Nearby Task Discovery (2026-11-13)
+
+Implemented in visible pushed slices: native Android tiles → existing safe discovery markers → selected preview and existing detail/Offer → optional foreground centering → observed native/responsive fixes. No business backend/DTO/collection or Task/Offer/Assignment lifecycle changed. See [Maps architecture/configuration/limits](maps.md) and [native acceptance](native-acceptance.md).
+
+Future geospatial indexing must stay behind DiscoveryService's existing contract; current bounds remain 100 candidates / 30 results. Nearby Helper sharing is a separate opt-in/default-off/approximate/no-history product, not part of this Sprint. Points, Payments, real providers and iOS remain deferred. Recommended next visible slice after team review: a real Care Circle invitation/join experience, rather than expanding location sharing without product/privacy decisions.

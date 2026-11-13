@@ -46,3 +46,9 @@ One known LOW issue remains: reopening a completed Assignment can show the Revie
 - Does the future Points/finance concept fit the product without suggesting a working wallet today?
 - Is Community in the right place, and is a Community Need clearly linked to the same Task flow?
 - What felt confusing, slow or surprising during the demo?
+
+## Sprint 7C team review — 2026-11-13
+
+Try Helper → Find → Map → marker → preview → View task → Offer, then Map/List and shared filters. Same-area tasks have Next task in this area. Location is optional; try denying it. Use only synthetic emulator locations for shared screenshots, and never publish the phone's current GPS. [Maps setup/acceptance/limitations](maps.md).
+
+The vivo tested real cloud Preview, Map/Offer, docked Offer-message input and two background FCM routes. Four emulator widths (320/360/390/412dp, including 1.3 text) were exercised. Please review approximate-area comprehension, coincident-task discoverability and preview scrolling; dense provider labels remain a low-priority visual issue. Nearby Helpers, Points/Payments and iOS are still future, not hidden implemented features.

@@ -344,3 +344,30 @@ After setup, follow the rows above with manager and Helper accounts; publish a T
 No product/backend/API/permission changes were made in this acceptance attempt. Existing architecture and API-only mobile business access are retained. Exact Figma parity remains unverified: historical access hit quota, and no native rendering exists for comparison; no new Figma failure is claimed. Hosted CI has not been observed.
 
 Automated results for this attempt are recorded in [validation](validation.md); they establish separate server/client/export evidence only.
+
+## Sprint 7C — Native Maps acceptance (2026-11-13)
+
+[Implementation, restricted-key setup and limits](maps.md). No business backend or lifecycle change. All tasks, positions and arrival information used for evidence were fictional; no physical GPS screenshot is committed.
+
+| Check | Target / observation | Result |
+|---|---|---|
+| Native provider tiles / SDK config | Pixel_9_Pro Android 16 / API 36 and vivo V2324A Android 14 / API 34 | PASS: actual Google map rendered with dedicated Android-app/API-restricted client key |
+| Shared discovery | Map/List, urgency filter, compensation filter, one/empty/multiple result sets | PASS: same authorized result/filter state; no fabricated pins |
+| Marker interactions | Tap/select, clear/Back, two tasks in the same privacy cell, preview → existing detail | PASS; same-cell cycling added without jitter or clustering dependency |
+| Offer flow | Synthetic verified Helper; normal Offer, success, message and withdrawal on both targets | PASS; no new Offer endpoint/direct acceptance |
+| Foreground location | Pixel only: denied/repeat tap, granted with fresh synthetic NYC fix, provider unavailable | PASS; non-blocking denied/unavailable messages; no repeated prompt, watcher or persisted GPS |
+| Physical location privacy | vivo permission denied and repeat tap | PASS; real physical GPS was not read; map/results stayed usable |
+| Network error / recovery | Emulator airplane mode, failed Discovery refresh, List/Map accessible, restored connection/retry | PASS; emulator networking restored afterward; no Windows network changes |
+| Responsive map preview | 320×800dp / font1.3, 360×850 /1.12, 390×920 /1.0, 412×940 /1.0 | PASS: all rendered and View task exercised; full-height primary CTA checked; final four-width rerun after spacing fixes |
+| Physical map / navigation | vivo about360dp, font1.12; List/Map, select, preview, detail, Offer, withdrawal, Back | PASS on final standalone candidate |
+| Keyboard | Final vivo Offer message, docked Gboard, text retained after dismissal, scroll/submit | PASS for this focused form; not a new comprehensive keyboard matrix |
+| FCM regression | Final vivo, app background; actual generic NEW_MESSAGE → Conversation; generic task update → pending Assignment | PASS; no private message/address in OS notification payload |
+| Arrival privacy | Pending denied; native Confirm and Show arrival details; completion via existing APIs; terminal GET denied | PASS; only synthetic arrival values used |
+| Stale privileged display | Native refresh after completion; return to Find Map | PASS: arrival text cleared; Discovery tree did not contain it; Map receives only safe DTOs |
+| USB-disconnected final phone | User asked to relaunch → Find Map → Errands marker → View task → List on normal Internet | PENDING USER REPORT; no disconnected observation is claimed by the agent |
+
+Fixes: HIGH coincident-area task reachability; MEDIUM permission-modal feedback/provider nags and sensor timeout; MEDIUM large-font CTA clipping. LOW provider label/callout density remains cosmetic. No BLOCKER/HIGH product defect remains in observed paths. The manual USB report and final hosted CI determine Sprint closure; do not infer them from local tests.
+
+Final Preview APK: `artifacts/android/team517-preview.apk`, SHA-256 `7b19aa692eded88ae71a7afcd23b2cdb15b5dae60a848d38dcb18dc290deada7`. Actual signer SHA-1 is recorded in maps.md; existing development signing is unchanged. Maps uses cloud Preview, no Metro or 10.0.2.2; adb reverse was empty and local service ports were stopped during focused standalone phone checks. Separate automated regression emulators were run independently on the PC afterward.
+
+Synthetic emulator evidence: [five curated screenshots](native-evidence/2026-11-13-sprint7c/README.md). Device display/network/location test settings were restored after testing. No rotation/iOS/all-device compatibility claim. Nearby Helpers, Points/Payments, real providers and background tracking remain out of scope.

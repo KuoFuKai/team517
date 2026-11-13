@@ -259,3 +259,7 @@ Native chat keyboard, scrolling, safe areas and Inbox navigation remain untested
 ## Maker Day 3 / Crit #3 presentation package (2026-11-13)
 
 Eight reproducible native Android screenshots illustrate a fictional trusted-circle appointment story: ASK → CLAIM → CONFIRM. See [setup and scope](docs/maker-day-3-demo.md) and [screenshots / exact reproduction steps](artifacts/maker-day-3-screenshots/SCREENSHOT_README.md). The explicit LOCAL presentation build is separate from cloud Preview; no cloud data, domain transitions or authorization rules were changed. These screens demonstrate the product, not research findings. Maps and new feature work remain out of scope.
+
+## Sprint 7C — Native Maps (2026-11-13)
+
+Helper Find Tasks now has a native Android Map sharing the existing List discovery API, filters and safe coarse-location DTO. Pins open a branded preview → existing Task detail → normal Offer. Optional foreground **Use my location** centers once; denial/unavailable GPS never blocks browsing. No tracking, nearby-helper sharing, geocoding, routes or financial work was added. [Configuration, privacy and acceptance](docs/maps.md). Android native rebuild needs a package/signature/API-restricted Maps client key supplied securely through `TEAM517_ANDROID_MAPS_API_KEY`; credential-free LOCAL/CI keeps List fallback. The standalone Preview continues using team517-dev Auth/API/FCM.

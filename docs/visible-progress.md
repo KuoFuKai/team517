@@ -15,6 +15,7 @@ Current: Sprint7C, November13. Native Maps working; source CI passed / disconnec
 | Find Tasks Map | NEW / WORKING | Native approximate Task pins, selected preview, existing detail/Offer, shared List filters; optional one-shot location |
 | Nearby Helpers | FUTURE | Separate opt-in/default-off approximate sharing policy; no helper pins or tracking implemented |
 | Points / Payments / real AI / real verification | FUTURE | Existing visual concepts remain; no fabricated balances, transactions or provider results |
+| iOS | DEFERRED | This Sprint validates Android only; no iOS Maps setup or compatibility claim |
 
 Polished refers to the exercised phone scope, not visual perfection or every Android device. See the report for remaining acceptance limits.
 

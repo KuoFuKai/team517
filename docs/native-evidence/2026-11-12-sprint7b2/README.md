@@ -11,3 +11,5 @@ Canonical physical target: vivo V2324A / Android14 API34 /1260×2800 @560dpi ≈
 Artifact provenance: most core/mobile input captures used candidate SHA256 `d1e6c67cd70b036096bb89d887a51110ba3be21fe81f47a09148c67f6c35a61a`; review fix and physical push routes used `9eef93e9990461cf2d15c9903ac4dcabe26a033509999e6d7e3adfacb4897f9f`; final delivered cold-Auth Tasks and Circle used `2af447b575958703cf7b742e2bf23b288b1367dc4c06db695e41504a96223ae1`. Last candidate reconciles duplicate brand changes (loading/tagline/font weight/dependency cleanup), retaining responsive layout behavior. Do not describe every screenshot as the last APK or every page as tested at every width.
 
 [Full matrix, actions, limits and peer-API distinction](../../sprint-7b2.md). USB-disconnected testing is user-reported separately; these screenshots prove connected physical use, background OS alerts and routing, not killed-process push or every lifecycle variant.
+
+Kevin subsequently reported the requested USB-disconnected normal-network reopen→Task→Community→Conversation→Back flow succeeded. This is explicitly user-reported; no disconnected screenshots are claimed.

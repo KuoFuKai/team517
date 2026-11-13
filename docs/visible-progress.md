@@ -16,3 +16,5 @@ Current: Sprint7B.2, November12. [Try the current screens](native-evidence/2026-
 | Points / Payments / real AI / real verification | FUTURE | Existing visual concepts remain; no fabricated balances, transactions or provider results |
 
 Polished refers to the exercised phone scope, not visual perfection or every Android device. See the report for remaining acceptance limits.
+
+Kevin also confirmed the phone works through the requested short flow with USB disconnected and normal Internet. The documented Sprint7B.2 scope is ready to close; Maps remains future Sprint7C work.

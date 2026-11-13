@@ -267,3 +267,5 @@ Helper Find Tasks now has a native Android Map sharing the existing List discove
 ## Photo-backed demo content (2026-11-13)
 
 Added five fictional Tasks and five natural Community Feed posts, with five bundled real-photo covers and API-created responses/comments/likes. [Content list, sources and safe seed command](docs/demo-content.md). Cloud text is already available; update the Preview APK to see bundled photos. Normal records, authorization and backend contracts are unchanged.
+
+Photo-content follow-up: all five Task details and five Feed covers exercised on API 36 emulator; duplicate resource-detail cover fixed. Updated Preview APK available locally. Corrected-build vivo acceptance is deferred until the phone returns; see [demo content](docs/demo-content.md).

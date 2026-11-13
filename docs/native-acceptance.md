@@ -374,3 +374,13 @@ Synthetic emulator evidence: [five curated screenshots](native-evidence/2026-11-
 
 
 Closure update: Kevin responded “看來沒問題” to the requested USB-disconnected relaunch → Find → Map → Errands marker → View task → List flow on ordinary Internet. This is user-reported evidence, not an agent-observed disconnected run. Sprint7C is closed for the documented Android/MVP scope; no all-device or production geospatial claim.
+
+## 2026-11-13 photo content: emulator acceptance follow-up
+
+Target: Pixel_9_Pro, Android 16 / API 36, emulator-5554 (`device`). All five seeded Task details were opened with their corresponding photographs; all five Feed posts were rendered and reached through native scrolling. Release update and cold relaunch retained the existing signed-in session.
+
+One MEDIUM issue was observed: RESOURCE post detail rendered the same photograph twice, pushing comments down. The duplicate post cover was removed only in detail mode; the resource card and Feed retain their photographs. The corrected release APK was installed and exercised: one detail photograph, comments and input reachable by scrolling, Android Back returns to Feed with its cover intact. No BLOCKER/HIGH issues were observed in this focused photo acceptance. No data mutations or backend changes were needed.
+
+Post-fix Node 22 typecheck and client tests (91/91) PASS; Android release build/Hermes bundling PASS. The preceding full photo-content regression remains PASS (backend 22/22, integration 92/92, smoke/default HTTP/AI mock flows, standalone Hermes export). This follow-up does not claim a new full lifecycle, keyboard, GPS or Maps acceptance run.
+
+The user deferred physical-phone testing while away. The corrected APK is not yet accepted on vivo; emulator results are not physical-device results. Artifact: `artifacts/android/team517-preview.apk`, SHA-256 `3f6d373eef906a4544974e95f0b7a7beeb86d500f1d5412a9dba59b14ab9c7ba`.

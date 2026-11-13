@@ -644,3 +644,13 @@ Final manual closure: Kevin replied **“看來沒問題”** to the requested U
 [Content/provenance/reproduction](demo-content.md). Five additional fictional Tasks and five public Feed resources were created through existing authenticated APIs; two Tasks have real fixture Offers, and each Feed resource has a seeded like/comment. No business backend, DTO, collection, permission or dependency changed. Exact-ID Preview-only bundled covers and guarded fictional author presentation preserve normal aliases and redaction behavior; new focused client tests cover these boundaries.
 
 Node22: typecheck PASS; backend22/22, client91/91, integration92/92, smoke/default HTTP/AI-mock HTTP/Hermes export PASS. Standalone Preview release built and installed on Pixel_9_Pro API36; owner Tasks/details, Helper cards and Feed photos/scrolling were actually rendered and visually inspected. No new physical-device acceptance is claimed yet. Existing Maps/privacy/push architecture remains; this slice adds no native module. The cloud seed was rerun without duplicating its five Task/post IDs or comments/likes. Sources/license recorded; no patient photos or private real addresses used. Latest APK SHA-256 is in demo-content.md.
+
+## 2026-11-13 photo content: emulator acceptance follow-up
+
+Target: Pixel_9_Pro, Android 16 / API 36, emulator-5554 (`device`). All five seeded Task details were opened with their corresponding photographs; all five Feed posts were rendered and reached through native scrolling. Release update and cold relaunch retained the existing signed-in session.
+
+One MEDIUM issue was observed: RESOURCE post detail rendered the same photograph twice, pushing comments down. The duplicate post cover was removed only in detail mode; the resource card and Feed retain their photographs. The corrected release APK was installed and exercised: one detail photograph, comments and input reachable by scrolling, Android Back returns to Feed with its cover intact. No BLOCKER/HIGH issues were observed in this focused photo acceptance. No data mutations or backend changes were needed.
+
+Post-fix Node 22 typecheck and client tests (91/91) PASS; Android release build/Hermes bundling PASS. The preceding full photo-content regression remains PASS (backend 22/22, integration 92/92, smoke/default HTTP/AI mock flows, standalone Hermes export). This follow-up does not claim a new full lifecycle, keyboard, GPS or Maps acceptance run.
+
+The user deferred physical-phone testing while away. The corrected APK is not yet accepted on vivo; emulator results are not physical-device results. Artifact: `artifacts/android/team517-preview.apk`, SHA-256 `3f6d373eef906a4544974e95f0b7a7beeb86d500f1d5412a9dba59b14ab9c7ba`.

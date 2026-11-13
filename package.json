@@ -20,6 +20,7 @@
     "test:e2e": "npm run build && firebase emulators:exec --project demo-team517 --only auth,firestore,functions --ui \"tsx functions/test/mobile-flow.ts\"",
     "seed:marketplace": "npm run seed:marketplace -w @team517/functions",
     "demo:prepare": "npm run seed:marketplace && tsx scripts/demo-prepare.ts",
+    "demo:content": "tsx scripts/seed-demo-content.ts",
     "demo:reset": "tsx scripts/demo-reset.ts --local-demo-only && npm run demo:prepare",
     "preview:android": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build-android-preview.ps1",
     "preview:prepare": "tsx scripts/preview-prepare.ts",

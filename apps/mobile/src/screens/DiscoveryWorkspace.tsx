@@ -1,3 +1,4 @@
+import { PreviewContentCover } from '../components/PreviewContentCover';
 import { SuccessScreen } from '../components/Feedback';
 import { DiscoveryMap } from '../components/DiscoveryMap';
 import { DiscoveryTaskCard, FilterPill } from '../components/DiscoveryPresentation';
@@ -83,7 +84,7 @@ export function DiscoveryWorkspace({ back }: { back: () => void }) {
       <Action icon="refresh-cw" title="Refresh tasks" disabled={busy} onPress={() => void run(load)} />
     </> : <>
       {assignment ? <AssignmentPanel assignment={assignment} /> : <>
-      <StatusBadge status={task.compensationType} /><PageHeading title={task.title} caption="Shared with verified caregivers" />
+      <PreviewContentCover kind="task" id={task.id} /><StatusBadge status={task.compensationType} /><PageHeading title={task.title} caption="Shared with verified caregivers" />
       <TonePanel title={compensationLabel(task)} />
       <Card><Text style={{ fontSize: 18, fontWeight: '600' }}>Quick summary</Text><Text>{task.publicInstructions || 'No additional public instructions.'}</Text><Text style={{ fontSize: 13.5, color: theme.colors.primary }}>{taskWhenLabel(task.startAt, task.endAt)}</Text></Card>
       <Card><Text style={{ fontSize: 13.5, color: theme.colors.muted }}>Approximate location</Text><Text style={{ fontWeight: '600' }}>{discoveryAreaLabel(task.approximateLocation.areaLabel)}</Text><DiscoveryMap tasks={[task]} compact /><Text style={{ fontSize: 13.5, color: theme.colors.primary }}>Exact address unlocks only for the confirmed helper.</Text></Card>

@@ -1,3 +1,4 @@
+import { PreviewContentCover } from '../components/PreviewContentCover';
 import React from 'react';
 import { View } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
@@ -13,6 +14,7 @@ export function TaskDetailScreen({ task, locations, busy, edit, cancel, back, vi
   const location = locations.find(l => l.id === task.locationId);
   const compensation = task.compensationType === 'PAID' ? `Paid task${task.cashAmount !== undefined ? ` · ${task.cashAmount} ${task.currency ?? ''}` : ''}` : task.compensationType === 'POINTS' ? `${task.pointReward ?? '—'} points` : task.compensationType === 'VOLUNTEER' ? 'Volunteer task' : 'Compensation not selected';
   return <>
+    <PreviewContentCover kind="task" id={task.id} />
     <PageHeading title={task.title || 'Untitled draft'} />
     <Text style={{ fontSize: 16, color: t.colors.muted }}>{postedByYou ? 'Posted by you' : 'Care-circle task'}{contextName ? ` · ${contextName}` : ''}</Text>
     {task.status === 'HAS_OFFERS' ? <TonePanel title="Awaiting your choice">{task.visibility === 'CARE_CIRCLE' ? 'People in your circle have offered to help.' : 'Helpers have offered to help.'}</TonePanel> : task.status === 'AWAITING_CONFIRMATION' ? <TonePanel title="Waiting for confirmation">Your selected helper needs to confirm.</TonePanel> : <StatusBadge status={task.status} />}

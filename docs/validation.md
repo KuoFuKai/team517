@@ -638,3 +638,9 @@ Shared-main hosted CI also **PASS** at `f329e4c`: [Node22 CI run](https://github
 
 
 Final manual closure: Kevin replied **“看來沒問題”** to the requested USB-disconnected normal-Internet Map/marker/detail/List flow. Record this as **user-reported**, not an agent-observed disconnected run. Together with the observed native scope and successful hosted runtime/source/main checks, Sprint7C can close. No new feature was started afterward. Final documentation-only commit CI is observed separately in the delivery report.
+
+## Photo-backed demo content — 2026-11-13
+
+[Content/provenance/reproduction](demo-content.md). Five additional fictional Tasks and five public Feed resources were created through existing authenticated APIs; two Tasks have real fixture Offers, and each Feed resource has a seeded like/comment. No business backend, DTO, collection, permission or dependency changed. Exact-ID Preview-only bundled covers and guarded fictional author presentation preserve normal aliases and redaction behavior; new focused client tests cover these boundaries.
+
+Node22: typecheck PASS; backend22/22, client91/91, integration92/92, smoke/default HTTP/AI-mock HTTP/Hermes export PASS. Standalone Preview release built and installed on Pixel_9_Pro API36; owner Tasks/details, Helper cards and Feed photos/scrolling were actually rendered and visually inspected. No new physical-device acceptance is claimed yet. Existing Maps/privacy/push architecture remains; this slice adds no native module. The cloud seed was rerun without duplicating its five Task/post IDs or comments/likes. Sources/license recorded; no patient photos or private real addresses used. Latest APK SHA-256 is in demo-content.md.

@@ -263,3 +263,7 @@ Eight reproducible native Android screenshots illustrate a fictional trusted-cir
 ## Sprint 7C — Native Maps (2026-11-13)
 
 Helper Find Tasks now has a native Android Map sharing the existing List discovery API, filters and safe coarse-location DTO. Pins open a branded preview → existing Task detail → normal Offer. Optional foreground **Use my location** centers once; denial/unavailable GPS never blocks browsing. No tracking, nearby-helper sharing, geocoding, routes or financial work was added. [Configuration, privacy and acceptance](docs/maps.md). Android native rebuild needs a package/signature/API-restricted Maps client key supplied securely through `TEAM517_ANDROID_MAPS_API_KEY`; credential-free LOCAL/CI keeps List fallback. The standalone Preview continues using team517-dev Auth/API/FCM.
+
+## Photo-backed demo content (2026-11-13)
+
+Added five fictional Tasks and five natural Community Feed posts, with five bundled real-photo covers and API-created responses/comments/likes. [Content list, sources and safe seed command](docs/demo-content.md). Cloud text is already available; update the Preview APK to see bundled photos. Normal records, authorization and backend contracts are unchanged.

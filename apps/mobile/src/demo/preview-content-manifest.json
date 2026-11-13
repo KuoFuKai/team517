@@ -1,0 +1,46 @@
+{
+  "project": "team517-dev",
+  "scenario": "fictional-community-content-v1",
+  "items": [
+    {
+      "taskId": "Ges5YkdsYrqx5nPlY5nE",
+      "postId": "ekOfFmxozHYtmOznZBvl",
+      "resourceId": "tSmWowuSkACLgekbc9H2",
+      "photo": "planning",
+      "authorId": "team517_preview_manager",
+      "authorName": "Grace Chen"
+    },
+    {
+      "taskId": "jnOaCoASkxGBho6ZVfZe",
+      "postId": "Eea2kjZw6HZidaCXZ4Ur",
+      "resourceId": "bampYAFfJn1oNn7Li0n4",
+      "photo": "groceries",
+      "authorId": "team517_preview_alex",
+      "authorName": "Alex Morgan"
+    },
+    {
+      "taskId": "ZKpCoMwPv67pD6jLMVNV",
+      "postId": "QzAyCdBNqFtAbrvzoUhs",
+      "resourceId": "El80Y81uIa36qdyOvGAd",
+      "photo": "meal",
+      "authorId": "team517_preview_marcus",
+      "authorName": "Marcus Chen"
+    },
+    {
+      "taskId": "BwanvIbUWyj5HpUWbF5U",
+      "postId": "Us8rDGMyGxcALSNn9two",
+      "resourceId": "1VL1K4gOl8QpkC5l1q5W",
+      "photo": "park",
+      "authorId": "team517_preview_manager",
+      "authorName": "Grace Chen"
+    },
+    {
+      "taskId": "iNo48gFIMIrfcy4U5XBM",
+      "postId": "leIQd8uFXKW5GE448ZyU",
+      "resourceId": "2zk4jvuWQLvfl977oy6m",
+      "photo": "books",
+      "authorId": "team517_preview_alex",
+      "authorName": "Alex Morgan"
+    }
+  ]
+}

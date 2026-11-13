@@ -2,7 +2,6 @@ import { FormSelect, ScheduleChooser } from '../components/FormSelect';
 import { SegmentedControl } from '../components/SegmentedControl';
 import { useHardwareBack } from '../navigation/useHardwareBack';
 import { useScreenTop } from '../navigation/scroll';
-import { TaskDateTimeField } from '../components/TaskDateTimeField';
 import { taskTimeInput, parseTaskTime, taskTimeValue } from '../utils/task-time';
 import { deviceTimeZone } from '../utils/presentation';
 import { View } from 'react-native';

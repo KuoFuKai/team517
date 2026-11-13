@@ -13,7 +13,7 @@ module.exports = ({ config }) => {
     firebase = { projectId: 'team517-dev', apiKey: client.api_key[0].current_key, appId: client.client_info.mobilesdk_app_id, authDomain: 'team517-dev.firebaseapp.com' };
   }
   return { ...config, name: preview ? 'team517 Preview' : config.name,
-    plugins: [...(config.plugins || []), '@react-native-community/datetimepicker', ['expo-notifications', { defaultChannel: 'updates' }], ...(!preview ? ['expo-dev-client'] : []), './plugins/withNotificationLaunch'],
+    plugins: [...(config.plugins || []), ['expo-notifications', { defaultChannel: 'updates' }], ...(!preview ? ['expo-dev-client'] : []), './plugins/withNotificationLaunch'],
     extra: { ...config.extra, team517Environment: preview ? 'PREVIEW' : 'LOCAL', ...(firebase ? { team517Firebase: firebase } : {}) },
     android: { ...config.android, ...(googleFile ? { googleServicesFile: googleFile } : {}) },
   };

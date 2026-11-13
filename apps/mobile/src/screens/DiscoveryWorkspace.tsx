@@ -1,6 +1,6 @@
 import { SuccessScreen } from '../components/Feedback';
 import { DiscoveryMap } from '../components/DiscoveryMap';
-import { DiscoveryTaskCard, FilterPill, IllustrativeMap } from '../components/DiscoveryPresentation';
+import { DiscoveryTaskCard, FilterPill } from '../components/DiscoveryPresentation';
 import { PageHeading } from '../components/ui';
 import { taskWhenLabel, compensationLabel, discoveryAreaLabel } from '../utils/design-presentation';
 import { SegmentedControl } from '../components/SegmentedControl';
@@ -75,17 +75,17 @@ export function DiscoveryWorkspace({ back }: { back: () => void }) {
       <Text>Priority</Text><Choices value={urgency ?? 'ALL'} options={[{ value: 'ALL', label: 'All' }, { value: 'PLANNED', label: 'Planned' }, { value: 'URGENT', label: 'Urgent' }]} disabled={busy} change={value => setUrgency(value === 'ALL' ? undefined : value)} />
       <Text>Compensation</Text><Choices value={compensation ?? 'ALL'} options={[{ value: 'ALL', label: 'All' }, { value: 'VOLUNTEER', label: 'Volunteer' }, { value: 'POINTS', label: 'Points' }, { value: 'PAID', label: 'Paid' }]} disabled={busy} change={value => setCompensation(value === 'ALL' ? undefined : value)} />
       <Button title="Apply filters" variant="primary" disabled={busy} onPress={() => void run(load)} /></Card>}
-      {mode === 'MAP' && <DiscoveryMap />}
+      {mode === 'MAP' && <DiscoveryMap tasks={data?.tasks ?? []} />}
       {data?.tasks.length === 0 && <EmptyState title="No tasks found" message="Try different filters or check back soon." />}
       {data?.truncated && <Text>Showing a limited set of tasks. Refine your filters to find more relevant results.</Text>}
-      {data?.tasks.slice().sort((a, b) => scheduledTime(a.startAt) - scheduledTime(b.startAt)).map(item => <DiscoveryTaskCard key={item.id} task={item} busy={busy} open={() => void run(async () => { setMine(null); setAssignment(null); setMessage(''); setTask(await api.getDiscoveredTask(item.id)); await refreshMine(item.id); })} />)}
+      {mode === 'LIST' && data?.tasks.slice().sort((a, b) => scheduledTime(a.startAt) - scheduledTime(b.startAt)).map(item => <DiscoveryTaskCard key={item.id} task={item} busy={busy} open={() => void run(async () => { setMine(null); setAssignment(null); setMessage(''); setTask(await api.getDiscoveredTask(item.id)); await refreshMine(item.id); })} />)}
       <Action icon="refresh-cw" title="Refresh tasks" disabled={busy} onPress={() => void run(load)} />
     </> : <>
       {assignment ? <AssignmentPanel assignment={assignment} /> : <>
       <StatusBadge status={task.compensationType} /><PageHeading title={task.title} caption="Shared with verified caregivers" />
       <TonePanel title={compensationLabel(task)} />
       <Card><Text style={{ fontSize: 18, fontWeight: '600' }}>Quick summary</Text><Text>{task.publicInstructions || 'No additional public instructions.'}</Text><Text style={{ fontSize: 13.5, color: theme.colors.primary }}>{taskWhenLabel(task.startAt, task.endAt)}</Text></Card>
-      <Card><Text style={{ fontSize: 13.5, color: theme.colors.muted }}>Location</Text><Text style={{ fontWeight: '600' }}>{discoveryAreaLabel(task.approximateLocation.areaLabel)}</Text><IllustrativeMap compact /><Text style={{ fontSize: 13.5, color: theme.colors.primary }}>Exact address unlocks only for the confirmed helper.</Text></Card>
+      <Card><Text style={{ fontSize: 13.5, color: theme.colors.muted }}>Approximate location</Text><Text style={{ fontWeight: '600' }}>{discoveryAreaLabel(task.approximateLocation.areaLabel)}</Text><DiscoveryMap tasks={[task]} compact /><Text style={{ fontSize: 13.5, color: theme.colors.primary }}>Exact address unlocks only for the confirmed helper.</Text></Card>
       {(!mine?.offer || ['WITHDRAWN', 'NOT_SELECTED'].includes(mine.offer.status)) && <><Disclosure title="Add an offer message"><TextInput accessibilityLabel="Offer message" placeholder="Tell the requester how you can help (optional)" value={message} onChangeText={setMessage} maxLength={1000} multiline editable={!busy} /></Disclosure>{['OPEN', 'HAS_OFFERS'].includes(mine?.taskStatus ?? task.status) && <Button variant="primary" disabled={busy} title="Offer to help" onPress={() => void run(async () => { await api.offerHelp(task.id, { message }); await refreshMine(task.id); setOfferSent(true); })} />}</>}
       {mine?.offer && <MessageEntry taskId={task.id} />}
       {mine?.offer && <Text>Your Offer: {statusLabel(mine.offer.status)}</Text>}

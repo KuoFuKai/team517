@@ -1,3 +1,4 @@
+import { demoPerson } from '../demo/maker-day3';
 import { SuccessScreen } from '../components/Feedback';
 import { Disclosure, TonePanel } from '../components/Details';
 import { MessageEntry } from './MessageEntry';
@@ -38,7 +39,7 @@ export function AssignmentPanel({ assignment, refresh }: { assignment: Assignmen
     <StatusBadge status={current.status} />
     <PageHeading title={publicTask?.title || 'Your arrangement'} /><Text>{publicTask?.publicInstructions}</Text>
     <TonePanel title="What happens next">{assignmentNextAction(current.status, helper)}</TonePanel>
-    <Card><Text style={{ fontWeight: '600' }}>{personLabel(current.helperId)}</Text><Text style={{ fontSize: 13.5 }}>Chosen by {personLabel(current.selectedBy)}</Text></Card><Disclosure title="Arrangement history">
+    <Card><Text style={{ fontWeight: '600' }}>{personLabel(current.helperId)}</Text><Text style={{ fontSize: 13.5 }}>{demoPerson(current.selectedBy) ? `Chosen by ${demoPerson(current.selectedBy)!.name}` : `Selected ${dateLabel(current.selectedAt)}`}</Text></Card><Disclosure title="Arrangement history">
     {current.confirmedAt && <Text>Confirmed: {dateLabel(current.confirmedAt)}</Text>}
     {current.startedAt && <Text>Started: {dateLabel(current.startedAt)}</Text>}
     {current.completedAt && <Text>Completed: {dateLabel(current.completedAt)}</Text>}

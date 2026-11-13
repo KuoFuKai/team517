@@ -99,7 +99,7 @@ export function EditTaskScreen({ task, locations, busy: requestBusy, save, locat
   };
 
   return <View style={s.form}>
-    {!assistantOpen && <View style={{ backgroundColor: t.colors.primarySoft, borderRadius: 12, padding: 14, gap: 12 }}><Text accessibilityRole="header">Start with your voice or notes</Text><Text>Tell AI what you need. Review every field before posting.</Text><ResponsiveActions><Button title="Describe by voice" disabled={busy} onPress={() => { setAssistantMode('TRANSCRIPT'); setAssistantOpen(true); }} /><Button title="Organize notes" disabled={busy} onPress={() => { setAssistantMode('TEXT'); setAssistantOpen(true); }} /></ResponsiveActions></View>}
+    {!assistantOpen && <View style={{ backgroundColor: t.colors.primarySoft, borderRadius: 12, padding: 14, gap: 12 }}><Text accessibilityRole="header">Start with your voice or notes</Text><Text>Tell AI what you need. Review every field before posting.</Text><ResponsiveActions><Button title="Voice notes" accessibilityLabel="Add a voice transcript" disabled={busy} onPress={() => { setAssistantMode('TRANSCRIPT'); setAssistantOpen(true); }} /><Button title="Organize notes" disabled={busy} onPress={() => { setAssistantMode('TEXT'); setAssistantOpen(true); }} /></ResponsiveActions></View>}
     {assistantOpen && <AiAssistantPanel close={() => setAssistantOpen(false)} initialMode={assistantMode} task={task} disabled={requestBusy} onBusy={setAiBusy} apply={async (fields, sourceVersion) => {
       await applyAi(fields, sourceVersion);
       // Only accepted fields replace local inputs. Other unsaved manual edits survive.

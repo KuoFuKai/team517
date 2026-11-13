@@ -6,7 +6,7 @@ import { Avatar } from '../components/ui';
 import React, { useEffect, useRef, useState } from 'react';
 import { useScreenTop } from '../navigation/scroll';
 import { useHardwareBack } from '../navigation/useHardwareBack';
-import { View, ScrollView, StyleSheet, Pressable } from 'react-native';
+import { View, ScrollView, StyleSheet, Pressable , useWindowDimensions } from 'react-native';
 import type { ConversationDetailDto, ConversationsDto, MessageDto } from '@team517/contracts';
 import * as api from '../api/client';
 import { auth } from '../auth/firebase';
@@ -15,6 +15,7 @@ import { friendlyError, dateLabel } from '../utils/presentation';
 import { logicalSend, type PendingSend } from '../utils/messaging';
 import { theme } from '../theme';
 export function ConversationScreen({ id, back, backLabel = 'Back to inbox' }: { id: string; back: () => void; backLabel?: string }) {
+  const { height } = useWindowDimensions();
   const [data, setData] = useState<ConversationDetailDto | null>(null), [messages, setMessages] = useState<MessageDto[]>([]), [before, setBefore] = useState<number | undefined>();
   const [composerOpen, setComposerOpen] = useState(false);
   const [text, setText] = useState(''), [error, setError] = useState(''), [busy, setBusy] = useState(false), [sending, setSending] = useState(false), [moreUnread, setMoreUnread] = useState(false);
@@ -35,7 +36,7 @@ export function ConversationScreen({ id, back, backLabel = 'Back to inbox' }: { 
     {before !== undefined && <Button disabled={busy} title="Load older messages" onPress={() => void run(async () => { const page = await api.listMessages(id, before); historyPosition.current = 'start'; setMessages(current => [...page.messages, ...current]); setBefore(page.nextBefore); })} />}
     {data && !data.conversation.canSend && <TonePanel title="Read-only conversation">Your relationship has ended. Message history is still available, but new messages cannot be sent.</TonePanel>}
     {data && messages.length === 0 && <EmptyState title="Start with a hello" message="Text only. Please keep private medical and identity documents out of chat." />}
-    {messages.length > 0 && <ScrollView ref={history} accessibilityLabel="Conversation message history" nestedScrollEnabled keyboardShouldPersistTaps="handled" style={s.history} contentContainerStyle={s.historyContent} onContentSizeChange={() => {
+    {messages.length > 0 && <ScrollView ref={history} accessibilityLabel="Conversation message history" nestedScrollEnabled keyboardShouldPersistTaps="handled" style={[s.history, { maxHeight: Math.max(160, Math.min(380, height * 0.38)) }]} contentContainerStyle={s.historyContent} onContentSizeChange={() => {
       if (historyPosition.current === 'end') history.current?.scrollToEnd({ animated: false });
       else history.current?.scrollTo({ y: 0, animated: false });
     }}>{messages.map(m => <View key={m.id} style={[s.bubble, m.senderId === auth.currentUser?.uid ? s.mine : s.theirs]}><Text>{m.text}</Text><Text style={s.time}>{m.senderId === auth.currentUser?.uid ? 'You' : data?.conversation.otherParticipant.label} · {dateLabel(m.createdAt)}</Text>{m.senderId === auth.currentUser?.uid && m.readAt && <Text style={s.time}>Read</Text>}</View>)}</ScrollView>}
@@ -64,4 +65,4 @@ export function MessagingScreen({ back, updates }: { back: () => void; updates?:
 
   </>;
 }
-const s = StyleSheet.create({ history: { minHeight: 120, maxHeight: 300 }, historyContent: { gap: theme.space.md, paddingVertical: 4 }, bubble: { borderRadius: theme.radius.md, padding: 12, gap: 4, maxWidth: '84%', borderWidth: 1, borderColor: theme.colors.border }, mine: { alignSelf: 'flex-end', backgroundColor: theme.colors.primarySoft }, theirs: { alignSelf: 'flex-start', backgroundColor: theme.colors.surface }, time: { color: theme.colors.muted, fontSize: 13.5, lineHeight: 19 } });
+const s = StyleSheet.create({ history: { minHeight: 120 }, historyContent: { gap: theme.space.md, paddingVertical: 4 }, bubble: { borderRadius: theme.radius.md, padding: 12, gap: 4, maxWidth: '84%', borderWidth: 1, borderColor: theme.colors.border }, mine: { alignSelf: 'flex-end', backgroundColor: theme.colors.primarySoft }, theirs: { alignSelf: 'flex-start', backgroundColor: theme.colors.surface }, time: { color: theme.colors.muted, fontSize: 13.5, lineHeight: 19 } });

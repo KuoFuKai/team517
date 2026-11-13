@@ -23,7 +23,7 @@ export function Button({ title, disabled, onPress, accessibilityLabel, testID, v
   // Deep Pine at half opacity leaves white text at about 3:1 on the canvas.
   return <Pressable testID={testID} accessibilityRole="button" accessibilityLabel={accessibilityLabel ?? label} accessibilityState={{ disabled: Boolean(disabled), selected }} disabled={disabled} onPress={onPress} hitSlop={4}
     style={({ pressed }) => [s.button, kind === 'primary' ? s.primary : kind === 'danger' ? s.danger : kind === 'quiet' ? s.quiet : kind === 'outline' ? s.outline : s.secondary, selected && s.selected, disabled && (kind === 'primary' ? s.offPrimary : s.off), pressed && !disabled && s.dim]}>
-    <NativeText numberOfLines={label.length <= 20 ? 1 : undefined} style={[s.buttonText, kind === 'primary' && { color: t.colors.surface }, kind === 'danger' && { color: t.colors.error }, disabled && { color: t.colors.muted }]}>{selected ? '✓ ' : ''}{label}</NativeText>
+    <NativeText style={[s.buttonText, kind === 'primary' && { color: t.colors.surface }, kind === 'danger' && { color: t.colors.error }, disabled && { color: t.colors.muted }]}>{selected ? '✓ ' : ''}{label}</NativeText>
   </Pressable>;
 }
 export const PrimaryButton = (props: ButtonProps) => <Button {...props} variant="primary" />;

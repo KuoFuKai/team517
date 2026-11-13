@@ -2,6 +2,14 @@ import type { TaskDiscoveryItemDto } from '@team517/contracts';
 export interface TaskAreaMarker { id: string; title: string; urgent: boolean; coordinate: { latitude: number; longitude: number } }
 export const defaultDiscoveryRegion = { latitude: 40.75, longitude: -73.96, latitudeDelta: .1, longitudeDelta: .1 };
 export const selectedDiscoveryTask = (tasks: readonly TaskDiscoveryItemDto[], id: string | null) => tasks.find(task => task.id === id);
+// Coarse privacy cells can coincide. Cycle real tasks at that exact safe point;
+// never jitter pins into fabricated coordinates or require a clustering SDK.
+export function nextTaskAtArea(markers: readonly TaskAreaMarker[], pressedId: string, currentId: string | null) {
+  const pressed = markers.find(m => m.id === pressedId);
+  if (!pressed) return null;
+  const same = markers.filter(m => m.coordinate.latitude === pressed.coordinate.latitude && m.coordinate.longitude === pressed.coordinate.longitude);
+  return same[(same.findIndex(m => m.id === currentId) + 1) % same.length].id;
+}
 // This adapter accepts only the existing safe projection. Never read a Location
 // document or Assignment execution details, and never round exact coordinates here.
 export function taskAreaMarkers(tasks: readonly TaskDiscoveryItemDto[]): TaskAreaMarker[] {

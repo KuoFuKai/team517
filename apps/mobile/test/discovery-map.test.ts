@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import type { TaskDiscoveryItemDto } from '@team517/contracts';
-import { taskAreaMarkers, taskAreaRegion, defaultDiscoveryRegion, selectedDiscoveryTask } from '../src/utils/discovery-map';
+import { taskAreaMarkers, taskAreaRegion, defaultDiscoveryRegion, selectedDiscoveryTask, nextTaskAtArea } from '../src/utils/discovery-map';
 const task = (id: string, latitude?: number, longitude?: number) => ({ id, title: 'Appointment companion', urgency: 'PLANNED', approximateLocation: { areaLabel: 'Approximate area', latitude, longitude } } as TaskDiscoveryItemDto);
 test('map only copies backend approximate coordinates; no exact/private fields enter markers', () => {
   const input = { ...task('a', 40.75, -73.95), latitude: 40.75283, longitude: -73.95743, locationId: 'private', privateInstructions: 'private note', formattedAddress: 'private address' };
@@ -24,4 +24,13 @@ test('selection resolves only against the current shared result set and disappea
   assert.equal(selectedDiscoveryTask(results, 'a'), results[0]);
   assert.equal(selectedDiscoveryTask(results, null), undefined);
   assert.equal(selectedDiscoveryTask(results.filter(t => t.id !== 'a'), 'a'), undefined);
+});
+
+test('coincident coarse pins expose every real task without shifting safe coordinates', () => {
+  const markers = taskAreaMarkers([task('a', 40.75, -73.95), task('b', 40.75, -73.95), task('c', 40.85, -73.85)]);
+  assert.equal(nextTaskAtArea(markers, 'b', null), 'a');
+  assert.equal(nextTaskAtArea(markers, 'b', 'a'), 'b');
+  assert.equal(nextTaskAtArea(markers, 'a', 'b'), 'a');
+  assert.equal(nextTaskAtArea(markers, 'c', 'a'), 'c');
+  assert.equal(nextTaskAtArea(markers, 'removed', 'a'), null);
 });

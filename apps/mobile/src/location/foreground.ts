@@ -3,5 +3,5 @@ import { createForegroundLocator } from '../utils/foreground-location';
 export const locateOnce = createForegroundLocator({
   permission: () => Location.getForegroundPermissionsAsync(),
   requestPermission: () => Location.requestForegroundPermissionsAsync(),
-  position: () => Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced }),
+  position: () => Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.High, mayShowUserSettingsDialog: false }),
 });

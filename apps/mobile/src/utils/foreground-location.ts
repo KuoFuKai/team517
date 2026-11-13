@@ -12,15 +12,15 @@ export function createForegroundLocator(port: LocationPort, timeoutMs = 12000) {
   return async (): Promise<ForegroundCenter> => {
     let timer: ReturnType<typeof setTimeout> | undefined;
     try {
-      const work = async (): Promise<ForegroundCenter> => {
-        let permission = await port.permission();
-        if (!permission.granted && !declined && permission.canAskAgain) permission = await port.requestPermission();
-        if (!permission.granted) { declined = true; return { status: 'DENIED' }; }
-        const { coords } = await port.position();
-        if (!Number.isFinite(coords.latitude) || !Number.isFinite(coords.longitude) || Math.abs(coords.latitude) > 90 || Math.abs(coords.longitude) > 180) return { status: 'UNAVAILABLE' };
-        return { status: 'AVAILABLE', coordinate: { latitude: coords.latitude, longitude: coords.longitude } };
-      };
-      return await Promise.race([work(), new Promise<ForegroundCenter>(resolve => { timer = setTimeout(() => resolve({ status: 'UNAVAILABLE' }), timeoutMs); })]);
+      let permission = await port.permission();
+      if (!permission.granted && !declined && permission.canAskAgain) permission = await port.requestPermission();
+      if (!permission.granted) { declined = true; return { status: 'DENIED' }; }
+      // Time out the sensor read, not the person's permission decision.
+      const position = await Promise.race([port.position(), new Promise<null>(resolve => { timer = setTimeout(() => resolve(null), timeoutMs); })]);
+      if (!position) return { status: 'UNAVAILABLE' };
+      const { coords } = position;
+      if (!Number.isFinite(coords.latitude) || !Number.isFinite(coords.longitude) || Math.abs(coords.latitude) > 90 || Math.abs(coords.longitude) > 180) return { status: 'UNAVAILABLE' };
+      return { status: 'AVAILABLE', coordinate: { latitude: coords.latitude, longitude: coords.longitude } };
     } catch { return { status: 'UNAVAILABLE' }; }
     finally { if (timer) clearTimeout(timer); }
   };

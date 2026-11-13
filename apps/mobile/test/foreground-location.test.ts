@@ -20,3 +20,13 @@ test('location error or timeout yields a non-blocking unavailable state', async 
   const timeout = createForegroundLocator({ permission, requestPermission: permission, position: () => new Promise(() => {}) }, 5);
   assert.deepEqual(await timeout(), { status: 'UNAVAILABLE' });
 });
+test('the sensor timeout does not expire while a person is deciding permission', async () => {
+  let decide!: (value: { granted: boolean; canAskAgain: boolean }) => void;
+  const decision = new Promise<{ granted: boolean; canAskAgain: boolean }>(resolve => { decide = resolve; });
+  const locate = createForegroundLocator({ permission: async () => ({ granted: false, canAskAgain: true }), requestPermission: () => decision,
+    position: async () => ({ coords: { latitude: 40.75, longitude: -73.96 } }) }, 5);
+  const result = locate();
+  await new Promise(resolve => setTimeout(resolve, 20));
+  decide({ granted: true, canAskAgain: true });
+  assert.equal((await result).status, 'AVAILABLE');
+});

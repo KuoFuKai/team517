@@ -36,9 +36,8 @@ import { SupportScreen } from './src/screens/SupportScreen';
 // Brand faces load before the first paint so text never reflows from a
 // fallback. A load failure is not fatal: the platform default still renders.
 export default function App() {
-  const [fontsReady, fontError] = useFonts({ Fraunces_600SemiBold, Fraunces_700Bold, Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold });
-  if (!fontsReady && !fontError) return <SafeAreaProvider initialMetrics={initialWindowMetrics}><SafeAreaView style={s.safe} /></SafeAreaProvider>;
-  return <SafeAreaProvider initialMetrics={initialWindowMetrics}><AppContent /></SafeAreaProvider>;
+  const [fontsLoaded, fontError] = useFonts({ Fraunces_600SemiBold, Fraunces_700Bold, Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold });
+  return <SafeAreaProvider initialMetrics={initialWindowMetrics}>{fontsLoaded || fontError ? <AppContent /> : <LoadingState label="Preparing your experience…" />}</SafeAreaProvider>;
 }
 function AppContent() {
   const { register, header } = useHeaderRegistry();
@@ -83,7 +82,7 @@ function AppContent() {
   const navigate = (next: MainTab) => { if (next === 'post' && tab !== 'post') { setPostDraftId(null); postDraftSession.reset(); } setTab(next); setOverlay(null); setError(''); setCircleTasks(false); };
   useHardwareBack(() => { if (overlay) { setOverlay(null); return true; } if (tab !== 'tasks') { navigate('tasks'); return true; } return false; });
   const titles: Record<MainTab, string> = { community: 'Community', tasks: helperMode ? 'Your caregiving tasks' : 'Your tasks', calendar: 'Your tasks', discover: 'Find nearby tasks', circle: '', me: helperMode ? 'Caregiver profile' : 'Your profile', post: 'Post a task', messages: 'Messages' };
-  const title = !user ? 'Care starts together' : !profile ? 'Welcome to team517' : overlay === 'inbox' ? 'Inbox' : overlay === 'notifications' ? 'Notifications' : overlay === 'verification' ? 'Verification' : overlay === 'create' ? 'Create your circle' : titles[tab];
+  const title = !user ? 'Care starts together' : !profile ? 'Welcome to 517' : overlay === 'inbox' ? 'Inbox' : overlay === 'notifications' ? 'Notifications' : overlay === 'verification' ? 'Verification' : overlay === 'create' ? 'Create your circle' : titles[tab];
   return <ScreenHeaderProvider value={register}><SafeAreaView style={s.safe}><StatusBar barStyle="dark-content" backgroundColor={t.colors.canvas} />
     <AppHeader titleSize={!helperMode && (tab === 'tasks' || tab === 'calendar') ? 26 : 28} detail={header} title={title} contextLabel={profile ? helperMode ? `Caregiver${user?.displayName || user?.email ? ' · ' + (user.displayName || user.email?.split('@')[0]) : ''}` : context?.name ?? 'Your care circle' : undefined} changeContext={() => navigate(helperMode ? 'me' : 'circle')} unread={unread} notifications={profile ? () => { setOverlay('notifications'); setError(''); } : undefined} disabled={busy} />
     <KeyboardAvoidingView style={s.flex} behavior="padding">

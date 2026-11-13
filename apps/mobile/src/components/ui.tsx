@@ -58,7 +58,7 @@ const s = StyleSheet.create({
   danger: { backgroundColor: 'transparent', borderColor: t.colors.error }, selected: { backgroundColor: t.colors.primarySoft, borderColor: t.colors.primary }, dim: { opacity: 0.5 },
   offPrimary: { backgroundColor: t.colors.accent, borderColor: t.colors.accent }, off: { opacity: 0.65 },
   hint: { fontSize: 13.5, lineHeight: 20, color: t.colors.muted },
-  buttonText: { fontFamily: t.font.bodySemibold, fontSize: t.type.label, fontWeight: t.weight.semibold, color: t.colors.primary, textAlign: 'center', flexShrink: 1 },
+  buttonText: { fontFamily: t.font.bodySemibold, fontSize: t.type.label, fontWeight: 'normal', color: t.colors.primary, textAlign: 'center', flexShrink: 1 },
   field: { gap: 6 }, fieldLabel: { fontSize: t.type.caption, fontWeight: t.weight.semibold, color: t.colors.muted }, input: { backgroundColor: t.colors.surface, minHeight: 54, borderWidth: 1, borderColor: t.colors.border, borderRadius: t.radius.sm, padding: 12, fontFamily: t.font.body, color: t.colors.ink, fontSize: 17, lineHeight: 22 }, area: { minHeight: 96, textAlignVertical: 'top' },
   card: { backgroundColor: t.colors.surface, borderRadius: t.radius.md, borderWidth: 1, borderColor: t.colors.border, padding: 14, gap: 10 },
   section: { gap: 8, marginTop: 0 }, muted: { color: t.colors.muted, fontSize: t.type.label }, badge: { maxWidth: '100%', alignSelf: 'flex-start', backgroundColor: t.colors.primarySoft, borderRadius: t.radius.pill, paddingHorizontal: 12, paddingVertical: 5 }, badgeText: { color: t.colors.primary, fontWeight: t.weight.semibold, fontSize: t.type.caption },

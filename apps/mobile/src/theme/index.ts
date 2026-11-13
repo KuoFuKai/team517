@@ -4,7 +4,7 @@
 // seven colours and the UI needs soft fills and text-safe variants of them.
 const brand = {
   deepPine: '#1F3D36',    // Primary — text and structure
-  terracotta: '#C8553D',  // Primary accent — restrained
+  terracotta: '#C8553D',  // Primary accent — restrained, never an alert
   sage: '#8FB39A',        // Supporting — supportive states
   marigold: '#E9A23B',    // Supporting — upcoming, needs attention
   oat: '#F6EFE4',         // Supporting — warm foundation
@@ -16,10 +16,11 @@ export const theme = {
   colors: {
     ink: brand.deepPine, text: brand.deepPine, muted: brand.stone,
     subtle: '#938F86',            // derived: Stone toward Oat, placeholders only
-    button: brand.deepPine, primary: brand.deepPine, primarySoft: '#DEE9E1', // derived: Sage toward Oat
+    primary: brand.deepPine, primarySoft: '#DEE9E1', // derived: Sage toward Oat
+    button: brand.deepPine,
     canvas: brand.oat, surface: '#FFFFFF',
     border: '#DCD1BC',            // derived: Oat darkened, cards and dividers
-    outline: '#B9A98D',           // derived: Oat darkened further, interactive control outlines
+    outline: '#B9A98D',           // derived: Oat darkened further, control outlines
     accent: '#EDE4D4',            // derived: Oat darkened, segmented track
     terracotta: brand.terracotta, marigold: brand.marigold,
     sage: '#4F7560',              // derived: Sage darkened to read as text

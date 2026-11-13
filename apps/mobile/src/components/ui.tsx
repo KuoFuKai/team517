@@ -1,11 +1,18 @@
 import React from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Text as NativeText, TextInput as NativeInput, View, type TextProps, type TextInputProps, type ButtonProps } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, Text as NativeText, TextInput as NativeInput, View, type TextProps, type TextStyle, type TextInputProps, type ButtonProps } from 'react-native';
 import { theme as t } from '../theme';
 import { statusLabel, statusLabels } from '../utils/presentation';
+// Android does not synthesise weights for custom faces, so the declared
+// fontWeight picks a real file and is then cleared to stop double-bolding.
+// The guide puts headings in Fraunces and everything else in Inter.
+export function typeface(weight: TextStyle['fontWeight'], display = false) {
+  const heavy = Number(weight) >= 700 || weight === 'bold';
+  if (display) return heavy ? t.font.displayBold : t.font.display;
+  return heavy ? t.font.bodyBold : Number(weight) >= 600 ? t.font.bodySemibold : Number(weight) >= 500 ? t.font.bodyMedium : t.font.body;
+}
 export function Text({ style, accessibilityRole, ...props }: TextProps) {
   const weight = StyleSheet.flatten(style)?.fontWeight ?? (accessibilityRole === 'header' ? '700' : '400');
-  const family = Number(weight) >= 700 || weight === 'bold' ? 'DMSans_700Bold' : Number(weight) >= 600 ? 'DMSans_600SemiBold' : Number(weight) >= 500 ? 'DMSans_500Medium' : 'DMSans_400Regular';
-  return <NativeText {...props} accessibilityRole={accessibilityRole} style={[s.text, accessibilityRole === 'header' && s.heading, accessibilityRole === 'alert' && s.error, style, { fontFamily: family, fontWeight: 'normal' }]} />;
+  return <NativeText {...props} accessibilityRole={accessibilityRole} style={[s.text, accessibilityRole === 'header' && s.heading, accessibilityRole === 'alert' && s.error, style, { fontFamily: typeface(weight, accessibilityRole === 'header'), fontWeight: 'normal' }]} />;
 }
 export function Button({ title, disabled, onPress, accessibilityLabel, testID, variant }: ButtonProps & { variant?: 'primary' | 'secondary' | 'quiet' | 'danger' | 'outline' }) {
   const selected = title.startsWith('✓ ');
@@ -13,15 +20,15 @@ export function Button({ title, disabled, onPress, accessibilityLabel, testID, v
   const label = statusLabels[raw] ? statusLabel(raw) : raw;
   const kind = variant ?? (/^(Post a task|Save and publish|Publish|Offer to help|Confirm Assignment|Confirm completion|Start Task|Request completion|Select this|Sign in|Create account|Submit Review)/i.test(raw) ? 'primary' : /^(Cancel task|Decline Assignment)/i.test(raw) ? 'danger' : 'secondary');
   return <Pressable testID={testID} accessibilityRole="button" accessibilityLabel={accessibilityLabel ?? label} accessibilityState={{ disabled: Boolean(disabled), selected }} disabled={disabled} onPress={onPress} hitSlop={4}
-    style={({ pressed }) => [s.button, kind === 'primary' ? s.primary : kind === 'danger' ? s.danger : kind === 'quiet' ? s.quiet : kind === 'outline' ? s.outline : s.secondary, selected && s.selected, (disabled || pressed) && s.dim]}>
-    <NativeText style={[s.buttonText, kind === 'primary' && { color: t.colors.surface }, kind === 'danger' && { color: t.colors.error }]}>{selected ? '✓ ' : ''}{label}</NativeText>
+    style={({ pressed }) => [s.button, kind === 'primary' ? s.primary : kind === 'danger' ? s.danger : kind === 'quiet' ? s.quiet : kind === 'outline' ? s.outline : s.secondary, selected && s.selected, disabled && (kind === 'primary' ? s.offPrimary : s.off), pressed && !disabled && s.dim]}>
+    <NativeText style={[s.buttonText, kind === 'primary' && { color: t.colors.surface }, kind === 'danger' && { color: t.colors.error }, disabled && { color: t.colors.muted }]}>{selected ? '✓ ' : ''}{label}</NativeText>
   </Pressable>;
 }
 export const PrimaryButton = (props: ButtonProps) => <Button {...props} variant="primary" />;
 export const SecondaryButton = (props: ButtonProps) => <Button {...props} variant="secondary" />;
 export function TextInput({ style, multiline, accessibilityLabel, placeholder, ...props }: TextInputProps) {
   return <View style={s.field}>{accessibilityLabel && <Text style={s.fieldLabel}>{accessibilityLabel}</Text>}
-    <NativeInput {...props} accessibilityLabel={accessibilityLabel ?? placeholder} placeholder={placeholder} placeholderTextColor={t.colors.muted} multiline={multiline} style={[s.input, multiline && s.area, style]} />
+    <NativeInput {...props} accessibilityLabel={accessibilityLabel ?? placeholder} placeholder={placeholder} placeholderTextColor={t.colors.subtle} multiline={multiline} style={[s.input, multiline && s.area, style]} />
   </View>;
 }
 export const TextField = TextInput;
@@ -46,8 +53,9 @@ const s = StyleSheet.create({
   primary: { backgroundColor: t.colors.button, borderColor: t.colors.button }, secondary: { backgroundColor: t.colors.surface, borderColor: t.colors.border }, quiet: { backgroundColor: 'transparent', borderColor: 'transparent' },
   outline: { backgroundColor: 'transparent', borderColor: t.colors.primary },
   danger: { backgroundColor: 'transparent', borderColor: t.colors.error }, selected: { backgroundColor: t.colors.primarySoft, borderColor: t.colors.primary }, dim: { opacity: 0.5 },
-  buttonText: { fontFamily: 'DMSans_600SemiBold', fontSize: t.type.label, fontWeight: t.weight.semibold, color: t.colors.primary, textAlign: 'center', flexShrink: 1 },
-  field: { gap: 6 }, fieldLabel: { fontSize: t.type.caption, fontWeight: t.weight.semibold, color: t.colors.muted }, input: { backgroundColor: t.colors.surface, minHeight: 54, borderWidth: 1, borderColor: t.colors.border, borderRadius: t.radius.sm, padding: 12, fontFamily: 'DMSans_400Regular', color: t.colors.ink, fontSize: 17, lineHeight: 22 }, area: { minHeight: 96, textAlignVertical: 'top' },
+  offPrimary: { backgroundColor: t.colors.accent, borderColor: t.colors.accent }, off: { opacity: 0.65 },
+  buttonText: { fontFamily: t.font.bodySemibold, fontSize: t.type.label, color: t.colors.primary, textAlign: 'center', flexShrink: 1 },
+  field: { gap: 6 }, fieldLabel: { fontSize: t.type.caption, fontWeight: t.weight.semibold, color: t.colors.muted }, input: { backgroundColor: t.colors.surface, minHeight: 54, borderWidth: 1, borderColor: t.colors.border, borderRadius: t.radius.sm, padding: 12, fontFamily: t.font.body, color: t.colors.ink, fontSize: 17, lineHeight: 22 }, area: { minHeight: 96, textAlignVertical: 'top' },
   card: { backgroundColor: t.colors.surface, borderRadius: t.radius.md, borderWidth: 1, borderColor: t.colors.border, padding: 14, gap: 10 },
   section: { gap: 8, marginTop: 0 }, muted: { color: t.colors.muted, fontSize: t.type.label }, badge: { alignSelf: 'flex-start', backgroundColor: t.colors.primarySoft, borderRadius: t.radius.pill, paddingHorizontal: 12, paddingVertical: 5 }, badgeText: { color: t.colors.primary, fontWeight: t.weight.semibold, fontSize: t.type.caption },
   avatar: { width: 40, height: 40, borderRadius: t.radius.pill, backgroundColor: t.colors.primarySoft, alignItems: 'center', justifyContent: 'center' }, avatarText: { color: t.colors.primary, fontSize: 18, fontWeight: t.weight.bold },

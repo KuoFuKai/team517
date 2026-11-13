@@ -1,5 +1,7 @@
 # Development plan
 
+Current Sprint checkpoint: [Sprint7B.2](sprint-7b2.md) / [visible progress](visible-progress.md). Physical responsive work precedes Sprint7C Maps.
+
 ## Permanent visible-first and collaboration policy
 
 Unless correctness/security/data integrity requires otherwise: (1) visible product experience, (2) usability/navigation/responsiveness, (3) directly exercisable features, (4) invisible infrastructure. Teammates should regularly see and operate progress. Sprint7B.2 focuses on physical Android and responsive existing UI; Maps remains Sprint7C, not started here.

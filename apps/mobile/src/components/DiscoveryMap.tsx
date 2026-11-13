@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Platform, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { AppState, Platform, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { locateOnce } from '../location/foreground';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import type { TaskDiscoveryItemDto } from '@team517/contracts';
 import { taskAreaMarkers, taskAreaRegion, selectedDiscoveryTask } from '../utils/discovery-map';
@@ -13,6 +14,22 @@ import { theme } from '../theme';
 export function DiscoveryMap({ tasks, compact = false, open, busy = false }: { tasks: readonly TaskDiscoveryItemDto[]; compact?: boolean; open?: (task: TaskDiscoveryItemDto) => void; busy?: boolean }) {
   const [ready, setReady] = useState(false), [slow, setSlow] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [locationState, setLocationState] = useState<'IDLE' | 'BUSY' | 'AVAILABLE' | 'DENIED' | 'UNAVAILABLE'>('IDLE');
+  const locationEpoch = useRef(0), locationLock = useRef(false);
+  useEffect(() => {
+    const listener = AppState.addEventListener('change', state => { if (state !== 'active') { locationEpoch.current++; setLocationState('IDLE'); } });
+    return () => { locationEpoch.current++; listener.remove(); };
+  }, []);
+  const centerOnDevice = async () => {
+    if (locationLock.current) return;
+    locationLock.current = true; const epoch = ++locationEpoch.current; setLocationState('BUSY');
+    try {
+      const result = await locateOnce();
+      if (epoch !== locationEpoch.current || AppState.currentState !== 'active') return;
+      setLocationState(result.status);
+      if (result.status === 'AVAILABLE') map.current?.animateToRegion({ ...result.coordinate, latitudeDelta: .06, longitudeDelta: .06 }, 350);
+    } finally { locationLock.current = false; }
+  };
   const selected = selectedDiscoveryTask(tasks, selectedId);
   useEffect(() => { if (!selected) setSelectedId(null); }, [selected]);
   useHardwareBack(() => { if (!selected) return false; setSelectedId(null); return true; }, 2);
@@ -25,6 +42,9 @@ export function DiscoveryMap({ tasks, compact = false, open, busy = false }: { t
   if (Platform.OS !== 'android' || !Constants.expoConfig?.extra?.team517MapsConfigured) return <Text>Map is unavailable in this build. You can continue exploring tasks in List.</Text>;
   return <View style={{ gap: 8 }}>
     <Text style={{ fontSize: 13.5, color: theme.colors.muted }}>Approximate task areas · exact addresses stay private.</Text>
+    {!compact && <Button variant="quiet" title={locationState === 'BUSY' ? 'Finding your location…' : 'Use my location'} disabled={busy || locationState === 'BUSY' || !ready} onPress={() => void centerOnDevice()} />}
+    {!compact && locationState === 'DENIED' && <Text accessibilityLiveRegion="polite" style={{ fontSize: 13.5, color: theme.colors.muted }}>Location is optional. Keep browsing, or enable it in Android Settings.</Text>}
+    {!compact && locationState === 'UNAVAILABLE' && <Text accessibilityLiveRegion="polite" style={{ fontSize: 13.5, color: theme.colors.muted }}>Your location is unavailable right now. Task areas and List still work.</Text>}
     {!compact && selected && <Card><Text accessibilityRole="header" style={{ fontSize: 18, fontWeight: '600' }}>{selected.title}</Text><Text style={{ fontSize: 13.5, color: theme.colors.muted }}>{taskWhenLabel(selected.startAt, selected.endAt)}</Text><Text style={{ fontSize: 13.5 }}>{compensationLabel(selected)} · {selected.urgency === 'URGENT' ? 'Urgent' : 'Planned'}{selected.distanceKm !== undefined ? ` · about ${selected.distanceKm} km` : ''}</Text><Text style={{ fontSize: 13.5, color: theme.colors.muted }}>{discoveryAreaLabel(selected.approximateLocation.areaLabel)} · Approximate area</Text><ResponsiveActions><Button variant="primary" title="View task" disabled={busy} onPress={() => open?.(selected)} /><Button variant="quiet" title="Clear selection" disabled={busy} onPress={() => setSelectedId(null)} /></ResponsiveActions></Card>}
     <View style={{ height: compact ? 180 : selected ? 230 : Math.max(260, Math.min(420, height * .44)), borderRadius: 12, overflow: 'hidden', backgroundColor: theme.colors.primarySoft }}>
       <MapView ref={map} provider={PROVIDER_GOOGLE} style={StyleSheet.absoluteFill} initialRegion={region} maxZoomLevel={14} showsMyLocationButton={false} showsUserLocation={false} toolbarEnabled={false} showsIndoors={false} onMapLoaded={() => setReady(true)} onPress={event => { if (event.nativeEvent.action !== 'marker-press') setSelectedId(null); }}>

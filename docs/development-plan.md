@@ -1,5 +1,11 @@
 # Development plan
 
+## Permanent visible-first and collaboration policy
+
+Unless correctness/security/data integrity requires otherwise: (1) visible product experience, (2) usability/navigation/responsiveness, (3) directly exercisable features, (4) invisible infrastructure. Teammates should regularly see and operate progress. Sprint7B.2 focuses on physical Android and responsive existing UI; Maps remains Sprint7C, not started here.
+
+Each session inspects status/branch/remotes, fetches origin and compares origin/main before editing. Use a Sprint branch, push small tested batches, re-fetch during work and before main integration. Preserve contributor intent/history; never force-push or discard shared work. Report collaboration state with every Sprint. See root AGENTS.md and the Sprint report.
+
 November 12 Sprint 7B.1 update: Firebase CLI user OAuth is complete and team517-dev visibility verified; Blaze owner-confirmed, required APIs enabled, Standard Native Firestore colocated in us-central1, locked rules/20 READY indexes and both existing Functions deployed. Auth Email/Password enabled, four synthetic accounts/baseline prepared, extended cloud smoke passed after adding the demonstrated reviews rating-aggregate index. No manual runtime IAM or business API/domain changes. API 36 standalone cloud login/data/Message send, background FCM and Task/Assignment/Conversation routes, confirmation/start/completion request, location clearing on refresh and cold Auth persistence passed. Physical phone-only acceptance/full rehearsal remains pending. Maps stays Sprint 7C; iOS remains deferred.
 
 Historical November 11 Sprint 7B.1 checkpoint: standalone APK/environment tooling was complete, but runtime-ADC-based inspection blocked cloud deployment then. That blocker is superseded by the user-identity deployment and evidence above. Earlier 7B/7A closures below retain their original local-development scope. See [Android Preview](android-preview.md).

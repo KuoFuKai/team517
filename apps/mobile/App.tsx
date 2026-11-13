@@ -1,4 +1,3 @@
-import { useFonts, DMSans_400Regular, DMSans_500Medium, DMSans_600SemiBold, DMSans_700Bold } from '@expo-google-fonts/dm-sans';
 import { ScreenHeaderProvider, useHeaderRegistry } from './src/components/ScreenHeader';
 import { MenuRow, Disclosure } from './src/components/Details';
 import { MessagingScreen } from './src/screens/MessagingScreen';
@@ -10,6 +9,9 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ScrollResetContext } from './src/navigation/scroll';
 import { ScrollView, StyleSheet, KeyboardAvoidingView, View, StatusBar } from 'react-native';
 import { SafeAreaProvider, SafeAreaView, initialWindowMetrics } from 'react-native-safe-area-context';
+import { useFonts } from 'expo-font';
+import { Fraunces_600SemiBold, Fraunces_700Bold } from '@expo-google-fonts/fraunces';
+import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold } from '@expo-google-fonts/inter';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from 'firebase/auth';
 import type { CareContextDto, TaskDetailDto } from '@team517/contracts';
 import { auth } from './src/auth/firebase';
@@ -30,9 +32,13 @@ import { TaskWorkspace } from './src/screens/TaskWorkspace';
 import { DiscoveryWorkspace } from './src/screens/DiscoveryWorkspace';
 import { MyWorkScreen } from './src/screens/MyWorkScreen';
 import { SupportScreen } from './src/screens/SupportScreen';
+
+// Brand faces load before the first paint so text never reflows from a
+// fallback. A load failure is not fatal: the platform default still renders.
 export default function App() {
-  const [fontsLoaded, fontError] = useFonts({ DMSans_400Regular, DMSans_500Medium, DMSans_600SemiBold, DMSans_700Bold });
-  return <SafeAreaProvider initialMetrics={initialWindowMetrics}>{fontsLoaded || fontError ? <AppContent /> : <LoadingState label="Preparing your experience…" />}</SafeAreaProvider>;
+  const [fontsReady, fontError] = useFonts({ Fraunces_600SemiBold, Fraunces_700Bold, Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold });
+  if (!fontsReady && !fontError) return <SafeAreaProvider initialMetrics={initialWindowMetrics}><SafeAreaView style={s.safe} /></SafeAreaProvider>;
+  return <SafeAreaProvider initialMetrics={initialWindowMetrics}><AppContent /></SafeAreaProvider>;
 }
 function AppContent() {
   const { register, header } = useHeaderRegistry();

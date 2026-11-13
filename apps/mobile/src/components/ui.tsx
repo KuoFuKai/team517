@@ -1,27 +1,36 @@
 import React from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Text as NativeText, TextInput as NativeInput, View, type TextProps, type TextInputProps, type ButtonProps } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, Text as NativeText, TextInput as NativeInput, View, type TextProps, type TextStyle, type TextInputProps, type ButtonProps } from 'react-native';
 import { theme as t } from '../theme';
 import { statusLabel, statusLabels } from '../utils/presentation';
+// Android does not synthesise weights for custom faces, so the declared
+// fontWeight picks a real file and is then cleared to stop double-bolding.
+const BODY_FACE: Record<string, string> = { '400': t.font.body, normal: t.font.body, '500': t.font.bodyMedium, '600': t.font.bodySemibold, '700': t.font.bodyBold, '800': t.font.bodyBold, '900': t.font.bodyBold, bold: t.font.bodyBold };
+export function typeface(weight: TextStyle['fontWeight'], display = false) {
+  const key = String(weight ?? '400');
+  if (display) return key === '700' || key === 'bold' || key === '800' || key === '900' ? t.font.displayBold : t.font.display;
+  return BODY_FACE[key] ?? t.font.body;
+}
 export function Text({ style, accessibilityRole, ...props }: TextProps) {
-  const weight = StyleSheet.flatten(style)?.fontWeight ?? (accessibilityRole === 'header' ? '700' : '400');
-  const family = Number(weight) >= 700 || weight === 'bold' ? 'DMSans_700Bold' : Number(weight) >= 600 ? 'DMSans_600SemiBold' : Number(weight) >= 500 ? 'DMSans_500Medium' : 'DMSans_400Regular';
-  return <NativeText {...props} accessibilityRole={accessibilityRole} style={[s.text, accessibilityRole === 'header' && s.heading, accessibilityRole === 'alert' && s.error, style, { fontFamily: family, fontWeight: 'normal' }]} />;
+  const merged = StyleSheet.flatten([s.text, accessibilityRole === 'header' && s.heading, accessibilityRole === 'alert' && s.error, style]) as TextStyle;
+  return <NativeText {...props} accessibilityRole={accessibilityRole} style={[merged, { fontFamily: typeface(merged.fontWeight, accessibilityRole === 'header'), fontWeight: 'normal' }]} />;
 }
 export function Button({ title, disabled, onPress, accessibilityLabel, testID, variant }: ButtonProps & { variant?: 'primary' | 'secondary' | 'quiet' | 'danger' | 'outline' }) {
   const selected = title.startsWith('✓ ');
   const raw = selected ? title.slice(2) : title;
   const label = statusLabels[raw] ? statusLabel(raw) : raw;
   const kind = variant ?? (/^(Post a task|Save and publish|Publish|Offer to help|Confirm Assignment|Confirm completion|Start Task|Request completion|Select this|Sign in|Create account|Submit Review)/i.test(raw) ? 'primary' : /^(Cancel task|Decline Assignment)/i.test(raw) ? 'danger' : 'secondary');
+  // A disabled filled button is dimmed to a flat Oat tone rather than faded:
+  // Deep Pine at half opacity leaves white text at about 3:1 on the canvas.
   return <Pressable testID={testID} accessibilityRole="button" accessibilityLabel={accessibilityLabel ?? label} accessibilityState={{ disabled: Boolean(disabled), selected }} disabled={disabled} onPress={onPress} hitSlop={4}
-    style={({ pressed }) => [s.button, kind === 'primary' ? s.primary : kind === 'danger' ? s.danger : kind === 'quiet' ? s.quiet : kind === 'outline' ? s.outline : s.secondary, selected && s.selected, (disabled || pressed) && s.dim]}>
-    <NativeText style={[s.buttonText, kind === 'primary' && { color: t.colors.surface }, kind === 'danger' && { color: t.colors.error }]}>{selected ? '✓ ' : ''}{label}</NativeText>
+    style={({ pressed }) => [s.button, kind === 'primary' ? s.primary : kind === 'danger' ? s.danger : kind === 'quiet' ? s.quiet : kind === 'outline' ? s.outline : s.secondary, selected && s.selected, disabled && (kind === 'primary' ? s.offPrimary : s.off), pressed && !disabled && s.dim]}>
+    <NativeText numberOfLines={label.length <= 20 ? 1 : undefined} style={[s.buttonText, kind === 'primary' && { color: t.colors.surface }, kind === 'danger' && { color: t.colors.error }, disabled && { color: t.colors.muted }]}>{selected ? '✓ ' : ''}{label}</NativeText>
   </Pressable>;
 }
 export const PrimaryButton = (props: ButtonProps) => <Button {...props} variant="primary" />;
 export const SecondaryButton = (props: ButtonProps) => <Button {...props} variant="secondary" />;
-export function TextInput({ style, multiline, accessibilityLabel, placeholder, ...props }: TextInputProps) {
-  return <View style={s.field}>{accessibilityLabel && <Text style={s.fieldLabel}>{accessibilityLabel}</Text>}
-    <NativeInput {...props} accessibilityLabel={accessibilityLabel ?? placeholder} placeholder={placeholder} placeholderTextColor={t.colors.muted} multiline={multiline} style={[s.input, multiline && s.area, style]} />
+export function TextInput({ style, multiline, accessibilityLabel, placeholder, hint, ...props }: TextInputProps & { hint?: string }) {
+  return <View style={s.field}>{accessibilityLabel && <Text style={s.fieldLabel}>{accessibilityLabel}</Text>}{hint ? <Text style={s.hint}>{hint}</Text> : null}
+    <NativeInput {...props} accessibilityLabel={accessibilityLabel ?? placeholder} accessibilityHint={hint} placeholder={placeholder} placeholderTextColor={t.colors.subtle} multiline={multiline} style={[s.input, multiline && s.area, style]} />
   </View>;
 }
 export const TextField = TextInput;
@@ -32,7 +41,8 @@ export function SectionHeader({ title, caption }: { title: string; caption?: str
 export function StatusBadge({ status }: { status: string }) {
   const issue = ['DISPUTED', 'CANCELLED', 'FAILED'].includes(status);
   const waiting = ['PENDING_CONFIRMATION', 'AWAITING_CONFIRMATION', 'COMPLETION_PENDING', 'PENDING', 'URGENT'].includes(status);
-  return <View style={[s.badge, issue && { backgroundColor: t.colors.errorSoft }, waiting && { backgroundColor: t.colors.warningSoft }]}><Text style={[s.badgeText, issue && { color: t.colors.error }, waiting && { color: t.colors.warning }]}>{statusLabel(status)}</Text></View>;
+  const done = ['COMPLETED', 'CONFIRMED', 'ARRANGED', 'VERIFIED'].includes(status);
+  return <View style={[s.badge, done && { backgroundColor: t.colors.sageSoft }, issue && { backgroundColor: t.colors.errorSoft }, waiting && { backgroundColor: t.colors.warningSoft }]}><Text style={[s.badgeText, done && { color: t.colors.sage }, issue && { color: t.colors.error }, waiting && { color: t.colors.warning }]}>{statusLabel(status)}</Text></View>;
 }
 export const Chip = StatusBadge;
 export function Avatar({ label }: { label: string }) { return <View accessibilityLabel={label} style={s.avatar}><Text style={s.avatarText}>{(label.includes('@') ? label.split('@')[0].slice(0, 2) : label.trim().split(/\s+/).length > 1 ? label.trim().split(/\s+/).map(word => word[0]).slice(0, 2).join('') : label.slice(0, 2)).toUpperCase()}</Text></View>; }
@@ -46,10 +56,12 @@ const s = StyleSheet.create({
   primary: { backgroundColor: t.colors.button, borderColor: t.colors.button }, secondary: { backgroundColor: t.colors.surface, borderColor: t.colors.border }, quiet: { backgroundColor: 'transparent', borderColor: 'transparent' },
   outline: { backgroundColor: 'transparent', borderColor: t.colors.primary },
   danger: { backgroundColor: 'transparent', borderColor: t.colors.error }, selected: { backgroundColor: t.colors.primarySoft, borderColor: t.colors.primary }, dim: { opacity: 0.5 },
-  buttonText: { fontFamily: 'DMSans_600SemiBold', fontSize: t.type.label, fontWeight: t.weight.semibold, color: t.colors.primary, textAlign: 'center', flexShrink: 1 },
-  field: { gap: 6 }, fieldLabel: { fontSize: t.type.caption, fontWeight: t.weight.semibold, color: t.colors.muted }, input: { backgroundColor: t.colors.surface, minHeight: 54, borderWidth: 1, borderColor: t.colors.border, borderRadius: t.radius.sm, padding: 12, fontFamily: 'DMSans_400Regular', color: t.colors.ink, fontSize: 17, lineHeight: 22 }, area: { minHeight: 96, textAlignVertical: 'top' },
+  offPrimary: { backgroundColor: t.colors.accent, borderColor: t.colors.accent }, off: { opacity: 0.65 },
+  hint: { fontSize: 13.5, lineHeight: 20, color: t.colors.muted },
+  buttonText: { fontFamily: t.font.bodySemibold, fontSize: t.type.label, fontWeight: t.weight.semibold, color: t.colors.primary, textAlign: 'center', flexShrink: 1 },
+  field: { gap: 6 }, fieldLabel: { fontSize: t.type.caption, fontWeight: t.weight.semibold, color: t.colors.muted }, input: { backgroundColor: t.colors.surface, minHeight: 54, borderWidth: 1, borderColor: t.colors.border, borderRadius: t.radius.sm, padding: 12, fontFamily: t.font.body, color: t.colors.ink, fontSize: 17, lineHeight: 22 }, area: { minHeight: 96, textAlignVertical: 'top' },
   card: { backgroundColor: t.colors.surface, borderRadius: t.radius.md, borderWidth: 1, borderColor: t.colors.border, padding: 14, gap: 10 },
-  section: { gap: 8, marginTop: 0 }, muted: { color: t.colors.muted, fontSize: t.type.label }, badge: { alignSelf: 'flex-start', backgroundColor: t.colors.primarySoft, borderRadius: t.radius.pill, paddingHorizontal: 12, paddingVertical: 5 }, badgeText: { color: t.colors.primary, fontWeight: t.weight.semibold, fontSize: t.type.caption },
+  section: { gap: 8, marginTop: 0 }, muted: { color: t.colors.muted, fontSize: t.type.label }, badge: { maxWidth: '100%', alignSelf: 'flex-start', backgroundColor: t.colors.primarySoft, borderRadius: t.radius.pill, paddingHorizontal: 12, paddingVertical: 5 }, badgeText: { color: t.colors.primary, fontWeight: t.weight.semibold, fontSize: t.type.caption },
   avatar: { width: 40, height: 40, borderRadius: t.radius.pill, backgroundColor: t.colors.primarySoft, alignItems: 'center', justifyContent: 'center' }, avatarText: { color: t.colors.primary, fontSize: 18, fontWeight: t.weight.bold },
   empty: { padding: t.space.xl, gap: t.space.sm, backgroundColor: t.colors.surface, borderRadius: t.radius.md, borderWidth: 1, borderStyle: 'dashed', borderColor: t.colors.border },
   loading: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 12 }, errorBox: { backgroundColor: t.colors.errorSoft, borderRadius: t.radius.sm, padding: 14 }, row: { gap: 10, flexDirection: 'row', alignItems: 'flex-start', paddingVertical: 3 },

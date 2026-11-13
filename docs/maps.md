@@ -1,6 +1,6 @@
 # Sprint 7C — Native Maps + Nearby Task Discovery
 
-Status: native implementation and observed device checks complete; final hosted CI and disconnected-phone user report are recorded in the acceptance/validation documents. This is bounded MVP Task discovery, not production geospatial search or live tracking.
+Status: COMPLETE for the documented Sprint7C Android scope. Native/device checks, successful hosted source/main CI and the disconnected-phone user report are recorded in the acceptance/validation documents. This is bounded MVP Task discovery, not production geospatial search or live tracking.
 
 ## Implementation and configuration
 

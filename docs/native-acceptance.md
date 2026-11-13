@@ -364,10 +364,13 @@ Automated results for this attempt are recorded in [validation](validation.md); 
 | FCM regression | Final vivo, app background; actual generic NEW_MESSAGE → Conversation; generic task update → pending Assignment | PASS; no private message/address in OS notification payload |
 | Arrival privacy | Pending denied; native Confirm and Show arrival details; completion via existing APIs; terminal GET denied | PASS; only synthetic arrival values used |
 | Stale privileged display | Native refresh after completion; return to Find Map | PASS: arrival text cleared; Discovery tree did not contain it; Map receives only safe DTOs |
-| USB-disconnected final phone | User asked to relaunch → Find Map → Errands marker → View task → List on normal Internet | PENDING USER REPORT; no disconnected observation is claimed by the agent |
+| USB-disconnected final phone | User asked to relaunch → Find Map → Errands marker → View task → List on normal Internet | PASS — USER-REPORTED: user replied “看來沒問題” to the requested disconnected flow; no issues reported; agent did not observe the disconnected screen |
 
-Fixes: HIGH coincident-area task reachability; MEDIUM permission-modal feedback/provider nags and sensor timeout; MEDIUM large-font CTA clipping. LOW provider label/callout density remains cosmetic. No BLOCKER/HIGH product defect remains in observed paths. The manual USB report and final hosted CI determine Sprint closure; do not infer them from local tests.
+Fixes: HIGH coincident-area task reachability; MEDIUM permission-modal feedback/provider nags and sensor timeout; MEDIUM large-font CTA clipping. LOW provider label/callout density remains cosmetic. No BLOCKER/HIGH product defect remains in observed paths. The requested disconnected-phone user report is now received, and runtime/source plus shared-main hosted CI passed. Sprint7C can close for the documented two-device scope.
 
 Final Preview APK: `artifacts/android/team517-preview.apk`, SHA-256 `7b19aa692eded88ae71a7afcd23b2cdb15b5dae60a848d38dcb18dc290deada7`. Actual signer SHA-1 is recorded in maps.md; existing development signing is unchanged. Maps uses cloud Preview, no Metro or 10.0.2.2; adb reverse was empty and local service ports were stopped during focused standalone phone checks. Separate automated regression emulators were run independently on the PC afterward.
 
 Synthetic emulator evidence: [five curated screenshots](native-evidence/2026-11-13-sprint7c/README.md). Device display/network/location test settings were restored after testing. No rotation/iOS/all-device compatibility claim. Nearby Helpers, Points/Payments, real providers and background tracking remain out of scope.
+
+
+Closure update: Kevin responded “看來沒問題” to the requested USB-disconnected relaunch → Find → Map → Errands marker → View task → List flow on ordinary Internet. This is user-reported evidence, not an agent-observed disconnected run. Sprint7C is closed for the documented Android/MVP scope; no all-device or production geospatial claim.

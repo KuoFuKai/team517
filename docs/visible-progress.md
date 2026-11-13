@@ -1,6 +1,6 @@
 # Visible product progress
 
-Current: Sprint7C, November13. Native Maps working; source CI passed / disconnected-phone report pending. [Maps details](maps.md). Prior Sprint7B.2: [Try the current screens](native-evidence/2026-11-12-sprint7b2/visible-progress.png) · [Acceptance detail](sprint-7b2.md)
+Current: Sprint7C, November13. Sprint7C complete: native Maps working, source/main CI passed, disconnected-phone user report received. [Maps details](maps.md). Prior Sprint7B.2: [Try the current screens](native-evidence/2026-11-12-sprint7b2/visible-progress.png) · [Acceptance detail](sprint-7b2.md)
 
 | Product area | Status | What teammates can try |
 | --- | --- | --- |

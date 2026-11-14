@@ -1,7 +1,7 @@
 import { prepareTaskPoints } from './points';
 import { lifecycleNotifications } from '../support/notifications';
 import { getFirestore, Timestamp, type Transaction } from 'firebase-admin/firestore';
-import type { Task, Location, TaskEventType } from '../domain/task';
+import type { Task, Location, TaskEventType, TaskEvent } from '../domain/task';
 import type { Assignment, Offer } from '../domain/marketplace';
 import type { User, CareContextMember } from '../domain/models';
 import type { PermissionReader } from '../permissions/authorize';
@@ -9,9 +9,9 @@ import { membershipId } from './store';
 import { ApiFailure } from '../shared/errors';
 
 export interface LifecycleSnapshot {
-  task: Task; assignment?: Assignment; offer?: Offer; backups: Offer[]; permissions: PermissionReader;
+  task: Task; assignment?: Assignment; offer?: Offer; backups: Offer[]; permissions: PermissionReader; targetOffer?: Offer;
 }
-export interface LifecycleChange { task: Task; assignment?: Assignment; offers: Offer[]; events: TaskEventType[] }
+export interface LifecycleChange { task: Task; assignment?: Assignment; offers: Offer[]; events: TaskEventType[]; metadata?: TaskEvent['metadata']; unchanged?: boolean }
 // Every lifecycle writer locks the Task, including discovery Offer/selection writers.
 // Queries and permission reads finish before writes; transaction retries revalidate all states.
 export class AssignmentRepository {
@@ -22,7 +22,7 @@ export class AssignmentRepository {
       member: async (id, uid) => (await tx.get(this.db.collection('care_context_members').doc(membershipId(id, uid)))).data() as CareContextMember | undefined,
     };
   }
-  async change(uid: string, target: { assignmentId: string } | { taskId: string }, mutate: (snapshot: LifecycleSnapshot) => Promise<LifecycleChange>) {
+  async change(uid: string, target: { assignmentId: string } | { taskId: string; offerId?: string }, mutate: (snapshot: LifecycleSnapshot) => Promise<LifecycleChange>) {
     const eventRefs = [this.db.collection('task_events').doc(), this.db.collection('task_events').doc()];
     return this.db.runTransaction(async tx => {
       let assignment: Assignment | undefined;
@@ -41,7 +41,9 @@ export class AssignmentRepository {
       const offer = assignment ? (await tx.get(this.db.collection('offers').doc(assignment.offerId))).data() as Offer | undefined : undefined;
       const active = await tx.get(this.db.collection('offers').where('taskId', '==', taskId).where('status', '==', 'ACTIVE').limit(401));
       if (active.size > 400) throw new ApiFailure(409, 'CONFLICT', 'Too many Offers for an atomic transition.');
-      const result = await mutate({ task, assignment, offer, backups: active.docs.map(doc => doc.data() as Offer), permissions: this.reader(tx) });
+      const targetOffer='offerId' in target && target.offerId ? (await tx.get(this.db.collection('offers').doc(target.offerId))).data() as Offer|undefined : undefined;
+      const result = await mutate({ task, assignment, offer, targetOffer, backups: active.docs.map(doc => doc.data() as Offer), permissions: this.reader(tx) });
+      if(result.unchanged)return result;
       const writePoints = await prepareTaskPoints(tx, task, result.task, result.assignment);
       const now = Timestamp.now();
       writePoints();
@@ -49,9 +51,9 @@ export class AssignmentRepository {
       if (result.assignment) tx.set(this.db.collection('assignments').doc(result.assignment.id), result.assignment);
       for (const changed of result.offers) tx.set(this.db.collection('offers').doc(changed.id), changed);
       result.events.forEach((type, index) => tx.create(eventRefs[index], { id: eventRefs[index].id, taskId, careContextId: task.careContextId,
-        actorId: uid, type, createdAt: now, ...(result.assignment ? { metadata: { assignmentId: result.assignment.id, offerId: result.assignment.offerId } } : {}) }));
+        actorId: uid, type, createdAt: now, ...(result.metadata ? {metadata:result.metadata} : result.assignment ? { metadata: { assignmentId: result.assignment.id, offerId: result.assignment.offerId } } : {}) }));
       result.events.forEach((type, index) => {
-        for (const notification of lifecycleNotifications(eventRefs[index].id, type, uid, task, now, result.assignment)) tx.create(this.db.collection('notifications').doc(notification.id), notification);
+        for (const notification of lifecycleNotifications(eventRefs[index].id, type, uid, task, now, result.assignment, result.metadata?.offerId)) tx.create(this.db.collection('notifications').doc(notification.id), notification);
       });
       return result;
     });

@@ -17,10 +17,10 @@ const api = createCareApi(request);
 export const { getCurrentUser, initializeUser, listCareContexts, createCareContext, getCareContext } = api;
 export const { createTaskDraft, updateTaskDraft, publishTask, getTask, listTasks, cancelTask, listLocations, createLocation } = createTaskApi(request);
 export const { generateTaskSuggestion, improveTaskSuggestion, summarizeTask } = createAiApi(request);
-export const { discoverTasks, getDiscoveredTask, offerHelp, withdrawOffer, getMyOffer, listOffers, selectOffer, getAssignment, updateRolePreference } = createMarketplaceApi(request);
+export const { discoverTasks, getDiscoveredTask, offerHelp, withdrawOffer, getMyOffer, listOffers, selectOffer, getAssignment, updateRolePreference, updateOfferAvailability } = createMarketplaceApi(request);
 
 import { createAssignmentApi } from './assignments';
-export const { getMyOffers, getMyAssignments, getExecutionDetails, confirmAssignment, declineAssignment, cancelAssignment, startTask, requestCompletion, confirmCompletion, disputeCompletion } = createAssignmentApi(request);
+export const { reconfirmAvailability, getMyOffers, getMyAssignments, getExecutionDetails, confirmAssignment, declineAssignment, cancelAssignment, startTask, requestCompletion, confirmCompletion, disputeCompletion } = createAssignmentApi(request);
 
 import { createSupportApi } from './support';
 export const { getCalendar, getNotifications, markNotificationRead, markAllNotificationsRead, submitReview, getHelperReviews, getHelperRatingSummary, getTaskTimeline, getVerificationStatus, getAssignmentPublicTask } = createSupportApi(request);

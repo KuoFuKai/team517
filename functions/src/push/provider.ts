@@ -4,7 +4,7 @@ import type { Notification } from '../domain/support';
 
 export interface PushPayload { notification: { title: string; body: string }; data: { notificationId: string; resourceType: string; resourceId: string } }
 export interface PushProvider { send(token: string, payload: PushPayload): Promise<'SENT' | 'INVALID' | 'FAILED'> }
-const important = new Set(['OFFER_RECEIVED', 'HELPER_SELECTED', 'ASSIGNMENT_CONFIRMED', 'ASSIGNMENT_DECLINED', 'ASSIGNMENT_CANCELLED', 'COMPLETION_REQUESTED', 'TASK_COMPLETED', 'COMPLETION_DISPUTED', 'NEW_MESSAGE']);
+const important = new Set(['OFFER_AVAILABILITY_UPDATED', 'OFFER_RECEIVED', 'HELPER_SELECTED', 'ASSIGNMENT_CONFIRMED', 'ASSIGNMENT_DECLINED', 'ASSIGNMENT_CANCELLED', 'COMPLETION_REQUESTED', 'TASK_COMPLETED', 'COMPLETION_DISPUTED', 'NEW_MESSAGE']);
 export function pushPayload(n: Notification): PushPayload | undefined {
   if (!important.has(n.type)) return;
   // Deliberately never copy persisted title/body or user-provided content.

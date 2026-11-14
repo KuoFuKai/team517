@@ -1,10 +1,15 @@
 import { z } from 'zod';
 const instant = z.iso.datetime({offset:true}).refine(value=>{const year=new Date(value).getUTCFullYear();return year>=1 && year<=9999;},'Choose a supported calendar year.');
-export const offerHelpSchema = z.object({ message: z.string().trim().max(1000).optional(), availableFrom: instant.optional(), availableUntil: instant.optional() }).strict().superRefine((value,ctx)=>{
+const pair=(value:{availableFrom?:string;availableUntil?:string},ctx:z.RefinementCtx)=>{
   if ((value.availableFrom === undefined) !== (value.availableUntil === undefined)) ctx.addIssue({code:'custom',path:['availableUntil'],message:'Supply both availability times, or omit both.'});
-  if (value.availableFrom && value.availableUntil && Date.parse(value.availableUntil) <= Date.parse(value.availableFrom)) ctx.addIssue({code:'custom',path:['availableUntil'],message:'Availability must end after it starts.'});
-});
-export const selectOfferSchema = z.object({ offerId: z.string().min(22).max(180).regex(/^[A-Za-z0-9_-]+$/) }).strict();
+  if(value.availableFrom && value.availableUntil && Date.parse(value.availableUntil)<=Date.parse(value.availableFrom))ctx.addIssue({code:'custom',path:['availableUntil'],message:'Availability must end after it starts.'});
+};
+export const offerHelpSchema=z.object({message:z.string().trim().max(1000).optional(),availableFrom:instant.optional(),availableUntil:instant.optional()}).strict().superRefine(pair);
+export const revisionSchema=z.number().int().min(0).max(1_000_000_000);
+export const updateAvailabilitySchema=z.object({expectedRevision:revisionSchema,availableFrom:instant.optional(),availableUntil:instant.optional()}).strict().superRefine(pair);
+export const reconfirmAvailabilitySchema=z.object({expectedRevision:revisionSchema}).strict();
+export const selectOfferSchema=z.object({offerId:z.string().min(22).max(180).regex(/^[A-Za-z0-9_-]+$/),availabilityRevision:revisionSchema.optional()}).strict();
+export const cancelAssignmentSchema=z.object({expectedAvailabilityRevision:revisionSchema.optional()}).strict();
 export const discoverySchema = z.object({
   latitude: z.coerce.number().min(-90).max(90).optional(), longitude: z.coerce.number().min(-180).max(180).optional(),
   radiusKm: z.coerce.number().positive().max(100).optional(),

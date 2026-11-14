@@ -6,7 +6,7 @@ import { initialized, managesTask, timelineScope } from '../permissions/support'
 import { ApiFailure } from '../shared/errors';
 export const notificationDto = (n: Notification): NotificationDto => ({ id: n.id, type: n.type, resourceType: n.resourceType, resourceId: n.resourceId, title: n.title, body: n.body, readAt: n.readAt?.toDate().toISOString(), createdAt: n.createdAt.toDate().toISOString() });
 export const reviewDto = (r: Review): ReviewDto => ({ id: r.id, rating: r.rating, comment: r.comment, reviewerLabel: 'Requester', createdAt: r.createdAt.toDate().toISOString() });
-const labels: Record<string, string> = { TASK_CREATED: 'Draft created', TASK_UPDATED: 'Draft updated', TASK_PUBLISHED: 'Task posted', TASK_CANCELLED: 'Task cancelled', OFFER_CREATED: 'Offer received', OFFER_WITHDRAWN: 'Offer withdrawn', HELPER_SELECTED: 'Helper selected', ASSIGNMENT_CONFIRMED: 'Assignment confirmed', ASSIGNMENT_DECLINED: 'Assignment declined', ASSIGNMENT_CANCELLED: 'Arrangement cancelled', TASK_STARTED: 'Task started', COMPLETION_REQUESTED: 'Completion requested', TASK_COMPLETED: 'Task completed', COMPLETION_DISPUTED: 'Completion disputed' };
+const labels: Record<string, string> = { OFFER_AVAILABILITY_UPDATED:'Helper updated availability', AVAILABILITY_RECONFIRMED:'Updated availability accepted', TASK_CREATED: 'Draft created', TASK_UPDATED: 'Draft updated', TASK_PUBLISHED: 'Task posted', TASK_CANCELLED: 'Task cancelled', OFFER_CREATED: 'Offer received', OFFER_WITHDRAWN: 'Offer withdrawn', HELPER_SELECTED: 'Helper selected', ASSIGNMENT_CONFIRMED: 'Assignment confirmed', ASSIGNMENT_DECLINED: 'Assignment declined', ASSIGNMENT_CANCELLED: 'Arrangement cancelled', TASK_STARTED: 'Task started', COMPLETION_REQUESTED: 'Completion requested', TASK_COMPLETED: 'Task completed', COMPLETION_DISPUTED: 'Completion disputed' };
 export class SupportService {
   constructor(private repo = new SupportRepository(), private market = new MarketplaceRepository()) {}
   async verification(uid: string): Promise<VerificationStatusDto> {
@@ -27,7 +27,7 @@ export class SupportService {
     const history = await this.repo.timeline(taskId);
     const items = history.items.filter(e => scope === 'CIRCLE' ||
       (e.createdAt.toMillis() >= own!.createdAt.toMillis() && !['TASK_CREATED', 'TASK_UPDATED'].includes(e.type) &&
-        (!['OFFER_CREATED', 'OFFER_WITHDRAWN', 'HELPER_SELECTED'].includes(e.type) || e.actorId === uid || e.metadata?.helperId === uid)));
+        (!['OFFER_AVAILABILITY_UPDATED','AVAILABILITY_RECONFIRMED','OFFER_CREATED', 'OFFER_WITHDRAWN', 'HELPER_SELECTED'].includes(e.type) || e.actorId === uid || e.metadata?.helperId === uid)));
     return { events: items.filter(e => labels[e.type]).reverse().map(e => ({ type: e.type, label: labels[e.type], createdAt: e.createdAt.toDate().toISOString() })), limit: 100, truncated: history.truncated };
   }
   async calendar(uid: string, query: CalendarQuery): Promise<CalendarDto> {

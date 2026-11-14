@@ -3,7 +3,7 @@ import type { Task } from '../domain/task';
 import type { Offer, Assignment } from '../domain/marketplace';
 import { ApiFailure } from '../shared/errors';
 
-export type MarketplaceAction = 'DISCOVER_TASK' | 'OFFER_HELP' | 'WITHDRAW_OFFER' | 'VIEW_OWN_OFFER' | 'VIEW_OFFERS' | 'SELECT_HELPER' | 'VIEW_ASSIGNMENT';
+export type MarketplaceAction = 'UPDATE_OFFER_AVAILABILITY' | 'DISCOVER_TASK' | 'OFFER_HELP' | 'WITHDRAW_OFFER' | 'VIEW_OWN_OFFER' | 'VIEW_OFFERS' | 'SELECT_HELPER' | 'VIEW_ASSIGNMENT';
 export const isOfferable = (task: Task) => Boolean(task.publishedAt) && ['OPEN', 'HAS_OFFERS'].includes(task.status);
 export async function authorizeMarketplace(reader: PermissionReader, uid: string, action: MarketplaceAction,
   resource: { task?: Task; offer?: Offer; assignment?: Assignment } = {}) {
@@ -17,7 +17,7 @@ export async function authorizeMarketplace(reader: PermissionReader, uid: string
   }
   const { task, offer, assignment } = resource;
   if (!task) denied();
-  if (action === 'WITHDRAW_OFFER' || action === 'VIEW_OWN_OFFER') {
+  if (action === 'UPDATE_OFFER_AVAILABILITY' || action === 'WITHDRAW_OFFER' || action === 'VIEW_OWN_OFFER') {
     if (!offer || offer.helperId !== uid || offer.taskId !== task!.id) denied();
     return;
   }

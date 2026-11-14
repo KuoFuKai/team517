@@ -1,0 +1,10 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {updateAvailabilitySchema,reconfirmAvailabilitySchema} from '../src/validation/marketplace';
+import {pushPayload} from '../src/push/provider';
+import {Timestamp} from 'firebase-admin/firestore';
+import {lifecycleNotifications} from '../src/support/notifications';
+import type {Task} from '../src/domain/task';
+import type {Assignment} from '../src/domain/marketplace';
+test('Availability mutations require an explicit bounded revision and valid paired instants; omission means unspecified',()=>{assert.equal(updateAvailabilitySchema.safeParse({expectedRevision:0}).success,true);for(const body of [{},{expectedRevision:-1},{expectedRevision:0.1},{expectedRevision:1,availableFrom:'2026-11-21T10:00:00Z'},{expectedRevision:1,message:'not an Offer editor'},{expectedRevision:1,availableFrom:null,availableUntil:null}])assert.equal(updateAvailabilitySchema.safeParse(body).success,false);assert.equal(reconfirmAvailabilitySchema.safeParse({expectedRevision:3}).success,true);assert.equal(reconfirmAvailabilitySchema.safeParse({expectedRevision:3,confirmed:true}).success,false);});
+test('Only selected pending availability updates notify; OS payload copies no private title or times',()=>{const t={id:'task',createdBy:'owner'} as Task,a={id:'assignment',offerId:'selected',helperId:'helper',status:'PENDING_CONFIRMATION'} as Assignment;assert.equal(lifecycleNotifications('event','OFFER_AVAILABILITY_UPDATED','backup',t,Timestamp.now(),a,'backup-offer').length,0);const [n]=lifecycleNotifications('event','OFFER_AVAILABILITY_UPDATED','helper',t,Timestamp.now(),a,'selected');assert.equal(n.recipientId,'owner');assert.equal(n.resourceType,'ASSIGNMENT');const payload=pushPayload({...n,title:'PRIVATE NAME',body:'PRIVATE 10:30 address'});assert.equal(payload?.notification.body,'You have a task update.');assert.ok(!JSON.stringify(payload).includes('PRIVATE'));});

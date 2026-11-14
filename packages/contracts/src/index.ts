@@ -96,21 +96,26 @@ export interface AiTaskSummaryDto {
 export type OfferStatus = 'ACTIVE' | 'WITHDRAWN' | 'SELECTED' | 'NOT_SELECTED' | 'EXPIRED';
 export type OfferAvailabilityFit = 'COVERS_TASK' | 'PARTIAL_OVERLAP' | 'CONFLICT' | 'NOT_PROVIDED';
 export interface OfferAvailabilityDto { availableFrom?: string; availableUntil?: string; availabilityFit?: OfferAvailabilityFit }
-export interface TaskOfferAvailabilityDto extends OfferAvailabilityDto { taskStartAt?: string; taskEndAt?: string }
+export interface TaskOfferAvailabilityDto extends OfferAvailabilityDto { availabilityRevision?:number; taskStartAt?: string; taskEndAt?: string }
 export interface OfferHelpRequest { message?: string; availableFrom?: string; availableUntil?: string }
-export interface SelectOfferRequest { offerId: string }
+export interface SelectOfferRequest { offerId: string; availabilityRevision?: number }
+export interface UpdateOfferAvailabilityRequest { expectedRevision: number; availableFrom?: string; availableUntil?: string }
+export interface AvailabilityReviewDto { selected: OfferAvailabilityDto; current: OfferAvailabilityDto; selectedRevision: number; currentRevision: number; requiresRequesterReconfirmation: boolean }
+export interface UpdateOfferAvailabilityResponse { offer: OfferDto; assignment?: AssignmentDto }
 export interface OfferDto extends OfferAvailabilityDto {
+  availabilityRevision?: number;
   id: string; taskId: string; helperId: string; message?: string; status: OfferStatus;
   createdAt: string; updatedAt: string; assignmentId?: string;
 }
 export interface OfferSummaryDto extends OfferDto { verificationStatus: VerificationStatus; averageRating?: number; reviewCount?: number; trust?: HelperTrustSummaryDto; relationship?: 'CARE_CIRCLE' | 'EXTERNAL' }
 export interface AssignmentDto {
+  availabilityReview?: AvailabilityReviewDto;
   id: string; taskId: string; offerId: string; helperId: string; selectedBy: string;
   status: AssignmentStatus; selectedAt: string; confirmedAt?: string; startedAt?: string; completionRequestedAt?: string; completedAt?: string; createdAt: string; updatedAt: string;
 }
 export interface TaskOfferStateDto { id: string; status: TaskStatus; offerCount: number; activeAssignmentId?: string }
 export interface OfferListDto { offers: OfferSummaryDto[]; task: TaskOfferStateDto }
-export interface MyOfferDto { offer: OfferDto | null; taskStatus: TaskStatus }
+export interface MyOfferDto { taskTime?: {startAt?:string;endAt?:string}; offer: OfferDto | null; taskStatus: TaskStatus }
 export interface SelectOfferResponse { task: TaskOfferStateDto; assignment: AssignmentDto }
 export interface TaskDiscoveryQuery {
   latitude?: number; longitude?: number; radiusKm?: number;
@@ -142,7 +147,7 @@ export interface DisputeCompletionRequest { reason?: string }
 export interface CalendarQuery { start: string; end: string }
 export interface CalendarTaskDto { taskId: string; title?: string; startAt: string; endAt: string; status: TaskStatus; roleInTask: 'REQUESTER' | 'HELPER'; assignmentId?: string; helperId?: string }
 export interface CalendarDto { tasks: CalendarTaskDto[]; truncated: boolean; limit: number }
-export type NotificationType = 'OFFER_RECEIVED' | 'HELPER_SELECTED' | 'ASSIGNMENT_CONFIRMED' | 'ASSIGNMENT_DECLINED' | 'ASSIGNMENT_CANCELLED' | 'TASK_STARTED' | 'COMPLETION_REQUESTED' | 'TASK_COMPLETED' | 'COMPLETION_DISPUTED' | 'NEW_MESSAGE';
+export type NotificationType = 'OFFER_AVAILABILITY_UPDATED' | 'OFFER_RECEIVED' | 'HELPER_SELECTED' | 'ASSIGNMENT_CONFIRMED' | 'ASSIGNMENT_DECLINED' | 'ASSIGNMENT_CANCELLED' | 'TASK_STARTED' | 'COMPLETION_REQUESTED' | 'TASK_COMPLETED' | 'COMPLETION_DISPUTED' | 'NEW_MESSAGE';
 export interface NotificationDto { id: string; type: NotificationType; resourceType: 'TASK' | 'ASSIGNMENT' | 'CONVERSATION'; resourceId: string; title: string; body: string; readAt?: string; createdAt: string }
 export interface NotificationsDto { notifications: NotificationDto[]; limit: number; truncated: boolean }
 export interface RegisterDeviceTokenRequest { token: string; platform: 'android'; deviceId?: string; appVersion?: string; deliveryEnabled?: boolean }
@@ -155,7 +160,7 @@ export interface HelperReviewsDto { reviews: ReviewDto[]; summary: HelperRatingS
 export interface TaskTimelineEventDto { type: string; label: string; createdAt: string }
 export interface TaskTimelineDto { events: TaskTimelineEventDto[]; limit: number; truncated: boolean }
 export interface VerificationStatusDto { status: VerificationStatus; canDiscover: boolean; message: string }
-export interface AssignmentPublicTaskDto { taskId: string; title?: string; publicInstructions?: string; compensationType?: TaskCompensationType; pointReward?: number }
+export interface AssignmentPublicTaskDto { startAt?:string;endAt?:string; taskId: string; title?: string; publicInstructions?: string; compensationType?: TaskCompensationType; pointReward?: number }
 
 export type CommunityVisibility = 'PUBLIC_VERIFIED' | 'CARE_CIRCLE';
 export type CommunityPostType = 'NEED' | 'RESOURCE' | 'SHARE';

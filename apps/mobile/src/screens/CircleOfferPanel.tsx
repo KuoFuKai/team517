@@ -1,3 +1,4 @@
+import { EditOfferAvailability } from './EditOfferAvailability';
 import { OfferForm } from '../components/OfferForm';
 import { OfferAvailability } from '../components/OfferAvailability';
 import { MessageEntry } from './MessageEntry';
@@ -29,6 +30,7 @@ export function CircleOfferPanel({ task, disabled }: { task: TaskDetailDto; disa
     <Text>Offer support in your circle</Text>
     {['OPEN','HAS_OFFERS'].includes(mine?.taskStatus ?? task.status) && !['ACTIVE','SELECTED'].includes(mine?.offer?.status ?? '') && <OfferForm task={task} existing={mine?.offer} disabled={disabled || busy} submit={body=>run(()=>api.offerHelp(task.id,body))}/>}
     {mine?.offer && <OfferAvailability value={mine.offer}/>}
+      {mine?.offer?.status==='ACTIVE' && <EditOfferAvailability taskId={task.id} task={task} saved={async()=>{await run(async()=>{});}}/>}
     <Button disabled={disabled || busy} title="Check my Offer" onPress={() => void run(async () => {})} />
     {mine?.offer && <MessageEntry taskId={task.id} />}
     {mine && <Text>Your Offer: {mine.offer ? statusLabel(mine.offer.status) : 'No offer yet'} · {statusLabel(mine.taskStatus)}</Text>}

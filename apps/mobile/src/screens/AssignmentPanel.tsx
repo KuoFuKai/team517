@@ -1,3 +1,6 @@
+import {EditOfferAvailability} from './EditOfferAvailability';
+import {OfferAvailability} from '../components/OfferAvailability';
+import {taskWhenLabel} from '../utils/design-presentation';
 import { demoPerson } from '../demo/maker-day3';
 import { SuccessScreen } from '../components/Feedback';
 import { Disclosure, TonePanel } from '../components/Details';
@@ -14,7 +17,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import type { AssignmentDto, AssignmentExecutionDto, AssignmentPublicTaskDto } from '@team517/contracts';
 import * as api from '../api/client';
 import { auth } from '../auth/firebase';
-export function AssignmentPanel({ assignment, refresh }: { assignment: AssignmentDto; refresh?: () => Promise<void> }) {
+export function AssignmentPanel({ assignment, refresh,chooseAnother }: { assignment: AssignmentDto; refresh?: () => Promise<void>; chooseAnother?:()=>Promise<void> }) {
   const [confirmedFeedback, setConfirmedFeedback] = useState(false);
   const [publicTask, setPublicTask] = useState<AssignmentPublicTaskDto | null>(null);
   const [current, setCurrent] = useState(assignment);
@@ -26,6 +29,10 @@ export function AssignmentPanel({ assignment, refresh }: { assignment: Assignmen
   useEffect(() => { let active = true; setPublicTask(null); void api.getAssignmentPublicTask(assignment.id).then(t => { if (active) setPublicTask(t); }).catch(() => {}); return () => { active = false; }; }, [assignment.id]);
   useEffect(() => { const listener = AppState.addEventListener('change', state => { if (state !== 'active') { executionEpoch.current++; setExecution(null); } }); return () => listener.remove(); }, []);
   const helper = current.helperId === auth.currentUser?.uid;
+  const review=current.availabilityReview;
+  const [helperName,setHelperName]=useState(personLabel(assignment.helperId));
+  useEffect(()=>{if(helper)return;let active=true;void api.getHelperTrustProfile(assignment.helperId,assignment.taskId).then(p=>{if(active)setHelperName(p.displayName);}).catch(()=>{});return()=>{active=false;};},[assignment.id,helper]);
+  useEffect(()=>{let active=true;const load=()=>{if(lock.current || AppState.currentState!=='active')return;void api.getAssignment(assignment.id).then(value=>{if(active)setCurrent(value);}).catch(()=>{});};load();const timer=setInterval(load,10000);const focus=AppState.addEventListener('change',state=>{if(state==='active')load();});return()=>{active=false;clearInterval(timer);focus.remove();};},[assignment.id]);
   const run = async (work: () => Promise<AssignmentDto>, refreshAfter = true) => {
     if (lock.current) return;
     lock.current = true; executionEpoch.current++; setBusy(true); setError(''); setExecution(null);
@@ -37,8 +44,10 @@ export function AssignmentPanel({ assignment, refresh }: { assignment: Assignmen
   if (confirmedFeedback) return <SuccessScreen header="Task confirmed" title="You confirmed the task" message="Your arrangement is confirmed. Arrival details are now available through the task." action="View arrangement" done={() => setConfirmedFeedback(false)} />;
   return <>
     <StatusBadge status={current.status} />
-    <PageHeading title={publicTask?.title || 'Your arrangement'} /><Text>{publicTask?.publicInstructions}</Text>
+    <PageHeading title={publicTask?.title || 'Your arrangement'} /><Text>{publicTask?.publicInstructions}</Text>{publicTask?.startAt && publicTask?.endAt && <Text>{taskWhenLabel(publicTask.startAt,publicTask.endAt)}</Text>}
     {publicTask?.compensationType === 'POINTS' && <Card><Text>Reward: {publicTask.pointReward?.toLocaleString()} points</Text>{current.status === 'COMPLETED' && <Text>{helper ? 'Completion approved. Open My points to see your latest balance and reward activity.' : 'Completion approved. The reserved task reward has been resolved.'}</Text>}{current.status === 'DISPUTED' && <Text>The reward stays reserved while the issue awaits resolution.</Text>}</Card>}
+    {review?.requiresRequesterReconfirmation && <Card><Text accessibilityRole="header">Availability changed</Text><Text>{helper?'The requester needs to review your updated availability.':helperName+' updated availability.'}</Text><Text>Previously selected</Text><Text>{review.selected.availableFrom && review.selected.availableUntil?taskWhenLabel(review.selected.availableFrom,review.selected.availableUntil):'Availability not provided'}</Text><Text>Current availability</Text><OfferAvailability value={review.current}/>{helper ? <Text>You can confirm after the requester reviews this change.</Text> : <><Button variant="primary" title={'Keep '+helperName+' selected'} disabled={busy} onPress={()=>void run(async()=>{await api.reconfirmAvailability(current.id,review.currentRevision);return api.getAssignment(current.id);})}/><Button title="Choose another helper" disabled={busy} onPress={()=>void run(async()=>{const value=await api.cancelAssignment(current.id,{expectedAvailabilityRevision:review.currentRevision});await chooseAnother?.();return value;})}/><MessageEntry taskId={current.taskId} otherUserId={current.helperId}/></>}</Card>}
+    {helper && current.status==='PENDING_CONFIRMATION' && <EditOfferAvailability taskId={current.taskId} task={publicTask ?? undefined} saved={async()=>{setExecution(null);setCurrent(await api.getAssignment(current.id));await refresh?.();}}/>}
     <TonePanel title="What happens next">{assignmentNextAction(current.status, helper)}</TonePanel>
     <Card><Text style={{ fontWeight: '600' }}>{personLabel(current.helperId)}</Text><Text style={{ fontSize: 13.5 }}>{demoPerson(current.selectedBy) ? `Chosen by ${demoPerson(current.selectedBy)!.name}` : `Selected ${dateLabel(current.selectedAt)}`}</Text></Card><Disclosure title="Arrangement history">
     {current.confirmedAt && <Text>Confirmed: {dateLabel(current.confirmedAt)}</Text>}
@@ -46,7 +55,7 @@ export function AssignmentPanel({ assignment, refresh }: { assignment: Assignmen
     {current.completedAt && <Text>Completed: {dateLabel(current.completedAt)}</Text>}
     </Disclosure>
     {helper && current.status === 'PENDING_CONFIRMATION' && <>
-      {button('Confirm', () => api.confirmAssignment(current.id))}
+      {!review?.requiresRequesterReconfirmation && button('Confirm', () => api.confirmAssignment(current.id))}
       {button('Decline', () => api.declineAssignment(current.id))}
     </>}
     {((!helper && current.status === 'PENDING_CONFIRMATION') || current.status === 'CONFIRMED') && button('Cancel arrangement · keep Task needed', () => api.cancelAssignment(current.id))}

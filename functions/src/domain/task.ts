@@ -37,13 +37,13 @@ export interface Task {
   updatedAt: Timestamp;
   publishedAt?: Timestamp;
 }
-export type TaskEventType = 'TASK_CREATED' | 'TASK_UPDATED' | 'TASK_PUBLISHED' | 'TASK_CANCELLED' | 'OFFER_CREATED' | 'OFFER_WITHDRAWN' | 'HELPER_SELECTED' | 'ASSIGNMENT_CONFIRMED' | 'ASSIGNMENT_DECLINED' | 'ASSIGNMENT_CANCELLED' | 'TASK_STARTED' | 'COMPLETION_REQUESTED' | 'TASK_COMPLETED' | 'COMPLETION_DISPUTED';
+export type TaskEventType = 'OFFER_AVAILABILITY_UPDATED' | 'AVAILABILITY_RECONFIRMED' | 'TASK_CREATED' | 'TASK_UPDATED' | 'TASK_PUBLISHED' | 'TASK_CANCELLED' | 'OFFER_CREATED' | 'OFFER_WITHDRAWN' | 'HELPER_SELECTED' | 'ASSIGNMENT_CONFIRMED' | 'ASSIGNMENT_DECLINED' | 'ASSIGNMENT_CANCELLED' | 'TASK_STARTED' | 'COMPLETION_REQUESTED' | 'TASK_COMPLETED' | 'COMPLETION_DISPUTED';
 export interface TaskEvent {
   id: string;
   taskId: string;
   careContextId: string;
   actorId: string;
   type: TaskEventType;
-  metadata?: { changedFields?: string[]; offerId?: string; helperId?: string; assignmentId?: string };
+  metadata?: { oldRevision?: number; newRevision?: number; semanticChange?: string; changedFields?: string[]; offerId?: string; helperId?: string; assignmentId?: string };
   createdAt: Timestamp;
 }

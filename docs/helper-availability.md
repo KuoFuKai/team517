@@ -41,3 +41,10 @@ Future Helper availability profiles may support recurring windows, blackout date
 
 
 Final acceptance notes: supported absolute years are checked before Firestore; explicit Use task times resets absolute provenance across repeated DST minutes/seconds, while untouched values retain precision. Legacy unspecified reactivation stays unspecified until the Helper explicitly adds a pair. These are MEDIUM edge/compatibility corrections within new availability behavior. Final native Helper confirmation and both FCM routes passed; physical8A/8B/8C remain queued. [Evidence](native-evidence/2026-11-14-availability/README.md).
+
+
+## Sprint8D engineering checkpoint
+
+Active and current selected/pending Offers now have a focused revision-checked availability update, with explicit clearing to unspecified. The existing Assignment state remains PENDING_CONFIRMATION; an additive accepted revision/snapshot and requiresRequesterReconfirmation flag gates Helper confirmation. Every genuinely changed non-covering pending window requires review; covering updates (including restored coverage) advance the accepted snapshot and notify without forced review. Neither action changes Task time, Points or Trust. Legacy revision0/snapshots work without a migration.
+
+Requester Keep accepts the exact current revision but does not confirm the Helper. Choose another releases only the expected still-pending selection through existing cancellation, then uses normal backup selection. Confirmed/in-progress/history availability is not editable. Same-window retries are read-only no-ops; stale differing edits/reviews conflict. Notifications use existing persistent Assignment routing and generic FCM; raw times stay only in authorized Offer/review DTOs, not events/public profiles. Foreground comparison/review refresh is10seconds plus resume/manual refresh, not WebSockets or automatic matching. Source unit/client/focused transaction validation precedes cloud/native acceptance; this checkpoint is not a physical pass.

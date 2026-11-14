@@ -24,7 +24,8 @@ export class MarketplaceService {
       if (existing && !['WITHDRAWN', 'NOT_SELECTED'].includes(existing.status)) throw new ApiFailure(409, 'OFFER_NOT_ACTIVE', 'This offer cannot be reactivated.');
       if (task.offerCount >= 100) throw new ApiFailure(409, 'CONFLICT', 'This task has reached its offer limit.');
       const now = Timestamp.now();
-      const offer: Offer = { ...(existing ?? {}), id, taskId, careContextId: task.careContextId, helperId: uid, status: 'ACTIVE',
+      const availabilityChanged=Boolean(existing && body.availableFrom && body.availableUntil && (existing.availableFrom?.toMillis()!==Date.parse(body.availableFrom) || existing.availableUntil?.toMillis()!==Date.parse(body.availableUntil)));
+      const offer: Offer = { availabilityRevision:0, ...(existing ?? {}), id, taskId, careContextId: task.careContextId, helperId: uid, status: 'ACTIVE', ...(availabilityChanged?{availabilityRevision:(existing?.availabilityRevision ?? 0)+1,availabilityChangedAt:now}:{}),
         createdAt: existing?.createdAt ?? now, updatedAt: now, ...(body.message !== undefined ? { message: body.message } : {}), ...(body.availableFrom && body.availableUntil ? {availableFrom:Timestamp.fromDate(new Date(body.availableFrom)),availableUntil:Timestamp.fromDate(new Date(body.availableUntil))} : {}) };
       return { task: { ...task, status: 'HAS_OFFERS', offerCount: task.offerCount + 1 }, offer, event: 'OFFER_CREATED' };
     });
@@ -48,7 +49,7 @@ export class MarketplaceService {
     const offer = await this.repo.offer(offerId(taskId, uid));
     await authorizeMarketplace(this.repo.reader(), uid, offer ? 'VIEW_OWN_OFFER' : 'OFFER_HELP', { task, offer });
     if (!offer && !isOfferable(task)) throw new ApiFailure(409, 'TASK_NOT_OFFERABLE', 'This task is not accepting offers.');
-    return { offer: offer ? { ...offerDto(offer,task), ...(offer.status === 'SELECTED' && task.activeAssignmentId ? { assignmentId: task.activeAssignmentId } : {}) } : null, taskStatus: task.status };
+    return { taskTime:{startAt:task.startAt?.toDate().toISOString(),endAt:task.endAt?.toDate().toISOString()}, offer: offer ? { ...offerDto(offer,task), ...(offer.status === 'SELECTED' && task.activeAssignmentId ? { assignmentId: task.activeAssignmentId } : {}) } : null, taskStatus: task.status };
   }
   async listOffers(uid: string, taskId: string): Promise<OfferListDto> {
     const task = await this.task(taskId);
@@ -60,7 +61,7 @@ export class MarketplaceService {
       return {...offerDto(offer,task),verificationStatus:trust.verificationStatus,reviewCount:trust.reviewCount,...(trust.averageRating!==undefined?{averageRating:trust.averageRating}:{}),trust,relationship};
     })};
   }
-  async select(uid: string, taskId: string, selectedOfferId: string): Promise<SelectOfferResponse> {
+  async select(uid: string, taskId: string, selectedOfferId: string, expectedRevision?:number): Promise<SelectOfferResponse> {
     const result = await this.repo.change(taskId, uid, async (task, reads, assignmentId) => {
       await authorizeMarketplace(reads.permissions, uid, 'SELECT_HELPER', { task });
       if (task.activeAssignmentId) throw new ApiFailure(409, 'ACTIVE_ASSIGNMENT_EXISTS', 'An Assignment is already pending.');
@@ -68,10 +69,11 @@ export class MarketplaceService {
       const offer = await reads.offer(selectedOfferId);
       if (!offer || offer.taskId !== taskId || offer.careContextId !== task.careContextId) throw new ApiFailure(404, 'OFFER_NOT_FOUND', 'Offer not found for this task.');
       if (offer.status !== 'ACTIVE') throw new ApiFailure(409, 'OFFER_NOT_ACTIVE', 'Select an active offer.');
+      if((expectedRevision!==undefined && expectedRevision!==(offer.availabilityRevision ?? 0)) || (expectedRevision===undefined && offer.availabilityChangedAt))throw new ApiFailure(409,'AVAILABILITY_STALE','Availability changed. Refresh and review the latest offer before selecting.');
       await authorizeMarketplace(reads.permissions, offer.helperId, 'OFFER_HELP', { task });
       const now = Timestamp.now();
       const assignment: Assignment = { id: assignmentId, taskId, careContextId: task.careContextId, offerId: offer.id, helperId: offer.helperId, selectedBy: uid,
-        status: 'PENDING_CONFIRMATION', selectedAt: now, createdAt: now, updatedAt: now };
+        selectedAvailabilityRevision:offer.availabilityRevision ?? 0, ...(offer.availableFrom && offer.availableUntil ? {selectedAvailableFrom:offer.availableFrom,selectedAvailableUntil:offer.availableUntil}:{}), requiresRequesterReconfirmation:false, status: 'PENDING_CONFIRMATION', selectedAt: now, createdAt: now, updatedAt: now };
       return { task: { ...task, status: 'AWAITING_CONFIRMATION', activeAssignmentId: assignmentId },
         offer: { ...offer, status: 'SELECTED', updatedAt: now }, assignment, event: 'HELPER_SELECTED' };
     });
@@ -82,6 +84,6 @@ export class MarketplaceService {
     if (!assignment) throw new ApiFailure(404, 'NOT_FOUND', 'Assignment not found.');
     const task = await this.task(assignment.taskId);
     await authorizeMarketplace(this.repo.reader(), uid, 'VIEW_ASSIGNMENT', { task, assignment });
-    return assignmentDto(assignment);
+    return assignmentDto(assignment,await this.repo.offer(assignment.offerId),task);
   }
 }

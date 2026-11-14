@@ -16,10 +16,11 @@ function requirePair(s: LifecycleSnapshot, assignmentStatus: Assignment['status'
 function clearRelationship(task: Task): Task { const { activeAssignmentId: _id, ...rest } = task; return rest; }
 export class AssignmentService {
   constructor(private repo = new AssignmentRepository()) {}
-  async transition(uid: string, id: string, operation: Transition, reason?: string) {
+  async transition(uid: string, id: string, operation: Transition, reason?: string, expectedAvailabilityRevision?:number) {
     const result = await this.repo.change(uid, { assignmentId: id }, async s => {
       const side = await authorizeAssignment(s.permissions, uid, actions[operation], s.task, s.assignment);
       if (s.task.compensationType === 'POINTS' && operation === 'confirm-completion' && s.task.status === 'COMPLETED' && s.assignment?.status === 'COMPLETED' && s.task.activeAssignmentId === s.assignment.id) return {task:s.task,assignment:s.assignment,offers:[],events:[]};
+      if(expectedAvailabilityRevision!==undefined){requirePair(s,'PENDING_CONFIRMATION','AWAITING_CONFIRMATION','ASSIGNMENT_NOT_CANCELLABLE');if(expectedAvailabilityRevision!==(s.offer?.availabilityRevision ?? 0))throw new ApiFailure(409,'AVAILABILITY_STALE','Review the latest availability before changing your selection.');}
       const now = Timestamp.now();
       const assignment = { ...s.assignment!, updatedAt: now };
       const selected = { ...s.offer!, updatedAt: now };
@@ -27,6 +28,7 @@ export class AssignmentService {
       const result = (status: Assignment['status'], taskStatus: Task['status'], event: LifecycleChange['events'][number], offers: Offer[] = []): LifecycleChange => ({ task: { ...s.task, status: taskStatus }, assignment: { ...assignment, status }, offers, events: [event] });
       if (operation === 'confirm') {
         requirePair(s, 'PENDING_CONFIRMATION', 'AWAITING_CONFIRMATION', 'ASSIGNMENT_NOT_CONFIRMABLE');
+        if(s.assignment?.requiresRequesterReconfirmation)throw new ApiFailure(409,'REQUESTER_RECONFIRMATION_REQUIRED','The requester needs to review your updated availability before you confirm.');
         const changed = result('CONFIRMED', 'ARRANGED', 'ASSIGNMENT_CONFIRMED', closeBackups());
         changed.assignment!.confirmedAt = now; changed.task.offerCount = 1; return changed;
       }
@@ -79,7 +81,7 @@ export class AssignmentService {
   async publicTask(uid: string, id: string) {
     return this.repo.view(id, async (task, assignment, _location, reader) => {
       await authorizeAssignment(reader, uid, 'VIEW_ASSIGNMENT', task, assignment);
-      return { taskId: task.id, title: task.title, publicInstructions: task.publicInstructions, compensationType: task.compensationType, ...(task.compensationType === 'POINTS' ? {pointReward: task.pointReward} : {}) };
+      return { startAt:task.startAt?.toDate().toISOString(),endAt:task.endAt?.toDate().toISOString(), taskId: task.id, title: task.title, publicInstructions: task.publicInstructions, compensationType: task.compensationType, ...(task.compensationType === 'POINTS' ? {pointReward: task.pointReward} : {}) };
     });
   }
   async execution(uid: string, id: string): Promise<AssignmentExecutionDto> {
@@ -95,7 +97,7 @@ export class AssignmentService {
   }
   async myAssignments(uid: string) {
     const list = await this.repo.mine<Assignment>('assignments', uid);
-    return { assignments: list.items.map(assignmentDto), limit: 50, truncated: list.truncated };
+    return { assignments: list.items.map(a=>assignmentDto(a)), limit: 50, truncated: list.truncated };
   }
   async myOffers(uid: string) {
     const list = await this.repo.mine<Offer>('offers', uid);

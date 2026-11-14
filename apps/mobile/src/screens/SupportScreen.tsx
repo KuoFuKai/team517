@@ -75,7 +75,7 @@ export function SupportScreen({ mode, back, onNotificationsLoaded, pushId, consu
   if (conversationId) return <ConversationScreen id={conversationId} backLabel="Back to notifications" back={() => setConversationId(null)} />;
   if (offersVisible && task) return <OffersWorkspace task={task} taskId={task.id} back={() => setOffersVisible(false)} />;
   if (task || assignment) return <>
-    {assignment ? <><AssignmentPanel key={assignment.id} assignment={assignment} />{task && <Button title="View offers" onPress={() => setOffersVisible(true)} />}</> : task && <TaskDetailScreen task={task} locations={taskLocations} busy={busy} back={() => { setTask(null); setAssignment(null); }} viewOffers={() => setOffersVisible(true)} />}
+    {assignment ? <><AssignmentPanel key={assignment.id} assignment={assignment} chooseAnother={async()=>setOffersVisible(true)} />{task && <Button title="View offers" onPress={() => setOffersVisible(true)} />}</> : task && <TaskDetailScreen task={task} locations={taskLocations} busy={busy} back={() => { setTask(null); setAssignment(null); }} viewOffers={() => setOffersVisible(true)} />}
     {error ? <ErrorState message={error} /> : null}
   </>;
   const groups = groupCalendarTasks(calendar?.tasks ?? []);

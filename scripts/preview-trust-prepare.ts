@@ -25,7 +25,7 @@ async function main(){
  for(let i=0;i<stories.length;i++){
   const [name,title,rating,comment]=stories[i];let task=await getTask('history-'+i,title);const candidate=createMarketplaceApi(actors[name]),execution=createAssignmentApi(actors[name]);
   if(task.status==='DRAFT')task=await tasks.publishTask(task.id);
-  let assignmentId=task.activeAssignmentId;
+  let assignmentId=(await market.listOffers(task.id)).task.activeAssignmentId;
   if(!assignmentId){assert.ok(['OPEN','HAS_OFFERS'].includes(task.status),'History is never rewound.');const previous=(await candidate.getMyOffer(task.id)).offer;assert.ok(!previous || previous.status==='ACTIVE','Do not reactivate withdrawn history.');const offer=previous ?? await candidate.offerHelp(task.id,{message:'I can help with this visit.'});assignmentId=(await market.selectOffer(task.id,offer.id)).assignment.id;}
   let a=await market.getAssignment(assignmentId);assert.equal(a.helperId,'team517_preview_'+name);
   if(a.status==='PENDING_CONFIRMATION')a=await execution.confirmAssignment(a.id);

@@ -30,7 +30,8 @@ export function OffersWorkspace({taskId,task:taskDetails,back}:{taskId:string;ta
  useEffect(()=>{void run(load);},[taskId]);
  const canSelect=(offer:OfferSummaryDto)=>offer.status==='ACTIVE' && !assignment && data?.task.status==='HAS_OFFERS' && !data.task.activeAssignmentId;
  const requestSelect=(offer:OfferSummaryDto)=>{setError('');setConfirmId(offer.id);};
- const actions=(offer:OfferSummaryDto)=><ResponsiveActions>{['ACTIVE','SELECTED'].includes(offer.status) && <MessageEntry taskId={taskId} otherUserId={offer.helperId}/>} {canSelect(offer) && <Button title={'Select '+helperName(offer)} variant="primary" disabled={busy} onPress={()=>requestSelect(offer)}/>}</ResponsiveActions>;
+ const actions=(offer:OfferSummaryDto)=><ResponsiveActions>{['ACTIVE','SELECTED'].includes(offer.status) && <MessageEntry taskId={taskId} otherUserId={offer.helperId}/>}
+ {canSelect(offer) && <Button title={'Select '+helperName(offer)} variant="primary" disabled={busy} onPress={()=>requestSelect(offer)}/>}</ResponsiveActions>;
  const choosing=data?.offers.find(o=>o.id===confirmId),copy=choosing?selectionCopy(helperName(choosing)):null;
  const confirmation=choosing && copy ? <ConfirmationSheet title={copy.title} message={copy.message} confirmLabel={copy.confirmLabel} dismissLabel="Cancel" dismissAccessibilityLabel="Cancel helper selection" confirmVariant="primary" busy={busy} error={error} dismiss={()=>{setConfirmId(null);setError('');}} confirm={()=>void run(async()=>{const result=await api.selectOffer(taskId,choosing.id);setAssignment(result.assignment);setConfirmId(null);setProfileId(null);setSelectedId(null);await load();})}/> : null;
  const list=(offers:OfferSummaryDto[])=>offers.map(offer=><Card key={offer.id}><View style={{flexDirection:'row',gap:12,alignItems:'flex-start'}}><Avatar label={helperName(offer)}/><Text accessibilityRole="header" style={{flex:1,fontSize:22,lineHeight:30}}>{helperName(offer)}</Text></View>

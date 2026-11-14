@@ -50,7 +50,7 @@ test('Withdraw/reactivate retains saved availability and timestamps; explicit pa
  const repeated=(await call(s.helper,'post',path,{})).body;assert.equal(repeated.id,initial.id);assert.equal(repeated.createdAt,initial.createdAt);assert.equal(repeated.availableFrom,initial.availableFrom);assert.equal(repeated.availabilityFit,'PARTIAL_OVERLAP');
  await call(s.helper,'post',path+'/mine/withdraw');
  const changed=(await call(s.helper,'post',path,{availableFrom:'2026-12-01T16:00:00Z',availableUntil:'2026-12-01T17:00:00Z'})).body;assert.equal(changed.id,initial.id);assert.equal(changed.availabilityFit,'CONFLICT');
- const list=(await call(s.owner,'get',path)).body;assert.equal(list.offers.length,1);assert.equal(list.task.offerCount,1);
+ const list=(await call(s.owner,'get',path)).body;assert.equal(list.offers.length,1);assert.equal(list.task.offerCount,1);const legacy=(await call(s.backup,'post',path,{})).body;await call(s.backup,'post',path+'/mine/withdraw');const legacyAgain=(await call(s.backup,'post',path,{})).body;assert.equal(legacyAgain.id,legacy.id);assert.equal(legacyAgain.availabilityFit,'NOT_PROVIDED');assert.equal(legacyAgain.availableFrom,undefined);
 });
 test('All compensation types allow conflict selection, retain backups and require separate confirmation; Points settles normally',async()=>{
  for(const type of ['VOLUNTEER','POINTS','PAID']){

@@ -8,7 +8,7 @@ import { offerAvailabilityInput,availabilityBaseline } from '../utils/offer-avai
 export function OfferForm({task,existing,disabled,submit}:{task:{id:string;startAt?:string;endAt?:string};existing?:OfferDto|null;disabled:boolean;submit:(body:OfferHelpRequest)=>Promise<void>}) {
  const scheduled=Boolean(task.startAt && task.endAt && Date.parse(task.endAt)>Date.parse(task.startAt));
  const [from,setFrom]=useState(''),[until,setUntil]=useState(''),[message,setMessage]=useState(''),[included,setIncluded]=useState(scheduled),[error,setError]=useState(''),[useTaskTimes,setUseTaskTimes]=useState(false);
- useEffect(()=>{setFrom(taskTimeInput(existing?.availableFrom ?? task.startAt));setUntil(taskTimeInput(existing?.availableUntil ?? task.endAt));setIncluded(Boolean(existing?.availableFrom)||scheduled);setMessage(existing?.message ?? '');setError('');setUseTaskTimes(false);},[task.id,existing?.updatedAt]);
+ useEffect(()=>{setFrom(taskTimeInput(existing?.availableFrom ?? task.startAt));setUntil(taskTimeInput(existing?.availableUntil ?? task.endAt));setIncluded(existing ? Boolean(existing.availableFrom && existing.availableUntil) : scheduled);setMessage(existing?.message ?? '');setError('');setUseTaskTimes(false);},[task.id,existing?.updatedAt]);
  const original=availabilityBaseline(task,existing,useTaskTimes);
  return <Card><Text accessibilityRole="header">Offer to help</Text><Text>Task time</Text><Text>{scheduled?taskWhenLabel(task.startAt,task.endAt):'Schedule flexible'}</Text><Text accessibilityRole="header">Your availability for this task</Text>
  <Text>Times shown in {Intl.DateTimeFormat().resolvedOptions().timeZone}. This does not confirm an assignment.</Text>

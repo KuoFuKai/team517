@@ -12,3 +12,5 @@ Individual images: 1170x2532, only the 156px top/72px bottom Android bars croppe
 - wallet-responsive.png / form-responsive.png: all requested widths; normal wrapping, scroll reachability, no observed clipping of amounts/actions.
 
 Backend local regression and cloud acceptance are separately documented in ../../points.md. No credential-entry images, raw tokens, real home addresses or phone screenshots are included. Phone/photo/FCM checks are queued in ../../native-acceptance.md. Existing docked-keyboard results from earlier builds are historical; this pass used emulator input and does not establish physical Gboard behavior.
+
+[final-private-wallet.png](final-private-wallet.png) is the final privacy-corrected APK41c46a5 at physical1280x2856, cropped to1280x2628 by system bars only. It adds no new layout changes to the earlier matrix captures. The account is synthetic. Privacy correction and successful cloud owner/non-owner probe are detailed in [points.md](../../points.md).

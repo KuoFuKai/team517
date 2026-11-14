@@ -66,7 +66,10 @@ export class TaskRepository {
       const result = await change(task, this.reads(tx));
       if (!result) return task;
       const writePoints = task.compensationType === 'POINTS' && task.status === 'DRAFT' && result.task.status === 'OPEN'
-        ? await preparePointEntry(tx, task.createdBy, 'RESERVE', task.pointReward!, task.id, task.id) : () => {};
+        ? await preparePointEntry(tx, task.createdBy, 'RESERVE', task.pointReward!, task.id, task.id).catch(error => {
+          if (error instanceof ApiFailure && error.code === 'INSUFFICIENT_POINTS' && task.createdBy !== uid) throw new ApiFailure(409, 'INSUFFICIENT_POINTS', 'The task creator needs more available points before this task can be published.');
+          throw error;
+        }) : () => {};
       const updated = { ...result.task, updatedAt: Timestamp.now() };
       writePoints();
       tx.set(ref, updated);

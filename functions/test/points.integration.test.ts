@@ -63,3 +63,11 @@ test('DISPUTED holds points and creates no settlement or automatic release',asyn
 test('Concurrent relationship reopen and whole-task cancellation release exactly once',async()=>{
  const s=await setup(),task=await s.draft();await s.publish(task);const id=await s.select(task);const results=await Promise.all([call(s.helper,'post',`/assignments/${id}/decline`),call(s.owner,'post',`/tasks/${task}/cancel`)]);assert.equal(results[1].status,200);assert.equal((await coherent(s.owner)).reservedPoints,0);assert.equal((await coherent(s.owner)).availablePoints,1500);
 });
+
+test('Care Manager publication cannot reveal the Task creator private wallet balance',async()=>{
+ const s=await setup(120),task=await s.draft();
+ const managed=await call(s.manager,'post',`/tasks/${task}/publish`);assert.equal(managed.status,409);assert.equal(managed.body.error.code,'INSUFFICIENT_POINTS');
+ assert.ok(!managed.body.error.message.includes('120'),'Another manager must not learn the creator balance from an error');
+ const own=await call(s.owner,'post',`/tasks/${task}/publish`);assert.ok(own.body.error.message.includes('120'));
+ assert.equal((await db.collection('tasks').doc(task).get()).data()!.status,'DRAFT');assert.equal((await coherent(s.owner)).availablePoints,120);
+});

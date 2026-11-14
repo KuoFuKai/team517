@@ -17,3 +17,5 @@ test('Points activity explains reserve and settlement without suggesting cash',(
 
 import { friendlyError } from '../src/utils/presentation';
 test('Insufficient Points shows safe amounts and never leaks arbitrary server text',()=>{assert.equal(friendlyError({code:'INSUFFICIENT_POINTS',message:'You need 250 points to publish this task. You currently have 120 available.'}),'You need 250 points to publish this task. You currently have 120 available.');assert.ok(!friendlyError({code:'INSUFFICIENT_POINTS',message:'private SQL trace'}).includes('SQL'));});
+
+test('Manager affordability failure does not imply another wallet belongs to the viewer',()=>{const message='The task creator needs more available points before this task can be published.';assert.equal(friendlyError({code:'INSUFFICIENT_POINTS',message}),message);});

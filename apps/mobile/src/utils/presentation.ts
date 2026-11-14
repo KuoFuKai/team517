@@ -50,6 +50,11 @@ export function dateLabel(value?: string) {
 }
 export function friendlyError(value: unknown): string {
   const code = (value as { code?: string })?.code;
+  if (code === 'INSUFFICIENT_POINTS') {
+    const message=(value as {message?:string})?.message ?? '';
+    return /^You need \d+ points to publish this task\. You currently have \d+ available\.$/.test(message) ? message : 'You do not have enough available points to publish this task. Your draft is saved.';
+  }
+  if (code === 'POINTS_RESERVATION_MISSING' || code === 'POINTS_CONFLICT') return 'This task reward needs checking. Refresh your points before trying again.';
   const messages: Record<string, string> = {
     MESSAGE_EMPTY: 'Write a message before sending.',
     MESSAGE_TOO_LONG: 'Keep your message within 2000 characters.',

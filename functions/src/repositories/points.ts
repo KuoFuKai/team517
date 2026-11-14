@@ -1,3 +1,5 @@
+import type { Task } from '../domain/task';
+import type { Assignment } from '../domain/marketplace';
 import { getFirestore, Timestamp, FieldPath, type Transaction } from 'firebase-admin/firestore';
 import type { PointAccountDto, PointTransactionListDto, PointTransactionType } from '@team517/contracts';
 import type { PointAccount, PointTransaction } from '../domain/points';
@@ -51,4 +53,20 @@ export class PointRepository {
     const result=await query.get(), page=result.docs.slice(0,20);
     return {transactions:page.map(doc=>{ const v=doc.data() as PointTransaction; return {id:v.id,type:v.type,amount:v.amount,availableDelta:v.availableDelta,reservedDelta:v.reservedDelta,createdAt:v.createdAt.toDate().toISOString()}; }),limit:20,...(result.size>20 ? {nextCursor:page.at(-1)!.id} : {})};
   }
+}
+
+export async function prepareTaskPoints(tx: Transaction, before: Task, after: Task, assignment?: Assignment) {
+  if (before.compensationType !== 'POINTS' || before.status === after.status || !['COMPLETED','CANCELLED'].includes(after.status) || before.status === 'DRAFT') return () => {};
+  const db=getFirestore(), amount=pointAmount(before.pointReward!);
+  const reserveRef=db.collection('point_transactions').doc(pointIdentity('RESERVE',before.id,before.createdBy));
+  const reserve=await tx.get(reserveRef);
+  if (!reserve.exists || reserve.data()!.amount !== amount || reserve.data()!.userId !== before.createdBy) throw new ApiFailure(409,'POINTS_RESERVATION_MISSING','This task needs its points reservation checked before it can be resolved.');
+  // Both terminal outcomes are read in this transaction; the Task is also locked.
+  const terminal=await tx.get(db.collection('point_transactions').doc(pointIdentity(after.status==='COMPLETED' ? 'RELEASE' : 'TRANSFER_OUT',before.id,before.createdBy)));
+  if (terminal.exists) throw new ApiFailure(409,'POINTS_CONFLICT','This task reward has already been resolved.');
+  if (after.status==='CANCELLED') return preparePointEntry(tx,before.createdBy,'RELEASE',amount,before.id,before.id);
+  if (!assignment || assignment.helperId===before.createdBy || assignment.status!=='COMPLETED') throw new ApiFailure(409,'POINTS_CONFLICT','A completed helper assignment is required.');
+  const out=await preparePointEntry(tx,before.createdBy,'TRANSFER_OUT',amount,before.id,before.id,assignment.id);
+  const incoming=await preparePointEntry(tx,assignment.helperId,'TRANSFER_IN',amount,before.id,before.id,assignment.id);
+  return ()=>{out();incoming();};
 }

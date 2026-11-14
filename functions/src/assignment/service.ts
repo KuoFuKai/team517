@@ -19,6 +19,7 @@ export class AssignmentService {
   async transition(uid: string, id: string, operation: Transition, reason?: string) {
     const result = await this.repo.change(uid, { assignmentId: id }, async s => {
       const side = await authorizeAssignment(s.permissions, uid, actions[operation], s.task, s.assignment);
+      if (s.task.compensationType === 'POINTS' && operation === 'confirm-completion' && s.task.status === 'COMPLETED' && s.assignment?.status === 'COMPLETED' && s.task.activeAssignmentId === s.assignment.id) return {task:s.task,assignment:s.assignment,offers:[],events:[]};
       const now = Timestamp.now();
       const assignment = { ...s.assignment!, updatedAt: now };
       const selected = { ...s.offer!, updatedAt: now };
@@ -62,6 +63,7 @@ export class AssignmentService {
   async cancelTask(uid: string, id: string) {
     const changed = await this.repo.change(uid, { taskId: id }, async s => {
       await authorizeAssignment(s.permissions, uid, 'CANCEL_TASK', s.task, s.assignment);
+      if (s.task.compensationType === 'POINTS' && s.task.status === 'CANCELLED') return {task:s.task,offers:[],events:[]};
       if (!['DRAFT', 'OPEN', 'HAS_OFFERS', 'AWAITING_CONFIRMATION', 'ARRANGED'].includes(s.task.status)) throw new ApiFailure(409, 'INVALID_TASK_STATE', 'Normal cancellation is allowed only before execution starts.');
       const now = Timestamp.now();
       const result: LifecycleChange = { task: { ...clearRelationship(s.task), status: 'CANCELLED', offerCount: 0 }, offers: s.backups.map(offer => ({ ...offer, status: 'NOT_SELECTED', updatedAt: now })), events: ['TASK_CANCELLED'] };
@@ -77,7 +79,7 @@ export class AssignmentService {
   async publicTask(uid: string, id: string) {
     return this.repo.view(id, async (task, assignment, _location, reader) => {
       await authorizeAssignment(reader, uid, 'VIEW_ASSIGNMENT', task, assignment);
-      return { taskId: task.id, title: task.title, publicInstructions: task.publicInstructions };
+      return { taskId: task.id, title: task.title, publicInstructions: task.publicInstructions, compensationType: task.compensationType, ...(task.compensationType === 'POINTS' ? {pointReward: task.pointReward} : {}) };
     });
   }
   async execution(uid: string, id: string): Promise<AssignmentExecutionDto> {

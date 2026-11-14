@@ -38,6 +38,7 @@ export function AssignmentPanel({ assignment, refresh }: { assignment: Assignmen
   return <>
     <StatusBadge status={current.status} />
     <PageHeading title={publicTask?.title || 'Your arrangement'} /><Text>{publicTask?.publicInstructions}</Text>
+    {publicTask?.compensationType === 'POINTS' && <Card><Text>Reward: {publicTask.pointReward?.toLocaleString()} points</Text>{current.status === 'COMPLETED' && <Text>{helper ? 'Completion approved. Open My points to see your latest balance and reward activity.' : 'Completion approved. The reserved task reward has been resolved.'}</Text>}{current.status === 'DISPUTED' && <Text>The reward stays reserved while the issue awaits resolution.</Text>}</Card>}
     <TonePanel title="What happens next">{assignmentNextAction(current.status, helper)}</TonePanel>
     <Card><Text style={{ fontWeight: '600' }}>{personLabel(current.helperId)}</Text><Text style={{ fontSize: 13.5 }}>{demoPerson(current.selectedBy) ? `Chosen by ${demoPerson(current.selectedBy)!.name}` : `Selected ${dateLabel(current.selectedAt)}`}</Text></Card><Disclosure title="Arrangement history">
     {current.confirmedAt && <Text>Confirmed: {dateLabel(current.confirmedAt)}</Text>}

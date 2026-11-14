@@ -9,7 +9,7 @@
   "scripts": {
     "build": "tsc",
     "test": "tsx --test test/unit.test.ts test/points.unit.test.ts test/ai.unit.test.ts test/discovery.unit.test.ts test/assignments.unit.test.ts test/support.unit.test.ts test/community.unit.test.ts test/messaging.unit.test.ts test/push.unit.test.ts",
-    "test:integration": "tsx --test test/integration.test.ts test/tasks.integration.test.ts test/ai.integration.test.ts test/marketplace.integration.test.ts test/assignments.integration.test.ts test/support.integration.test.ts test/community.integration.test.ts test/messaging.integration.test.ts test/push.integration.test.ts test/rules.integration.test.ts",
+    "test:integration": "tsx --test test/integration.test.ts test/points.integration.test.ts test/tasks.integration.test.ts test/ai.integration.test.ts test/marketplace.integration.test.ts test/assignments.integration.test.ts test/support.integration.test.ts test/community.integration.test.ts test/messaging.integration.test.ts test/push.integration.test.ts test/rules.integration.test.ts",
     "test:smoke": "tsx test/smoke.ts",
     "seed:marketplace": "tsx test/seed-marketplace.ts"
   },

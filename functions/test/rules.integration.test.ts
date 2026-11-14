@@ -10,11 +10,13 @@ test('business Firestore rules deny unauthenticated and signed-in direct reads/w
   try {
     const signUp = await fetch(`http://${process.env.FIREBASE_AUTH_EMULATOR_HOST}/identitytoolkit.googleapis.com/v1/accounts:signUp?key=demo-key`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: `${id}@example.test`, password: 'testing123', returnSecureToken: true }) });
     assert.equal(signUp.status, 200); const { idToken } = await signUp.json() as { idToken: string };
-    const url = `http://${process.env.FIRESTORE_EMULATOR_HOST}/v1/projects/demo-team517/databases/(default)/documents/tasks/${id}`;
+    for (const collection of ['tasks','point_accounts','point_transactions']) {
+    const url = `http://${process.env.FIRESTORE_EMULATOR_HOST}/v1/projects/demo-team517/databases/(default)/documents/${collection}/${id}`;
     for (const token of [undefined, idToken]) {
       const headers: Record<string, string> = { 'Content-Type': 'application/json', ...(token ? { Authorization: 'Bearer ' + token } : {}) };
       assert.equal((await fetch(url, { headers })).status, 403);
       assert.equal((await fetch(url, { method: 'PATCH', headers, body: JSON.stringify({ fields: { title: { stringValue: 'Forbidden direct write' } } }) })).status, 403);
+    }
     }
   } finally { await ref.delete(); }
 });

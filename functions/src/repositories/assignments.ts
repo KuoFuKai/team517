@@ -1,3 +1,4 @@
+import { prepareTaskPoints } from './points';
 import { lifecycleNotifications } from '../support/notifications';
 import { getFirestore, Timestamp, type Transaction } from 'firebase-admin/firestore';
 import type { Task, Location, TaskEventType } from '../domain/task';
@@ -41,7 +42,9 @@ export class AssignmentRepository {
       const active = await tx.get(this.db.collection('offers').where('taskId', '==', taskId).where('status', '==', 'ACTIVE').limit(401));
       if (active.size > 400) throw new ApiFailure(409, 'CONFLICT', 'Too many Offers for an atomic transition.');
       const result = await mutate({ task, assignment, offer, backups: active.docs.map(doc => doc.data() as Offer), permissions: this.reader(tx) });
+      const writePoints = await prepareTaskPoints(tx, task, result.task, result.assignment);
       const now = Timestamp.now();
+      writePoints();
       tx.set(taskRef, { ...result.task, updatedAt: now });
       if (result.assignment) tx.set(this.db.collection('assignments').doc(result.assignment.id), result.assignment);
       for (const changed of result.offers) tx.set(this.db.collection('offers').doc(changed.id), changed);

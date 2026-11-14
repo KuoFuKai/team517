@@ -152,7 +152,7 @@ export interface HelperReviewsDto { reviews: ReviewDto[]; summary: HelperRatingS
 export interface TaskTimelineEventDto { type: string; label: string; createdAt: string }
 export interface TaskTimelineDto { events: TaskTimelineEventDto[]; limit: number; truncated: boolean }
 export interface VerificationStatusDto { status: VerificationStatus; canDiscover: boolean; message: string }
-export interface AssignmentPublicTaskDto { taskId: string; title?: string; publicInstructions?: string }
+export interface AssignmentPublicTaskDto { taskId: string; title?: string; publicInstructions?: string; compensationType?: TaskCompensationType; pointReward?: number }
 
 export type CommunityVisibility = 'PUBLIC_VERIFIED' | 'CARE_CIRCLE';
 export type CommunityPostType = 'NEED' | 'RESOURCE' | 'SHARE';

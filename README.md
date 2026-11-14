@@ -1,7 +1,7 @@
 
 ## Sprint 8A — Points (November 14)
 
-[Wallet/ledger, lifecycle policy, cloud and validation report](docs/points.md) now records real available/reserved balance and private paginated activity, POINTS publication reservation, completed-helper reward transfer and whole-task cancellation release. Disputed/reopened tasks keep reservations under the documented policy. This supersedes older metadata-only/future-Points statements below. No money, purchase, cash-out or fee; no wallet data in Discovery/Maps and no mobile business Firestore access. Phone acceptance is queued per Kevin; emulator observations are recorded separately.
+[Wallet/ledger, lifecycle policy, cloud and validation report](docs/points.md) now records real available/reserved balance and private paginated activity, POINTS publication reservation, completed-helper reward transfer and whole-task cancellation release. Disputed/reopened tasks keep reservations under the documented policy. This supersedes older metadata-only/future-Points statements below. No money, purchase, cash-out or fee; no wallet data in Discovery/Maps and no mobile business Firestore access. Wallet and reward controls passed320/360/390/412dp emulator checks; full cloud/API regression and hosted source CI passed. Phone acceptance is queued per Kevin. [Latest APK](artifacts/android/team517-preview.apk) remains standalone; [native evidence](docs/native-evidence/2026-11-14-points/README.md).
 
 # team517
 

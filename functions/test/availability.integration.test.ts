@@ -29,7 +29,7 @@ async function setup(balance=0){
 test('Offer availability create/read is validated, scoped, and absent from public projections',async()=>{
  const s=await setup();const task=await s.draft();await s.publish(task);
  const path=`/tasks/${task}/offers`;
- for(const body of [{availableFrom:'bad'},{availableFrom:'2026-12-01T14:00:00Z'},{availableFrom:'2026-12-01T15:00:00Z',availableUntil:'2026-12-01T14:00:00Z'}])assert.equal((await call(s.helper,'post',path,body)).status,400);
+ for(const body of [{availableFrom:'0000-01-01T00:00:00Z',availableUntil:'0000-01-02T00:00:00Z'},{availableFrom:'bad'},{availableFrom:'2026-12-01T14:00:00Z'},{availableFrom:'2026-12-01T15:00:00Z',availableUntil:'2026-12-01T14:00:00Z'}])assert.equal((await call(s.helper,'post',path,body)).status,400);
  assert.equal((await db.collection('offers').doc(task+'_'+s.helper).get()).exists,false);
  const created=await call(s.helper,'post',path,{message:'Whole visit',availableFrom:'2026-12-01T09:00:00-05:00',availableUntil:'2026-12-01T10:00:00-05:00'});assert.equal(created.status,201);assert.equal(created.body.availableFrom,'2026-12-01T14:00:00.000Z');assert.equal(created.body.availabilityFit,'COVERS_TASK');
  const stored=(await db.collection('offers').doc(created.body.id).get()).data()!;assert.ok(stored.availableFrom.toMillis());assert.equal(stored.availabilityFit,undefined);

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-const instant = z.iso.datetime({offset:true});
+const instant = z.iso.datetime({offset:true}).refine(value=>{const year=new Date(value).getUTCFullYear();return year>=1 && year<=9999;},'Choose a supported calendar year.');
 export const offerHelpSchema = z.object({ message: z.string().trim().max(1000).optional(), availableFrom: instant.optional(), availableUntil: instant.optional() }).strict().superRefine((value,ctx)=>{
   if ((value.availableFrom === undefined) !== (value.availableUntil === undefined)) ctx.addIssue({code:'custom',path:['availableUntil'],message:'Supply both availability times, or omit both.'});
   if (value.availableFrom && value.availableUntil && Date.parse(value.availableUntil) <= Date.parse(value.availableFrom)) ctx.addIssue({code:'custom',path:['availableUntil'],message:'Availability must end after it starts.'});

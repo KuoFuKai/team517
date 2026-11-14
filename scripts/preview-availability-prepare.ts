@@ -33,7 +33,7 @@ async function main(){
    {name:'alex',fit:'COVERS_TASK',body:{message:'I can arrive early and stay through the appointment.',availableFrom:'2026-11-23T14:30:00Z',availableUntil:'2026-11-23T17:30:00Z'}},
    {name:'marcus',fit:'PARTIAL_OVERLAP',body:{message:'I can join after 10:30 and help with the return trip.',availableFrom:'2026-11-23T15:30:00Z',availableUntil:'2026-11-23T18:00:00Z'}},
    {name:'circle',fit:'NOT_PROVIDED',body:{message:'Happy to coordinate the timing with you.'}}]},
-  {slot:'conflict',title:'Afternoon visit — timing to discuss',start:'2026-11-24T15:00:00Z',end:'2026-11-24T17:00:00Z',candidates:[
+  {slot:'conflict',title:'Visit timing to discuss',start:'2026-11-24T15:00:00Z',end:'2026-11-24T17:00:00Z',candidates:[
    {name:'alex',fit:'CONFLICT',body:{message:'I can help in the afternoon if the appointment time is flexible.',availableFrom:'2026-11-24T18:00:00Z',availableUntil:'2026-11-24T20:00:00Z'}},
    {name:'marcus',fit:'COVERS_TASK',body:{message:'I can cover the scheduled visit.',availableFrom:'2026-11-24T15:00:00Z',availableUntil:'2026-11-24T17:00:00Z'}}]}
  ];

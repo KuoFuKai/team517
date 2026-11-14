@@ -1,3 +1,7 @@
+## Sprint 8D hosted fixture-isolation follow-up
+
+Documentation-only CI43647882646 passed116/117 integration tests, exposing a pre-existing support test assumption that an unfiltered30-result Discovery list must contain its newly published fixture amid parallel suites. Isolated that synthetic fixture geographically and used the existing radius query; all public projection/privacy assertions remain. No backend/product change, no test retries hiding the failure. Full integration rerun and corrected hosted CI are checked before completion; final APK/source product code is unchanged.
+
 ## Sprint 8D final validation — November 14
 
 Node22.23.4/Java21: typecheck PASS; backend unit **34/34**, client **104/104**, emulator integration **117/117**; smoke, default/manual HTTP, mock-AI HTTP and Android Hermes export PASS. This includes existing Points, Trust, Maps/discovery privacy, Community and Messaging regressions. Revision/edit/select/confirm/reconfirm/replacement race loops and retry assertions pass. Real-Auth guarded team517-dev preparation/replay and dedicated reconfirmation smoke pass; no CI credentials required, no full emulator test suite aimed at cloud. Mobile business Firestore boundary scan clean; secret preflight findings zero. Audit remains **28** (1 low/20 moderate/7 high/0 critical), no dependency added.

@@ -30,7 +30,10 @@ async function account(verified = true, helper = true): Promise<Account> {
 before(async () => {
   [owner, alex, marcus, lisa, unverified, circle, manager] = await Promise.all([account(), account(), account(), account(), account(false), account(false), account(true, false)]);
   contextId = (await call(owner, 'post', '/care-contexts', { name: "Mom's care" })).body.id;
-  locationId = (await call(owner, 'post', `/care-contexts/${contextId}/locations`, { label: 'PRIVATE HOME LABEL', formattedAddress: '918 PRIVATE ADDRESS', latitude: 40.75283, longitude: -73.95743 })).body.id;
+  // A distinct synthetic area lets discovery projection tests use the real radius
+  // filter instead of assuming an unfiltered, bounded marketplace returns every
+  // Task created by concurrently running integration files.
+  locationId = (await call(owner, 'post', `/care-contexts/${contextId}/locations`, { label: 'PRIVATE HOME LABEL', formattedAddress: '918 PRIVATE ADDRESS', latitude: 51.50474, longitude: -0.08315 })).body.id;
   for (const [actor, role] of [[circle, 'HELPER'], [manager, 'CARE_MANAGER']] as const) {
     const id = membershipId(contextId, actor.localId);
     await db.collection('care_context_members').doc(id).set({ id, userId: actor.localId, careContextId: contextId, role, status: 'ACTIVE' });
@@ -74,7 +77,9 @@ const notifications = async (actor: Account) => { const result = await call(acto
 test('explicit public instructions publish without legacy notes; private operational text is projected only for current confirmed work', async () => {
   const taskId = await instructed();
   const detail = await call(alex, 'get', `/tasks/${taskId}/discovery`); assert.equal(detail.body.publicInstructions, 'PUBLIC clinic accompaniment');
-  const listing = await call(alex, 'get', '/tasks/discover'); assert.ok(listing.body.tasks.some((t: any) => t.id === taskId && t.publicInstructions === 'PUBLIC clinic accompaniment'));
+  const listing = await call(alex, 'get', '/tasks/discover?latitude=51.50&longitude=-0.08&radiusKm=5');
+  assert.equal(listing.status, 200);
+  assert.ok(listing.body.tasks.some((t: any) => t.id === taskId && t.publicInstructions === 'PUBLIC clinic accompaniment'));
   for (const response of [detail, listing]) { assert.ok(!JSON.stringify(response.body).includes('PRIVATE buzz')); assert.ok(!JSON.stringify(response.body).includes('918 PRIVATE')); }
   assert.equal((await call(circle, 'get', '/tasks/' + taskId)).body.privateInstructions, undefined);
   assert.equal((await call(owner, 'get', '/tasks/' + taskId)).body.privateInstructions, 'PRIVATE buzz 12B');

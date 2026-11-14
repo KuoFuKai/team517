@@ -65,7 +65,7 @@ No new BLOCKER/HIGH product defect was observed in the exercised Trust flow. MED
 
 Fixture replay originally tried to obtain an Assignment ID from TaskDetailDto, which does not expose that field. It stopped safely without resetting data. It now uses the existing manager Offers DTO; a credential-free strict fixture typecheck is part of `npm run typecheck`. This was development tooling, not a production domain change.
 
-LOW remaining: dense Google provider labels; long Offer excerpts intentionally truncate to four lines with full response available in View offer/profile. No broad redesign was made. Empty and error UI remain retryable; error branches/privacy/permissions are primarily automated coverage, not every error deliberately induced natively.
+LOW remaining: the existing Assignment banner still uses its generic Helper alias while the new Offer/profile use the safe first name; dense Google provider labels; long Offer excerpts intentionally truncate to four lines with full response available in View offer/profile. No broad redesign was made. Empty and error UI remain retryable; error branches/privacy/permissions are primarily automated coverage, not every error deliberately induced natively.
 
 ## Automated and cloud validation
 
@@ -79,7 +79,10 @@ No new dependencies. Existing advisory baseline: 28 (1 low, 20 moderate, 7 high,
 
 Engineering/cloud/emulator acceptance is ready subject to final regression/CI below. Full physical Sprint 8B acceptance and Sprint 8A physical closure remain pending separately. Run one consolidated vivo checklist when connected: final APK/cold Auth; Trust comparison/profile/Message/Select/Back; docked keyboards; all four prior photo/Points/native scope items; Maps/privacy; both Task and Message background FCM routes; ordinary-network USB-disconnected smoke. Do not count emulator results as physical passes.
 
-Trust limits: controlled verification status, no real provider; optional first name/no profile editor; aggregate query cost; bounded recent Reviews and historical Offer cap; no claim of real trustworthiness from synthetic fixtures. Points balances are not public. No Payments, cash-out, Points purchase, fees, background-check service or iOS work was started. iOS remains deferred. Recommended next visible work is a short team usability review of comparing candidates and Circle-vs-verification comprehension before choosing the next product slice; do not automatically start another Sprint.
+Trust limits: controlled verification status, no real provider; optional first name/no profile editor; aggregate query cost; bounded recent Reviews and historical Offer cap; no claim of real trustworthiness from synthetic fixtures. Points balances are not public. No Payments, cash-out, Points purchase, fees, background-check service or iOS work was started. iOS remains deferred. Recommended next visible feature, after a short teammate usability review, is structured Helper availability on Offers to make appointment-time comparison clearer; do not automatically start another Sprint.
 
 
 Final post-native Node22 acceptance rerun: **all PASS** — typecheck (including strict fixture contracts),27 backend unit,97 client,105 emulator integration,smoke,default/manual HTTP,mock-AI HTTP and Android Hermes export. Frontend business-Firestore scan: no matches. Secret preflight: no findings; rerun again after staging final evidence. Standalone cold force-stop/relaunch on the restored original1280x2856/480dpi/font1.0 AVD retained Alex Auth; adb reverse list was empty. No native PAID Task was rendered; compensation-specific automated coverage remains the evidence for that path.
+
+
+Hosted source CI: [`14611c2`](https://github.com/KuoFuKai/team517/actions/runs/43606925017) completed **success**, including all credential-free suites and Hermes export. Earlier implementation checkpoint `d7d567c` also passed hosted CI. Final acceptance commit `14611c2` is pushed; the follow-up is documentation only. Fetch found no incoming main/Kingsley changes and no conflicts. Engineering/cloud/emulator scope is accepted; full Sprint8B physical closure remains pending, separately from Sprint8A.

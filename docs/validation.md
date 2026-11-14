@@ -690,3 +690,6 @@ Real team517-dev Trust API/index deployed. Preview smoke passed real Auth, draft
 
 
 Final post-native Node22 acceptance rerun: **all PASS** — typecheck (including strict fixture contracts),27 backend unit,97 client,105 emulator integration,smoke,default/manual HTTP,mock-AI HTTP and Android Hermes export. Frontend business-Firestore scan: no matches. Secret preflight: no findings; rerun again after staging final evidence. Standalone cold force-stop/relaunch on the restored original1280x2856/480dpi/font1.0 AVD retained Alex Auth; adb reverse list was empty. No native PAID Task was rendered; compensation-specific automated coverage remains the evidence for that path.
+
+
+Hosted source CI: [`14611c2`](https://github.com/KuoFuKai/team517/actions/runs/43606925017) completed **success**, including all credential-free suites and Hermes export. Earlier implementation checkpoint `d7d567c` also passed hosted CI. Final acceptance commit `14611c2` is pushed; the follow-up is documentation only. Fetch found no incoming main/Kingsley changes and no conflicts. Engineering/cloud/emulator scope is accepted; full Sprint8B physical closure remains pending, separately from Sprint8A.

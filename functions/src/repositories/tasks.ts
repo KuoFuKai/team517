@@ -1,3 +1,4 @@
+import { preparePointEntry } from './points';
 import { getFirestore, Timestamp, type Transaction } from 'firebase-admin/firestore';
 import type { CreateLocationRequest } from '@team517/contracts';
 import type { Location, Task, TaskEvent, TaskEventType } from '../domain/task';
@@ -64,7 +65,10 @@ export class TaskRepository {
       if (!task) throw new ApiFailure(404, 'NOT_FOUND', 'Task not found.');
       const result = await change(task, this.reads(tx));
       if (!result) return task;
+      const writePoints = task.compensationType === 'POINTS' && task.status === 'DRAFT' && result.task.status === 'OPEN'
+        ? await preparePointEntry(tx, task.createdBy, 'RESERVE', task.pointReward!, task.id, task.id) : () => {};
       const updated = { ...result.task, updatedAt: Timestamp.now() };
+      writePoints();
       tx.set(ref, updated);
       tx.create(eventRef, this.event(updated, uid, result.event, eventRef.id, result.changedFields));
       return updated;

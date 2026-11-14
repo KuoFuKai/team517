@@ -1,3 +1,4 @@
+import { PointRepository } from '../src/repositories/points';
 import { before, test } from 'node:test';
 import assert from 'node:assert/strict';
 import request from 'supertest';
@@ -95,6 +96,7 @@ test('reviewed suggestion applies through existing PATCH; publish validation sta
   assert.equal((await call(owner, 'post', `/tasks/${draft.id}/ai-suggestions`, { text: 'Make it clearer', timezone: 'UTC' })).status, 409);
 });
 test('POINTS suggestion metadata still requires normal compensation publish validation', async () => {
+  await new PointRepository().grant(owner.localId,100,'points-validation-fixture');
   const draft = (await call(owner, 'post', `/care-contexts/${contextId}/tasks/drafts`, {})).body;
   const suggestion = await call(owner, 'post', '/ai/task-suggestions', input({ text: 'Help for 10 points', currentTaskId: draft.id }));
   assert.equal(suggestion.body.fields.compensationType, 'POINTS');

@@ -1,9 +1,10 @@
+import * as pointApi from '../api/client';
 import { Disclosure } from '../components/Details';
 import { useScreenHeader } from '../components/ScreenHeader';
 import { useScreenTop } from '../navigation/scroll';
 import { useHardwareBack } from '../navigation/useHardwareBack';
 import { ResponsiveActions } from '../components/ResponsiveActions';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Card } from '../components/ui';
 import { theme as t } from '../theme';
@@ -51,6 +52,8 @@ export function EditTaskScreen({ task, locations, busy: requestBusy, save, locat
   const [urgency, setUrgency] = useState<TaskUrgency>(task.urgency ?? 'PLANNED');
   const [visibility, setVisibility] = useState<TaskVisibility>(task.visibility ?? 'CARE_CIRCLE');
   const [compensationType, setCompensation] = useState<TaskCompensationType | undefined>(task.compensationType);
+  const [availablePoints,setAvailablePoints] = useState<number | null>(null);
+  useEffect(()=>{let active=true;void Promise.all([pointApi.getPointAccount(),pointApi.getCurrentUser()]).then(([value,user])=>{if(active && user.id===task.createdBy)setAvailablePoints(value.availablePoints);}).catch(()=>{});return()=>{active=false;};},[task.id]);
   const [points, setPoints] = useState(task.pointReward?.toString() ?? '');
   const [cash, setCash] = useState(task.cashAmount?.toString() ?? '');
   const [currency, setCurrency] = useState(task.currency ?? '');
@@ -156,7 +159,7 @@ export function EditTaskScreen({ task, locations, busy: requestBusy, save, locat
       {([['VOLUNTEER', 'Volunteer'], ['POINTS', 'Points'], ['PAID', 'Paid']] as [TaskCompensationType, string][]).map(([value, label]) =>
         <OptionCard key={value} title={label} selected={compensationType === value} disabled={busy} choose={() => setCompensation(value)} />)}
     </Field>
-    {compensationType === 'POINTS' && <TextInput accessibilityLabel="Point reward" value={points} onChangeText={setPoints} editable={!busy} maxLength={12} />}
+    {compensationType === 'POINTS' && <><TextInput accessibilityLabel="Point reward" value={points} onChangeText={setPoints} editable={!busy} keyboardType="number-pad" maxLength={12} />{availablePoints !== null && <Text>Available balance: {availablePoints.toLocaleString()} points</Text>}<Text>Points are reserved from the task creator when this task is published.</Text></>}
     {compensationType === 'PAID' && <>
       <TextInput accessibilityLabel="Cash amount (major currency units)" value={cash} onChangeText={setCash} editable={!busy} maxLength={12} />
       <TextInput accessibilityLabel="Currency (three uppercase letters)" value={currency} onChangeText={setCurrency} editable={!busy} maxLength={3} />

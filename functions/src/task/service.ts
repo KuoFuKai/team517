@@ -74,6 +74,7 @@ export class TaskService {
   async publish(uid: string, id: string) {
     const task = await this.repo.changeTask(id, uid, async (current, reads) => {
       await authorize(reads.permissions, uid, 'PUBLISH_TASK', current.careContextId, current.createdBy);
+      if (current.compensationType === 'POINTS' && current.publishedAt && current.status !== 'CANCELLED') return null; // Safe retry: publication never reserves twice.
       requireDraft(current);
       const valid = validatePublish(taskDetailDto(current));
       checkLocation(await reads.location(valid.locationId), current.careContextId);

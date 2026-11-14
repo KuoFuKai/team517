@@ -1,3 +1,4 @@
+import { PointRepository } from '../src/repositories/points';
 import { before, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { initializeApp } from 'firebase-admin/app';
@@ -179,6 +180,7 @@ test('VOLUNTEER forbids conflicting compensation metadata', async () => {
   assert.equal((await call(owner, 'post', `/tasks/${created.id}/publish`, {})).status, 400);
 });
 test('POINTS requires a positive integer reward and excludes money', async () => {
+  await new PointRepository().grant(owner.localId,100,'points-validation-fixture');
   const created = await draft({ ...valid(), compensationType: 'POINTS' });
   assert.equal((await call(owner, 'post', `/tasks/${created.id}/publish`, {})).status, 400);
   assert.equal((await call(owner, 'patch', '/tasks/' + created.id, { pointReward: 0 })).status, 400);

@@ -264,3 +264,8 @@ Actual participants keep read-only history and read marking after termination. N
 NEW_MESSAGE extends existing NotificationType and CONVERSATION resourceType. One generic recipient-only Notification commits atomically with each new Message; no body text is placed in Notification, no sender notification. Sprint 7A delivers its push through the shared post-commit service. Existing lifecycle Notifications are unchanged. Notification navigation rechecks participant access/current canSend.
 
 Errors: 404 CONVERSATION_NOT_FOUND/NOT_FOUND; 403 FORBIDDEN, CONVERSATION_NOT_ALLOWED or MESSAGING_RELATIONSHIP_INACTIVE; 400 MESSAGE_EMPTY/MESSAGE_TOO_LONG or VALIDATION_ERROR; 409 CLIENT_MESSAGE_ID_CONFLICT/CONFLICT. No Firestore internals or private Task data are exposed. This API is HTTP refresh only, not realtime/presence or a general chat platform.
+
+
+## Sprint 8A Points
+
+Authenticated owner-only reads: GET `/api/v1/me/points` → PointAccountDto; GET `/api/v1/me/points/transactions?cursor=…` → PointTransactionListDto (20 entries, optional nextCursor). No ordinary mutation/grant routes. Ledger metadata is private; foreign cursor returns INVALID_CURSOR. Existing POINTS publish reserves the creator's reward atomically or returns 409 INSUFFICIENT_POINTS while retaining DRAFT. Completion approval settles paired entries; whole-task cancellation releases, relationship reopening/dispute retain the reservation. POINTS retries are safe; non-POINTS transition behavior stays unchanged. See [points policy and validation](points.md).

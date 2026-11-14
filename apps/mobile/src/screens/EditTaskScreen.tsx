@@ -155,7 +155,7 @@ export function EditTaskScreen({ task, locations, busy: requestBusy, save, locat
     <TextInput accessibilityLabel="Arrival details" hint="Shared only with your confirmed helper." value={privateInstructions} onChangeText={setPrivateInstructions} editable={!busy} maxLength={2000} multiline placeholder="Door code, parking, who to ask for" />
     {(task.instructions || instructions) ? <TextInput accessibilityLabel="Existing private circle notes" value={instructions} onChangeText={setInstructions} editable={!busy} maxLength={5000} multiline /> : null}
 
-    <Field label="How is help recognised?" hint="Task information only. No transfers are made here.">
+    <Field label="How is help recognised?" hint="Points are reserved on publishing and sent after completion approval. Paid tasks show information only.">
       {([['VOLUNTEER', 'Volunteer'], ['POINTS', 'Points'], ['PAID', 'Paid']] as [TaskCompensationType, string][]).map(([value, label]) =>
         <OptionCard key={value} title={label} selected={compensationType === value} disabled={busy} choose={() => setCompensation(value)} />)}
     </Field>

@@ -30,3 +30,15 @@ test('identity and care context slice with real Auth and Firestore emulators',as
   assert.equal((await request(app).get('/api/v1/care-contexts').set('Authorization','Bearer '+b.idToken)).body.careContexts.length,0);
   assert.equal((await request(app).post('/api/v1/care-contexts').set('Authorization','Bearer '+b.idToken).send({name:'Unauthorized'})).status,403);
 });
+
+test('Points reads are authenticated owner-only projections, including a valid zero account', async () => {
+  const a = await token(), b = await token();
+  assert.equal((await request(app).get('/api/v1/me/points')).status, 401);
+  const own = await request(app).get('/api/v1/me/points').set('Authorization', 'Bearer '+a.idToken);
+  assert.deepEqual(own.body, {availablePoints:0,reservedPoints:0,lifetimeEarnedPoints:0,lifetimeSpentPoints:0});
+  await getFirestore().collection('point_accounts').doc(a.localId).set({...own.body,availablePoints:1500,privateAudit:'not public'});
+  assert.equal((await request(app).get('/api/v1/me/points').set('Authorization','Bearer '+a.idToken)).body.availablePoints,1500);
+  assert.deepEqual((await request(app).get('/api/v1/me/points?userId='+a.localId).set('Authorization','Bearer '+b.idToken)).body,own.body);
+  assert.equal((await request(app).get('/api/v1/me/points').set('Authorization','Bearer '+a.idToken)).body.privateAudit,undefined);
+  assert.equal((await request(app).post('/api/v1/me/points/add').set('Authorization','Bearer '+a.idToken).send({amount:500})).status,404);
+});

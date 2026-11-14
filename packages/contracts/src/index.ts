@@ -184,3 +184,5 @@ export interface MessagesDto { messages: MessageDto[]; limit: number; truncated:
 export interface ConversationDetailDto { conversation: ConversationSummaryDto; messages: MessagesDto }
 export interface MessagingMemberDto { id: string; label: string }
 export interface MessagingMembersDto { members: MessagingMemberDto[]; limit: number; truncated: boolean }
+
+export interface PointAccountDto { availablePoints: number; reservedPoints: number; lifetimeEarnedPoints: number; lifetimeSpentPoints: number }

@@ -30,3 +30,6 @@ export const { getCommunityFeed, getCommunityPost, createCommunityPost, commentO
 
 import { createMessagingApi } from './messaging';
 export const { listConversations, getOrCreateConversation, getConversation, listMessages, sendMessage, markConversationRead, startTaskConversation, listMessagingMembers } = createMessagingApi(request);
+
+import { createPointApi } from './points';
+export const { getPointAccount } = createPointApi(request);

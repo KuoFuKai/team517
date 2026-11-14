@@ -1,3 +1,4 @@
+import { PointsScreen } from './PointsScreen';
 import { demoPerson } from '../demo/maker-day3';
 import React, { useEffect, useState } from 'react';
 import { View, Pressable } from 'react-native';
@@ -19,6 +20,7 @@ export function HomeScreen({ busy, profile, initialize, loadUser, switchRole, ch
   useScreenTop(preview ?? (rolesOpen ? 'role-picker' : 'profile'));
   useEffect(() => { let active = true; setRating(null); if (profile?.roles.includes('HELPER')) void api.getHelperRatingSummary(profile.id).then(value => { if (active) setRating(value); }).catch(() => {}); return () => { active = false; }; }, [profile?.id]);
   if (!profile) return <><PageHeading title="How will you use this app?" caption="Choose the best fit for now." />{(['CARE_RECEIVER', 'CARE_MANAGER', 'HELPER'] as UserRole[]).map(value => <Pressable key={value} accessibilityRole="radio" accessibilityLabel={roleName(value)} accessibilityState={{ checked: role === value, disabled: busy }} disabled={busy} onPress={() => setRole(value)} style={{ padding: 20, gap: 8, borderWidth: 1, borderColor: role === value ? t.colors.primary : t.colors.border, borderRadius: 12, backgroundColor: role === value ? t.colors.primarySoft : t.colors.surface }}><Text style={{ fontSize: 18, fontWeight: '600' }}>{value === 'CARE_RECEIVER' ? 'For myself' : value === 'CARE_MANAGER' ? 'For a family member' : 'To help others'}</Text><Text style={{ color: t.colors.muted }}>{value === 'CARE_RECEIVER' ? 'I’m looking for everyday help.' : value === 'CARE_MANAGER' ? 'I’m helping someone manage their care.' : 'I’d like to volunteer or offer practical help.'}</Text></Pressable>)}<Button variant="primary" disabled={busy} title="Continue" onPress={() => initialize(role)} /></>;
+  if (preview === 'points') return <PointsScreen back={() => setPreview(null)} />;
   if (preview) return <DesignPreviewScreen key={preview} kind={preview} back={() => setPreview(null)} />;
   if (rolesOpen) return <RolePicker profile={profile} busy={busy} switchRole={switchRole} contextName={contextName} back={() => setRolesOpen(false)} />;
   const title = name || email || 'Your account';

@@ -1,3 +1,4 @@
+import {taskWhenLabel} from '../utils/design-presentation';
 import {EditOfferAvailability} from './EditOfferAvailability';
 import { Choices, TonePanel } from '../components/Details';
 import { SegmentedControl } from '../components/SegmentedControl';
@@ -31,7 +32,7 @@ export function MyWorkScreen({ back }: { back: () => void }) {
   return <><Choices value={section} options={[{ value: 'assignments', label: 'My tasks' }, { value: 'offers', label: 'My offers' }]} change={setSection} />
     {busy && <LoadingState />}{error ? <ErrorState message={error} /> : null}
     {section === 'offers' && <>{!busy && offers?.offers.length === 0 && <EmptyState title="Ready to lend a hand?" message="Find a task and send your first offer." />}
-      {offers?.offers.map(offer => <Card key={offer.id}><StatusBadge status={offer.status} /><Text accessibilityRole="header">{titles[offer.taskId] || (offer.assignmentId ? titles[offer.assignmentId] : undefined) || 'Your offer'}</Text><Text>{offer.message || 'You offered to help with this task.'}</Text><Text>Sent {dateLabel(offer.createdAt)}</Text>
+      {offers?.offers.map(offer => <Card key={offer.id}><StatusBadge status={offer.status} /><Text accessibilityRole="header">{titles[offer.taskId] || (offer.assignmentId ? titles[offer.assignmentId] : undefined) || 'Your offer'}</Text><Text>{offer.message || 'You offered to help with this task.'}</Text><Text>Sent {dateLabel(offer.createdAt)}</Text><Text>{offer.availableFrom && offer.availableUntil?'Available '+taskWhenLabel(offer.availableFrom,offer.availableUntil):'Availability not provided'}</Text>
         {offer.status==='ACTIVE' && <EditOfferAvailability taskId={offer.taskId} saved={load}/>}
         {offer.status === 'ACTIVE' && <Button title="Withdraw offer" disabled={busy} onPress={() => void run(async () => { await api.withdrawOffer(offer.taskId); await load(); })} />}
         {offer.assignmentId && <Button title="View assignment" disabled={busy} onPress={() => void run(async () => setSelected(await api.getAssignment(offer.assignmentId!)))} />}

@@ -32,4 +32,4 @@ import { createMessagingApi } from './messaging';
 export const { listConversations, getOrCreateConversation, getConversation, listMessages, sendMessage, markConversationRead, startTaskConversation, listMessagingMembers } = createMessagingApi(request);
 
 import { createPointApi } from './points';
-export const { getPointAccount } = createPointApi(request);
+export const { getPointAccount, getPointTransactions } = createPointApi(request);

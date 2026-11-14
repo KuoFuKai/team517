@@ -186,3 +186,7 @@ export interface MessagingMemberDto { id: string; label: string }
 export interface MessagingMembersDto { members: MessagingMemberDto[]; limit: number; truncated: boolean }
 
 export interface PointAccountDto { availablePoints: number; reservedPoints: number; lifetimeEarnedPoints: number; lifetimeSpentPoints: number }
+
+export type PointTransactionType = 'GRANT' | 'RESERVE' | 'RELEASE' | 'TRANSFER_OUT' | 'TRANSFER_IN' | 'ADJUSTMENT';
+export interface PointTransactionDto { id: string; type: PointTransactionType; amount: number; availableDelta: number; reservedDelta: number; createdAt: string }
+export interface PointTransactionListDto { transactions: PointTransactionDto[]; nextCursor?: string; limit: number }

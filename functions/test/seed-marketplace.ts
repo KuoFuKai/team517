@@ -1,3 +1,4 @@
+import { PointRepository } from '../src/repositories/points';
 // Explicit emulator-only fixtures. Never use real verification or production data.
 import { initializeApp } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
@@ -26,6 +27,7 @@ async function main() {
     catch (error) { if ((error as { code?: string }).code !== 'auth/user-not-found') throw error; user = await getAuth().createUser({ email, password: 'development517' }); }
     await getAuth().updateUser(user.uid, { password: 'development517' });
     ids.set(account.name, user.uid);
+    if (account.name !== 'circle') await new PointRepository().grant(user.uid, account.name === 'manager' ? 1500 : 300, 'local-initial-v1');
     await store.initialize(user.uid, account.roles[0]);
     await db.collection('users').doc(user.uid).update({ roles: account.roles, lastActiveRole: account.roles[0], verificationStatus: account.verified ? 'VERIFIED' : 'UNVERIFIED', updatedAt: now });
   }

@@ -42,3 +42,18 @@ test('Points reads are authenticated owner-only projections, including a valid z
   assert.equal((await request(app).get('/api/v1/me/points').set('Authorization','Bearer '+a.idToken)).body.privateAudit,undefined);
   assert.equal((await request(app).post('/api/v1/me/points/add').set('Authorization','Bearer '+a.idToken).send({amount:500})).status,404);
 });
+
+import { PointRepository } from '../src/repositories/points';
+test('Fixture grants are immutable, concurrent retry-safe and history is bounded/private',async()=>{
+ const a=await token(),b=await token(),repo=new PointRepository();
+ await Promise.all([repo.grant(a.localId,1500,'test-grant-v1'),repo.grant(a.localId,1500,'test-grant-v1')]);
+ assert.equal((await repo.account(a.localId)).availablePoints,1500);
+ await assert.rejects(()=>repo.grant(a.localId,1600,'test-grant-v1'));
+ for(let i=0;i<22;i++)await repo.grant(a.localId,1,'test-extra-'+i);
+ const page=await repo.history(a.localId);assert.equal(page.transactions.length,20);assert.ok(page.nextCursor);
+ const next=await repo.history(a.localId,page.nextCursor);assert.equal(next.transactions.length,3);
+ assert.equal(new Set([...page.transactions,...next.transactions].map(t=>t.id)).size,23);
+ assert.equal((await repo.history(b.localId)).transactions.length,0);
+ await assert.rejects(()=>repo.history(b.localId,page.nextCursor));
+ assert.equal((page.transactions[0] as any).sourceId,undefined);assert.equal((page.transactions[0] as any).userId,undefined);
+});

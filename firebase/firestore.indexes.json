@@ -4,8 +4,14 @@
       "collectionGroup": "reviews",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "revieweeId", "order": "ASCENDING" },
-        { "fieldPath": "rating", "order": "ASCENDING" }
+        {
+          "fieldPath": "revieweeId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "rating",
+          "order": "ASCENDING"
+        }
       ]
     },
     {
@@ -299,6 +305,24 @@
         {
           "order": "ASCENDING",
           "fieldPath": "enabled"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "point_transactions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "userId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "DESCENDING"
         }
       ]
     }

@@ -1,0 +1,1 @@
+export function selectionCopy(name:string){return {title:`Select ${name}?`,message:`${name} will be invited to confirm this task. The task is not fully arranged until ${name} confirms. Other offers stay available until then.`,confirmLabel:`Select ${name}`};}

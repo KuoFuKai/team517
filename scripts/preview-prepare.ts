@@ -59,6 +59,8 @@ async function main() {
     const profile = (await db.collection('users').doc(uid(account.name)).get()).data()!;
     if (profile.verificationStatus !== (account.verified ? 'VERIFIED' : 'UNVERIFIED') || account.roles.some(role => !profile.roles?.includes(role))) throw new Error('Existing synthetic trust/role state differs; no client self-verification or automatic override performed.');
   }
+  const firstNames:Record<string,string>={manager:'Grace',alex:'Alex',marcus:'Marcus',circle:'Sam'};
+  for(const account of accounts) await db.runTransaction(async tx=>{const ref=db.collection('users').doc(uid(account.name)),profile=await tx.get(ref);if(profile.data()?.publicFirstName===undefined)tx.update(ref,{publicFirstName:firstNames[account.name]});});
   for (const account of accounts.filter(a => a.name !== 'circle')) await new PointRepository().grant(uid(account.name), account.name === 'manager' ? 1500 : 300, 'preview-initial-v1');
   const owner = uid('manager'), context = PREVIEW_CONTEXT_ID;
   await createMissing('care_contexts', context, { id: context, name: "Mom's care", createdBy: owner, status: 'ACTIVE', createdAt: now, updatedAt: now }, owner);

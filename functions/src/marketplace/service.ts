@@ -1,4 +1,4 @@
-import { SupportRepository } from '../repositories/support';
+import { TrustRepository } from '../repositories/trust';
 import { Timestamp } from 'firebase-admin/firestore';
 import type { OfferHelpRequest, MyOfferDto, OfferListDto, SelectOfferResponse } from '@team517/contracts';
 import { MarketplaceRepository, offerId } from '../repositories/marketplace';
@@ -54,9 +54,11 @@ export class MarketplaceService {
     const task = await this.task(taskId);
     await authorizeMarketplace(this.repo.reader(), uid, 'VIEW_OFFERS', { task });
     const offers = await this.repo.offers(taskId);
-    return { task: taskOfferStateDto(task), offers: await Promise.all(offers.sort((a, b) => a.createdAt.toMillis() - b.createdAt.toMillis()).map(async offer => ({
-      ...offerDto(offer), ...await new SupportRepository().rating(offer.helperId), verificationStatus: (await this.repo.reader().user(offer.helperId))?.verificationStatus ?? 'UNVERIFIED',
-    }))) };
+    const summaries=await new TrustRepository().summaries(offers.map(offer=>offer.helperId),task.careContextId);
+    return {task:taskOfferStateDto(task),offers:offers.sort((a,b)=>a.createdAt.toMillis()-b.createdAt.toMillis()).map(offer=>{
+      const {trust,relationship}=summaries.get(offer.helperId)!;
+      return {...offerDto(offer),verificationStatus:trust.verificationStatus,reviewCount:trust.reviewCount,...(trust.averageRating!==undefined?{averageRating:trust.averageRating}:{}),trust,relationship};
+    })};
   }
   async select(uid: string, taskId: string, selectedOfferId: string): Promise<SelectOfferResponse> {
     const result = await this.repo.change(taskId, uid, async (task, reads, assignmentId) => {

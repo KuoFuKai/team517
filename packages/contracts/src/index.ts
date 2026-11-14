@@ -100,7 +100,7 @@ export interface OfferDto {
   id: string; taskId: string; helperId: string; message?: string; status: OfferStatus;
   createdAt: string; updatedAt: string; assignmentId?: string;
 }
-export interface OfferSummaryDto extends OfferDto { verificationStatus: VerificationStatus; averageRating?: number; reviewCount?: number }
+export interface OfferSummaryDto extends OfferDto { verificationStatus: VerificationStatus; averageRating?: number; reviewCount?: number; trust?: HelperTrustSummaryDto; relationship?: 'CARE_CIRCLE' | 'EXTERNAL' }
 export interface AssignmentDto {
   id: string; taskId: string; offerId: string; helperId: string; selectedBy: string;
   status: AssignmentStatus; selectedAt: string; confirmedAt?: string; startedAt?: string; completionRequestedAt?: string; completedAt?: string; createdAt: string; updatedAt: string;

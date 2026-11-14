@@ -29,7 +29,7 @@ export class MarketplaceRepository {
   async task(id: string) { return (await this.db.collection('tasks').doc(id).get()).data() as Task | undefined; }
   async offer(id: string) { return (await this.db.collection('offers').doc(id).get()).data() as Offer | undefined; }
   async assignment(id: string) { return (await this.db.collection('assignments').doc(id).get()).data() as Assignment | undefined; }
-  async offers(id: string) { return (await this.db.collection('offers').where('taskId', '==', id).get()).docs.map(doc => doc.data() as Offer); }
+  async offers(id: string) { const snapshot=await this.db.collection('offers').where('taskId', '==', id).limit(101).get(); if(snapshot.size>100)throw new ApiFailure(409,'OFFER_LIST_LIMIT','This task has too many historical offers for one comparison.');return snapshot.docs.map(doc=>doc.data() as Offer); }
   async candidates(limit: number) {
     return (await this.db.collection('tasks').where('visibility', '==', 'VERIFIED_HELPERS').where('status', 'in', ['OPEN', 'HAS_OFFERS']).limit(limit).get()).docs.map(doc => doc.data() as Task);
   }

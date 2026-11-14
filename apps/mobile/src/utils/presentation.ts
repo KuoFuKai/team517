@@ -57,6 +57,8 @@ export function friendlyError(value: unknown): string {
   }
   if (code === 'POINTS_RESERVATION_MISSING' || code === 'POINTS_CONFLICT') return 'This task reward needs checking. Refresh your points before trying again.';
   const messages: Record<string, string> = {
+    HELPER_NOT_FOUND: 'This helper profile is no longer available.',
+    OFFER_LIST_LIMIT: 'This task has too many historical offers for one comparison. Contact your care coordinator.',
     MESSAGE_EMPTY: 'Write a message before sending.',
     MESSAGE_TOO_LONG: 'Keep your message within 2000 characters.',
     CONVERSATION_NOT_ALLOWED: 'Messaging requires an active shared circle or a valid helper/requester Task relationship.',

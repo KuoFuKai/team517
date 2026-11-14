@@ -29,6 +29,7 @@ async function main() {
     ids.set(account.name, user.uid);
     if (account.name !== 'circle') await new PointRepository().grant(user.uid, account.name === 'manager' ? 1500 : 300, 'local-initial-v1');
     await store.initialize(user.uid, account.roles[0]);
+    await db.runTransaction(async tx=>{const ref=db.collection('users').doc(user.uid),profile=await tx.get(ref);if(profile.data()?.publicFirstName===undefined)tx.update(ref,{publicFirstName:({manager:'Grace',alex:'Alex',marcus:'Marcus',lisa:'Lisa',circle:'Sam'} as Record<string,string>)[account.name]});});
     await db.collection('users').doc(user.uid).update({ roles: account.roles, lastActiveRole: account.roles[0], verificationStatus: account.verified ? 'VERIFIED' : 'UNVERIFIED', updatedAt: now });
   }
   const ownerId = ids.get('manager')!;

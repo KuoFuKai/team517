@@ -46,7 +46,7 @@ async function main() {
       catch (e) { if ((e as { code: string }).code !== 'auth/user-not-found') throw e; await auth.createUser({ uid: person.uid, email: person.email, password, displayName: person.name }); }
       await auth.updateUser(person.uid, { displayName: person.name, password });
       await store.initialize(person.uid, person.role);
-      await db.collection('users').doc(person.uid).update({ roles: [person.role], lastActiveRole: person.role, onboardingStatus: 'COMPLETE', verificationStatus: 'UNVERIFIED', updatedAt: now });
+      await db.collection('users').doc(person.uid).update({ publicFirstName: person.name.split(' ')[0], roles: [person.role], lastActiveRole: person.role, onboardingStatus: 'COMPLETE', verificationStatus: 'UNVERIFIED', updatedAt: now });
       const id = membershipId(contextId, person.uid);
       await db.collection('care_context_members').doc(id).set({ id, careContextId: contextId, userId: person.uid, role: person.role, status: 'ACTIVE', joinedAt: now });
     }

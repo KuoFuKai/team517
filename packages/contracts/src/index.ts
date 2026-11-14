@@ -190,3 +190,6 @@ export interface PointAccountDto { availablePoints: number; reservedPoints: numb
 export type PointTransactionType = 'GRANT' | 'RESERVE' | 'RELEASE' | 'TRANSFER_OUT' | 'TRANSFER_IN' | 'ADJUSTMENT';
 export interface PointTransactionDto { id: string; type: PointTransactionType; amount: number; availableDelta: number; reservedDelta: number; createdAt: string }
 export interface PointTransactionListDto { transactions: PointTransactionDto[]; nextCursor?: string; limit: number }
+
+export interface HelperTrustSummaryDto { userId: string; displayName: string; verificationStatus: VerificationStatus; completedTaskCount: number; averageRating?: number; reviewCount: number }
+export interface HelperTrustProfileDto extends HelperTrustSummaryDto { memberSince?: string; relationship?: 'CARE_CIRCLE' | 'EXTERNAL'; recentReviews: ReviewDto[]; reviewLimit: number; reviewsTruncated: boolean }

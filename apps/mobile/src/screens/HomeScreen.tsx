@@ -1,3 +1,4 @@
+import { HelperTrustScreen } from './HelperTrustScreen';
 import { PointsScreen } from './PointsScreen';
 import { demoPerson } from '../demo/maker-day3';
 import React, { useEffect, useState } from 'react';
@@ -15,13 +16,15 @@ import { DesignPreviewScreen, type DesignPreview } from './DesignPreviewScreen';
 const roleName = (value: UserRole) => value === 'HELPER' ? 'Caregiver' : value === 'CARE_MANAGER' ? 'Care coordinator' : 'Care receiver';
 export function HomeScreen({ busy, profile, initialize, loadUser, switchRole, children, email, name, contextName, verification, logout }: { children?: React.ReactNode; email?: string | null; name?: string | null; contextName?: string; verification?: () => void; logout?: () => void; busy: boolean; profile: UserDto | null; initialize: (role: UserRole) => void; loadUser: () => void; switchRole: (role: UserRole) => void }) {
   const [role, setRole] = useState<UserRole>('CARE_MANAGER'), [rolesOpen, setRolesOpen] = useState(false), [preview, setPreview] = useState<DesignPreview | null>(null);
+  const [trustOpen,setTrustOpen]=useState(false);
   const [pointsBalance,setPointsBalance]=useState<number | null>(null);
   useEffect(()=>{let active=true;setPointsBalance(null);if(profile && !preview)void api.getPointAccount().then(value=>{if(active)setPointsBalance(value.availablePoints);}).catch(()=>{});return()=>{active=false;};},[profile?.id,preview]);
   const [rating, setRating] = useState<HelperRatingSummaryDto | null>(null);
   const helper = (profile?.lastActiveRole ?? profile?.primaryOnboardingRole) === 'HELPER';
-  useScreenTop(preview ?? (rolesOpen ? 'role-picker' : 'profile'));
+  useScreenTop(trustOpen ? 'my-helper-profile' : preview ?? (rolesOpen ? 'role-picker' : 'profile'));
   useEffect(() => { let active = true; setRating(null); if (profile?.roles.includes('HELPER')) void api.getHelperRatingSummary(profile.id).then(value => { if (active) setRating(value); }).catch(() => {}); return () => { active = false; }; }, [profile?.id]);
   if (!profile) return <><PageHeading title="How will you use this app?" caption="Choose the best fit for now." />{(['CARE_RECEIVER', 'CARE_MANAGER', 'HELPER'] as UserRole[]).map(value => <Pressable key={value} accessibilityRole="radio" accessibilityLabel={roleName(value)} accessibilityState={{ checked: role === value, disabled: busy }} disabled={busy} onPress={() => setRole(value)} style={{ padding: 20, gap: 8, borderWidth: 1, borderColor: role === value ? t.colors.primary : t.colors.border, borderRadius: 12, backgroundColor: role === value ? t.colors.primarySoft : t.colors.surface }}><Text style={{ fontSize: 18, fontWeight: '600' }}>{value === 'CARE_RECEIVER' ? 'For myself' : value === 'CARE_MANAGER' ? 'For a family member' : 'To help others'}</Text><Text style={{ color: t.colors.muted }}>{value === 'CARE_RECEIVER' ? 'I’m looking for everyday help.' : value === 'CARE_MANAGER' ? 'I’m helping someone manage their care.' : 'I’d like to volunteer or offer practical help.'}</Text></Pressable>)}<Button variant="primary" disabled={busy} title="Continue" onPress={() => initialize(role)} /></>;
+  if (trustOpen) return <HelperTrustScreen helperId={profile.id} back={()=>setTrustOpen(false)}/>;
   if (preview === 'points') return <PointsScreen back={() => setPreview(null)} />;
   if (preview) return <DesignPreviewScreen key={preview} kind={preview} back={() => setPreview(null)} />;
   if (rolesOpen) return <RolePicker profile={profile} busy={busy} switchRole={switchRole} contextName={contextName} back={() => setRolesOpen(false)} />;
@@ -31,6 +34,7 @@ export function HomeScreen({ busy, profile, initialize, loadUser, switchRole, ch
       {helper && <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingTop: 8 }}>{[[rating?.averageRating?.toFixed(1) ?? '—', 'Rating'], [rating?.reviewCount?.toString() ?? '—', 'Reviews'], [statusLabel(profile.verificationStatus ?? 'UNVERIFIED'), 'Identity']].map(([value,label]) => <View key={label} style={{ gap: 4, flex: 1 }}><Text style={{ color: t.colors.primary, fontSize: 18, fontWeight: '600' }}>{value}</Text><Text style={{ fontSize: 13.5, color: t.colors.muted }}>{label}</Text></View>)}</View>}
     </Card>
     <Pressable accessibilityRole="button" accessibilityLabel="My points" onPress={() => setPreview('points')}><TonePanel title="My points">{pointsBalance === null ? 'View your balance and activity' : `${pointsBalance.toLocaleString()} points available`}</TonePanel></Pressable>
+    {profile.roles.includes('HELPER') && <MenuRow contained title="View my helper profile" onPress={()=>setTrustOpen(true)} />}
     {helper && <MenuRow contained title="Skills and availability" onPress={() => setPreview('skills')} />}
     {verification && <MenuRow contained title={helper ? 'Caregiver verification' : 'Identity verification'} onPress={verification} />}
     {helper && <MenuRow contained title="Certificates" onPress={() => setPreview('certificates')} />}

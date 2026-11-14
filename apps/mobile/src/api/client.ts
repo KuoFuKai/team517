@@ -33,3 +33,6 @@ export const { listConversations, getOrCreateConversation, getConversation, list
 
 import { createPointApi } from './points';
 export const { getPointAccount, getPointTransactions } = createPointApi(request);
+
+import { createTrustApi } from './trust';
+export const { getHelperTrustProfile } = createTrustApi(request);

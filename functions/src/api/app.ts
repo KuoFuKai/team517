@@ -1,3 +1,4 @@
+import { trustRoutes } from './trust-routes';
 import { pointRoutes } from './point-routes';
 import { pushRoutes } from './push-routes';
 import { messagingRoutes } from './messaging-routes';
@@ -33,6 +34,7 @@ export function createApp(store: Store, verify = authenticate, aiProvider: AiPro
   api.post('/care-contexts',asyncRoute(async (req,res)=>{const body=createContextSchema.parse(req.body); res.status(201).json(await contexts.create(res.locals.uid,body.name));}));
   api.get('/care-contexts',asyncRoute(async (_req,res)=>{res.json({careContexts:await contexts.list(res.locals.uid)});}));
   api.get('/care-contexts/:id',asyncRoute(async (req,res)=>{res.json(await contexts.get(res.locals.uid,contextIdSchema.parse(req.params.id)));}));
+  api.use(trustRoutes());
   api.use(pointRoutes());
   api.use(pushRoutes());
   api.use(messagingRoutes());

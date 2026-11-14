@@ -182,3 +182,9 @@ Sprint 8A adds owner-scoped Points API → PointService → PointRepository → 
 ## Sprint 8B — trust read projection
 
 Authenticated Helper trust API → TrustService → bounded TrustRepository/SupportRepository → Firestore. Shared contracts export only public DTOs. Explicit projection uses optional backend-controlled first name or stable alias; never Auth/legal/contact identity, wallet or private verification evidence. Counts use completed Assignment COUNT and existing Review COUNT/AVG; no Offer snapshots/counter patches. Offers batch users/memberships and limit aggregate workers, with an explicit100historical-Offer cap. Optional Task scope reuses VIEW_OFFERS before exposing Circle relationship. Profile/Offer/Conversation screens call the API layer only; existing public business Firestore denial remains. [Full semantics](trust-profile.md).
+
+## Sprint8C — Offer-local availability
+
+Existing Offer document owns two optional Timestamps, with strict paired instant/range validation and no new collection/index/provider. Marketplace DTO derives fit from current Task/Offer numeric milliseconds. Existing transactional Offer count/state/event writes and authorization remain intact; no availability in TaskEvent metadata or permanent Trust metrics. Task-scoped TrustService adds explicit safe availability only after existing Offer-management authorization; unscoped public projection remains clean.
+
+Shared mobile OfferForm calls the existing authenticated API from Discovery/Map/Circle/Community. It reuses TaskDateTimeField and existing local-time parsing/formatting; explicit Task reset tracks exact original instant provenance. Comparison uses one backend policy, does not reorder candidates, warns without prohibiting partial/conflict selection and keeps separate Assignment confirmation. No device/provider calendar, recurring/free-busy service or matching engine. [Semantics/limits](helper-availability.md).

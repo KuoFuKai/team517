@@ -61,3 +61,9 @@ The vivo tested real cloud Preview, Map/Offer, docked Offer-message input and tw
 ## Sprint 8B — candidate comparison review
 
 Try requester Tasks → Company for a Saturday appointment → arrangement/backup Offers (the final native acceptance selected Alex, still waiting for confirmation). Compare Marcus's real synthetic history with Sam's Circle/no-Reviews state. For a fresh selection walkthrough create a normal new Task; do not reset the progressed fixture. Open Profile → Message → profile → Android Back; Me → own public profile. Ask whether VERIFIED vs Care Circle is understood, whether the response covers the desired time, and whether selection clearly requires the Helper's confirmation. No safety/KYC claims or public Points balances. [Report/evidence](sprint-8b-report.md). Physical8A/8B checks remain pending; no real user study result is implied by synthetic histories.
+
+## Sprint8C — availability comparison review
+
+Requester: Company for a morning appointment → Offers. Alex covers, Marcus partially overlaps, Sam has not provided a window; compare this signal independently of verification/Reviews/Circle membership. View profile shows only Availability for this task. Message and Cancel selection before deciding. The separate Visit timing to discuss story was actually selected despite conflict and then independently confirmed; do not rewind it. The8B Saturday story remains pending, and the8C main comparison remains unselected for team review.
+
+Helper: Find/Map → eligible Task → Offer form, exact Task-time defaults, editable native times or unspecified option, separate message. Withdrawing/reactivating preserves saved pair or missing state. Try large text and Back/picker Cancel. Ask whether partial coverage and separate confirmation are understood; synthetic fixture behavior is not real user research. [Semantics](helper-availability.md) · [40-item report/evidence](sprint-8c-report.md). Physical8A/8B/8C remain queued together.

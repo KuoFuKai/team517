@@ -2,7 +2,7 @@ import type { Timestamp } from 'firebase-admin/firestore';
 import type { OfferStatus, AssignmentStatus } from '@team517/contracts';
 
 export interface Offer {
-  id: string; taskId: string; careContextId: string; helperId: string; message?: string;
+  id: string; taskId: string; careContextId: string; helperId: string; message?: string; availableFrom?: Timestamp; availableUntil?: Timestamp;
   status: OfferStatus; createdAt: Timestamp; updatedAt: Timestamp;
 }
 export interface Assignment {

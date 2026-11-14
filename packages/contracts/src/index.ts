@@ -94,9 +94,12 @@ export interface AiTaskSummaryDto {
 }
 
 export type OfferStatus = 'ACTIVE' | 'WITHDRAWN' | 'SELECTED' | 'NOT_SELECTED' | 'EXPIRED';
-export interface OfferHelpRequest { message?: string }
+export type OfferAvailabilityFit = 'COVERS_TASK' | 'PARTIAL_OVERLAP' | 'CONFLICT' | 'NOT_PROVIDED';
+export interface OfferAvailabilityDto { availableFrom?: string; availableUntil?: string; availabilityFit?: OfferAvailabilityFit }
+export interface TaskOfferAvailabilityDto extends OfferAvailabilityDto { taskStartAt?: string; taskEndAt?: string }
+export interface OfferHelpRequest { message?: string; availableFrom?: string; availableUntil?: string }
 export interface SelectOfferRequest { offerId: string }
-export interface OfferDto {
+export interface OfferDto extends OfferAvailabilityDto {
   id: string; taskId: string; helperId: string; message?: string; status: OfferStatus;
   createdAt: string; updatedAt: string; assignmentId?: string;
 }
@@ -192,4 +195,4 @@ export interface PointTransactionDto { id: string; type: PointTransactionType; a
 export interface PointTransactionListDto { transactions: PointTransactionDto[]; nextCursor?: string; limit: number }
 
 export interface HelperTrustSummaryDto { userId: string; displayName: string; verificationStatus: VerificationStatus; completedTaskCount: number; averageRating?: number; reviewCount: number }
-export interface HelperTrustProfileDto extends HelperTrustSummaryDto { memberSince?: string; relationship?: 'CARE_CIRCLE' | 'EXTERNAL'; recentReviews: ReviewDto[]; reviewLimit: number; reviewsTruncated: boolean }
+export interface HelperTrustProfileDto extends HelperTrustSummaryDto { taskAvailability?: TaskOfferAvailabilityDto; memberSince?: string; relationship?: 'CARE_CIRCLE' | 'EXTERNAL'; recentReviews: ReviewDto[]; reviewLimit: number; reviewsTruncated: boolean }

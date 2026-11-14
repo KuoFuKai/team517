@@ -1,3 +1,5 @@
+import { OfferAvailability } from '../components/OfferAvailability';
+import { taskWhenLabel } from '../utils/design-presentation';
 import React, { useEffect,useState } from 'react';
 import { View } from 'react-native';
 import type { HelperTrustProfileDto,HelperTrustSummaryDto } from '@team517/contracts';
@@ -18,6 +20,7 @@ export function HelperTrustScreen({helperId,taskId,back,children}:{helperId:stri
  useEffect(()=>{let active=true;setData(null);setError('');setLoading(true);void api.getHelperTrustProfile(helperId,taskId).then(value=>{if(active)setData(value);}).catch(e=>{if(active)setError(friendlyError(e));}).finally(()=>{if(active)setLoading(false);});return()=>{active=false;};},[helperId,taskId,revision]);
  return <>{loading && <LoadingState label="Loading helper profile…"/>}{error ? <ErrorState message={error}/> : null}{data && <><Card><Avatar label={data.displayName}/><Text accessibilityRole="header" style={{fontSize:28,lineHeight:36}}>{data.displayName}</Text><TrustSignals value={data} relationship={data.relationship}/>{data.memberSince && <Text style={{color:t.colors.muted}}>On 517 since {new Date(data.memberSince+'-01T12:00:00Z').toLocaleDateString(undefined,{month:'short',year:'numeric'})}</Text>}</Card>
  <Text>Verification, completed tasks and reviews offer context for your decision.</Text>{data.relationship==='CARE_CIRCLE' && <Text>This helper belongs to this task’s care circle. Circle membership and verification are separate.</Text>}
+ {data.taskAvailability && <Card><Text accessibilityRole="header">Availability for this task</Text><Text>{data.taskAvailability.taskStartAt && data.taskAvailability.taskEndAt ? taskWhenLabel(data.taskAvailability.taskStartAt,data.taskAvailability.taskEndAt) : 'Schedule flexible'}</Text><OfferAvailability value={data.taskAvailability}/></Card>}
  {children}
  <Text accessibilityRole="header">Recent reviews</Text>{data.recentReviews.length===0 ? <Card><Text>No reviews yet. You can still read their offer and message them before deciding.</Text></Card> : data.recentReviews.map(review=><Card key={review.id}><Text style={{fontWeight:'600'}}>{review.reviewerLabel}</Text><Text>{review.rating} ★ · {dateLabel(review.createdAt)}</Text><Text>{review.comment || 'No written comment'}</Text></Card>)}
  {data.reviewsTruncated && <ReviewsPanel helperId={helperId}/>}</>}

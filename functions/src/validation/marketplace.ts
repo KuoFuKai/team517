@@ -1,5 +1,9 @@
 import { z } from 'zod';
-export const offerHelpSchema = z.object({ message: z.string().trim().max(1000).optional() }).strict();
+const instant = z.iso.datetime({offset:true});
+export const offerHelpSchema = z.object({ message: z.string().trim().max(1000).optional(), availableFrom: instant.optional(), availableUntil: instant.optional() }).strict().superRefine((value,ctx)=>{
+  if ((value.availableFrom === undefined) !== (value.availableUntil === undefined)) ctx.addIssue({code:'custom',path:['availableUntil'],message:'Supply both availability times, or omit both.'});
+  if (value.availableFrom && value.availableUntil && Date.parse(value.availableUntil) <= Date.parse(value.availableFrom)) ctx.addIssue({code:'custom',path:['availableUntil'],message:'Availability must end after it starts.'});
+});
 export const selectOfferSchema = z.object({ offerId: z.string().min(22).max(180).regex(/^[A-Za-z0-9_-]+$/) }).strict();
 export const discoverySchema = z.object({
   latitude: z.coerce.number().min(-90).max(90).optional(), longitude: z.coerce.number().min(-180).max(180).optional(),

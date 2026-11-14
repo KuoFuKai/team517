@@ -25,10 +25,10 @@ export class MarketplaceService {
       if (task.offerCount >= 100) throw new ApiFailure(409, 'CONFLICT', 'This task has reached its offer limit.');
       const now = Timestamp.now();
       const offer: Offer = { ...(existing ?? {}), id, taskId, careContextId: task.careContextId, helperId: uid, status: 'ACTIVE',
-        createdAt: existing?.createdAt ?? now, updatedAt: now, ...(body.message !== undefined ? { message: body.message } : {}) };
+        createdAt: existing?.createdAt ?? now, updatedAt: now, ...(body.message !== undefined ? { message: body.message } : {}), ...(body.availableFrom && body.availableUntil ? {availableFrom:Timestamp.fromDate(new Date(body.availableFrom)),availableUntil:Timestamp.fromDate(new Date(body.availableUntil))} : {}) };
       return { task: { ...task, status: 'HAS_OFFERS', offerCount: task.offerCount + 1 }, offer, event: 'OFFER_CREATED' };
     });
-    return offerDto(result.offer);
+    return offerDto(result.offer,result.task);
   }
   async withdraw(uid: string, taskId: string) {
     const result = await this.repo.change(taskId, uid, async (task, reads) => {
@@ -41,14 +41,14 @@ export class MarketplaceService {
       return { task: { ...task, offerCount: count, status: task.status === 'HAS_OFFERS' && count === 0 ? 'OPEN' : task.status },
         offer: { ...offer, status: 'WITHDRAWN', updatedAt: Timestamp.now() }, event: 'OFFER_WITHDRAWN' };
     });
-    return offerDto(result.offer);
+    return offerDto(result.offer,result.task);
   }
   async mine(uid: string, taskId: string): Promise<MyOfferDto> {
     const task = await this.task(taskId);
     const offer = await this.repo.offer(offerId(taskId, uid));
     await authorizeMarketplace(this.repo.reader(), uid, offer ? 'VIEW_OWN_OFFER' : 'OFFER_HELP', { task, offer });
     if (!offer && !isOfferable(task)) throw new ApiFailure(409, 'TASK_NOT_OFFERABLE', 'This task is not accepting offers.');
-    return { offer: offer ? { ...offerDto(offer), ...(offer.status === 'SELECTED' && task.activeAssignmentId ? { assignmentId: task.activeAssignmentId } : {}) } : null, taskStatus: task.status };
+    return { offer: offer ? { ...offerDto(offer,task), ...(offer.status === 'SELECTED' && task.activeAssignmentId ? { assignmentId: task.activeAssignmentId } : {}) } : null, taskStatus: task.status };
   }
   async listOffers(uid: string, taskId: string): Promise<OfferListDto> {
     const task = await this.task(taskId);
@@ -57,7 +57,7 @@ export class MarketplaceService {
     const summaries=await new TrustRepository().summaries(offers.map(offer=>offer.helperId),task.careContextId);
     return {task:taskOfferStateDto(task),offers:offers.sort((a,b)=>a.createdAt.toMillis()-b.createdAt.toMillis()).map(offer=>{
       const {trust,relationship}=summaries.get(offer.helperId)!;
-      return {...offerDto(offer),verificationStatus:trust.verificationStatus,reviewCount:trust.reviewCount,...(trust.averageRating!==undefined?{averageRating:trust.averageRating}:{}),trust,relationship};
+      return {...offerDto(offer,task),verificationStatus:trust.verificationStatus,reviewCount:trust.reviewCount,...(trust.averageRating!==undefined?{averageRating:trust.averageRating}:{}),trust,relationship};
     })};
   }
   async select(uid: string, taskId: string, selectedOfferId: string): Promise<SelectOfferResponse> {

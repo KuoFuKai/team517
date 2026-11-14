@@ -14,7 +14,7 @@ export class TrustRepository {
     const db=getFirestore(),[users,members]=await Promise.all([db.getAll(...unique.map(id=>db.collection('users').doc(id))),db.getAll(...unique.map(id=>db.collection('care_context_members').doc(membershipId(contextId,id))))]);
     let position=0;
     // Four workers bound aggregate concurrency; no per-card frontend HTTP requests.
-    await Promise.all(Array.from({length:Math.min(4,unique.length)},async()=>{while(position<unique.length){const i=position++,id=unique[i];const user=(users[i].data() ?? {id,roles:[]}) as User;const member=members[i].data() as CareContextMember|undefined;output.set(id,{trust:await this.aggregate(user),relationship:member?.status==='ACTIVE'?'CARE_CIRCLE':'EXTERNAL'});}}));
+    await Promise.all(Array.from({length:Math.min(4,unique.length)},async()=>{while(position<unique.length){const i=position++,id=unique[i];const user=(users[i].data() ?? {id,roles:[]}) as User;const member=members[i].data() as CareContextMember|undefined;output.set(id,{trust:await this.aggregate(user),relationship:member?.status==='ACTIVE' && member.careContextId===contextId && member.userId===id?'CARE_CIRCLE':'EXTERNAL'});}}));
     return output;
   }
 }

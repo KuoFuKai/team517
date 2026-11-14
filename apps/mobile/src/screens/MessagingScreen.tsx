@@ -1,3 +1,5 @@
+import { HelperTrustScreen } from './HelperTrustScreen';
+import { ScreenModal } from '../components/ScreenModal';
 import { displayPerson } from '../demo/maker-day3';
 import { messageTimeLabel } from '../utils/design-presentation';
 import Feather from '@expo/vector-icons/Feather';
@@ -18,6 +20,8 @@ import { theme } from '../theme';
 export function ConversationScreen({ id, back, backLabel = 'Back to inbox' }: { id: string; back: () => void; backLabel?: string }) {
   const { height } = useWindowDimensions();
   const [data, setData] = useState<ConversationDetailDto | null>(null), [messages, setMessages] = useState<MessageDto[]>([]), [before, setBefore] = useState<number | undefined>();
+  const [helperProfileAvailable,setHelperProfileAvailable]=useState(false),[helperProfileOpen,setHelperProfileOpen]=useState(false);
+  useEffect(()=>{let active=true;setHelperProfileAvailable(false);setHelperProfileOpen(false);const c=data?.conversation;if(c?.scope==='TASK' && c.taskId)void api.getHelperTrustProfile(c.otherParticipant.id,c.taskId).then(()=>{if(active)setHelperProfileAvailable(true);}).catch(()=>{});return()=>{active=false;};},[data?.conversation.id,data?.conversation.taskId,data?.conversation.otherParticipant.id]);
   const [composerOpen, setComposerOpen] = useState(false);
   const [text, setText] = useState(''), [error, setError] = useState(''), [busy, setBusy] = useState(false), [sending, setSending] = useState(false), [moreUnread, setMoreUnread] = useState(false);
   useScreenHeader({ title: displayPerson(data?.conversation.otherParticipant.id, data?.conversation.otherParticipant.label || 'Conversation'), back, disabled: busy || sending, priority: 5 });
@@ -32,7 +36,9 @@ export function ConversationScreen({ id, back, backLabel = 'Back to inbox' }: { 
   };
   useEffect(() => { setData(null); setMessages([]); pending.current = null; setText(''); setComposerOpen(false); void run(load); }, [id]);
   useHardwareBack(() => { if (!busy && !sending) back(); return true; }, 5);
+  if(helperProfileOpen && data && helperProfileAvailable)return <ScreenModal title="Helper profile" close={()=>setHelperProfileOpen(false)}><HelperTrustScreen helperId={data.conversation.otherParticipant.id} taskId={data.conversation.taskId} back={()=>setHelperProfileOpen(false)}/></ScreenModal>;
   return <><View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingTop: 24 }}><Text style={{ flex: 1, fontSize: 13.5, color: theme.colors.muted }}>Your conversation with {displayPerson(data?.conversation.otherParticipant.id, data?.conversation.otherParticipant.label || 'your circle')}</Text><IconAction disabled={busy} icon="refresh-cw" title="Refresh messages" onPress={() => void run(load)} /></View>
+    {helperProfileAvailable && <Button title="View helper profile" onPress={()=>setHelperProfileOpen(true)} disabled={busy || sending}/>}
     {busy && <LoadingState />}{error ? <ErrorState message={error} /> : null}
     {before !== undefined && <Button disabled={busy} title="Load older messages" onPress={() => void run(async () => { const page = await api.listMessages(id, before); historyPosition.current = 'start'; setMessages(current => [...page.messages, ...current]); setBefore(page.nextBefore); })} />}
     {data && !data.conversation.canSend && <TonePanel title="Read-only conversation">Your relationship has ended. Message history is still available, but new messages cannot be sent.</TonePanel>}

@@ -1,3 +1,8 @@
+
+## Sprint 8A — Points (November 14)
+
+[Wallet/ledger, lifecycle policy, cloud and validation report](points.md) now records real available/reserved balance and private paginated activity, POINTS publication reservation, completed-helper reward transfer and whole-task cancellation release. Disputed/reopened tasks keep reservations under the documented policy. This supersedes older metadata-only/future-Points statements below. No money, purchase, cash-out or fee; no wallet data in Discovery/Maps and no mobile business Firestore access. Phone acceptance is queued per Kevin; emulator observations are recorded separately.
+
 # Development plan
 
 Current Sprint checkpoint: [Sprint7B.2](sprint-7b2.md) / [visible progress](visible-progress.md). Physical responsive work precedes Sprint7C Maps.

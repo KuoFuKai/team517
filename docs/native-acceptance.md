@@ -1,3 +1,8 @@
+
+## Sprint 8A — Points (November 14)
+
+[Wallet/ledger, lifecycle policy, cloud and validation report](points.md) now records real available/reserved balance and private paginated activity, POINTS publication reservation, completed-helper reward transfer and whole-task cancellation release. Disputed/reopened tasks keep reservations under the documented policy. This supersedes older metadata-only/future-Points statements below. No money, purchase, cash-out or fee; no wallet data in Discovery/Maps and no mobile business Firestore access. Phone acceptance is queued per Kevin; emulator observations are recorded separately.
+
 # Sprint 7B.1 standalone cloud acceptance — November 12, 2026
 
 Sprint7B.2: [physical Android / responsive acceptance / collaboration](sprint-7b2.md) and [visible progress](visible-progress.md). Actual vivo V2324A Android14/API34 ≈360dp/font1.12 rendered the documented core/support paths; 320/360/390/412dp emulator Tasks/Post at1.0/1.3 and360dp at0.85 also rendered. Physical docked keyboard, synthetic draft/comment/message send and background Conversation/Task FCM taps passed within scope. Final APK SHA256 `2af447b575958703cf7b742e2bf23b288b1367dc4c06db695e41504a96223ae1`; Node22 full suite22 unit/78 client/92 integration plus smoke/default+mock HTTP/Hermes passed. Kevin reported the complete USB-disconnected normal-network short flow succeeded (user-observed, separately from adb evidence). Sprint7B.2 can close within the documented scope. Kingsley branding/history preserved on the Sprint branch; final integration/CI state is recorded in the Sprint report/completion. Earlier checkpoints below are historical.

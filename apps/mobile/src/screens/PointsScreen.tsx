@@ -4,7 +4,6 @@ import { View } from 'react-native';
 import type { PointAccountDto, PointTransactionListDto } from '@team517/contracts';
 import * as api from '../api/client';
 import { Text, Button, Card } from '../components/ui';
-import { TonePanel } from '../components/Details';
 import { useScreenHeader } from '../components/ScreenHeader';
 import { useHardwareBack } from '../navigation/useHardwareBack';
 import { theme as t } from '../theme';
@@ -20,7 +19,7 @@ export function PointsScreen({ back }: { back: () => void }) {
   return <>
     {loading && <Text >Loading your points…</Text>}
     {error ? <Text accessibilityRole="alert">{error}</Text> : null}
-    {account && !loading && !error && <><TonePanel title="Available points"><Text style={{ color: t.colors.primary, fontSize: 44, lineHeight: 56 }}>{account.availablePoints.toLocaleString()}</Text><Text>points available</Text></TonePanel>
+    {account && !loading && !error && <><View style={{backgroundColor:t.colors.primarySoft,borderRadius:12,padding:16,gap:8}}><Text style={{fontWeight:'600'}}>Available points</Text><Text accessibilityRole="header" style={{ color: t.colors.primary, fontSize: 44, lineHeight: 56 }}>{account.availablePoints.toLocaleString()}</Text><Text>points available</Text></View>
       <Card><View style={{ gap: 8 }}><Text accessibilityRole="header">{account.reservedPoints.toLocaleString()} points reserved</Text><Text>Reserved for active tasks. Points stay reserved until the task is completed or cancelled.</Text></View></Card>
       <Text>Points are for help within 517. They are separate from ratings and reviews.</Text>
       <Text accessibilityRole="header">Recent activity</Text>

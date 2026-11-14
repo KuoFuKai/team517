@@ -15,6 +15,8 @@ import { DesignPreviewScreen, type DesignPreview } from './DesignPreviewScreen';
 const roleName = (value: UserRole) => value === 'HELPER' ? 'Caregiver' : value === 'CARE_MANAGER' ? 'Care coordinator' : 'Care receiver';
 export function HomeScreen({ busy, profile, initialize, loadUser, switchRole, children, email, name, contextName, verification, logout }: { children?: React.ReactNode; email?: string | null; name?: string | null; contextName?: string; verification?: () => void; logout?: () => void; busy: boolean; profile: UserDto | null; initialize: (role: UserRole) => void; loadUser: () => void; switchRole: (role: UserRole) => void }) {
   const [role, setRole] = useState<UserRole>('CARE_MANAGER'), [rolesOpen, setRolesOpen] = useState(false), [preview, setPreview] = useState<DesignPreview | null>(null);
+  const [pointsBalance,setPointsBalance]=useState<number | null>(null);
+  useEffect(()=>{let active=true;setPointsBalance(null);if(profile && !preview)void api.getPointAccount().then(value=>{if(active)setPointsBalance(value.availablePoints);}).catch(()=>{});return()=>{active=false;};},[profile?.id,preview]);
   const [rating, setRating] = useState<HelperRatingSummaryDto | null>(null);
   const helper = (profile?.lastActiveRole ?? profile?.primaryOnboardingRole) === 'HELPER';
   useScreenTop(preview ?? (rolesOpen ? 'role-picker' : 'profile'));
@@ -28,7 +30,7 @@ export function HomeScreen({ busy, profile, initialize, loadUser, switchRole, ch
     <Card>{helper ? <Text accessibilityRole="header" style={{ fontSize: 28, lineHeight: 34 }}>{title}</Text> : <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}><Avatar label={title} /><Text accessibilityRole="header" style={{ flex: 1, fontSize: 22, lineHeight: 28 }}>{title}</Text></View>}<Text style={{ color: t.colors.muted }}>{demoPerson(profile.id)?.relationship ?? `${roleName(profile.lastActiveRole ?? profile.primaryOnboardingRole)} · ${statusLabel(profile.verificationStatus ?? 'UNVERIFIED')}`}</Text>
       {helper && <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingTop: 8 }}>{[[rating?.averageRating?.toFixed(1) ?? '—', 'Rating'], [rating?.reviewCount?.toString() ?? '—', 'Reviews'], [statusLabel(profile.verificationStatus ?? 'UNVERIFIED'), 'Identity']].map(([value,label]) => <View key={label} style={{ gap: 4, flex: 1 }}><Text style={{ color: t.colors.primary, fontSize: 18, fontWeight: '600' }}>{value}</Text><Text style={{ fontSize: 13.5, color: t.colors.muted }}>{label}</Text></View>)}</View>}
     </Card>
-    <Pressable accessibilityRole="button" accessibilityLabel="My points" onPress={() => setPreview('points')}><TonePanel title="My points">— points available</TonePanel></Pressable>
+    <Pressable accessibilityRole="button" accessibilityLabel="My points" onPress={() => setPreview('points')}><TonePanel title="My points">{pointsBalance === null ? 'View your balance and activity' : `${pointsBalance.toLocaleString()} points available`}</TonePanel></Pressable>
     {helper && <MenuRow contained title="Skills and availability" onPress={() => setPreview('skills')} />}
     {verification && <MenuRow contained title={helper ? 'Caregiver verification' : 'Identity verification'} onPress={verification} />}
     {helper && <MenuRow contained title="Certificates" onPress={() => setPreview('certificates')} />}

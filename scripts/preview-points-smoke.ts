@@ -1,0 +1,40 @@
+// Explicitly guarded, non-destructive synthetic team517-dev acceptance. Never a production runner.
+import assert from 'node:assert/strict';
+import { readFileSync,writeFileSync,existsSync } from 'node:fs';
+import { assertPreviewTarget,PREVIEW_API,PREVIEW_PROJECT,PREVIEW_CONTEXT_ID,PREVIEW_LOCATION_ID } from './preview-policy';
+import { createTransport } from '../apps/mobile/src/api/transport';
+import { createTaskApi } from '../apps/mobile/src/api/tasks';
+import { createPointApi } from '../apps/mobile/src/api/points';
+import { createMarketplaceApi } from '../apps/mobile/src/api/marketplace';
+import { createAssignmentApi } from '../apps/mobile/src/api/assignments';
+async function main(){
+ assertPreviewTarget(process.argv[process.argv.indexOf('--project')+1]);
+ const credentials=JSON.parse(readFileSync('.tools/preview-credentials.json','utf8')),google=JSON.parse(readFileSync('apps/mobile/google-services.json','utf8'));
+ assert.equal(credentials.project,PREVIEW_PROJECT);assert.equal(google.project_info.project_id,PREVIEW_PROJECT);
+ const key=google.client.find((c:any)=>c.client_info.android_client_info.package_name==='edu.cornelltech.team517').api_key[0].current_key;
+ const client=async(name:string)=>{const r=await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key='+encodeURIComponent(key),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...credentials.accounts[name],returnSecureToken:true})});assert.equal(r.status,200);const {idToken}=await r.json() as {idToken:string};return {token:idToken,request:createTransport({baseUrl:PREVIEW_API,getToken:async()=>idToken})};};
+ const owner=await client('manager'),helper=await client('alex'),tasks=createTaskApi(owner.request),market=createMarketplaceApi(owner.request),candidate=createMarketplaceApi(helper.request),execution=createAssignmentApi(helper.request),approval=createAssignmentApi(owner.request),wallet=createPointApi(owner.request),earnings=createPointApi(helper.request);
+ if(process.argv.includes('--native-draft')){const title='Dinner delivery — Points preview';const existing=(await tasks.listTasks(PREVIEW_CONTEXT_ID)).tasks.filter(t=>t.title===title);assert.ok(existing.length<=1);const task=existing[0] ?? await tasks.createTaskDraft(PREVIEW_CONTEXT_ID,{title,helpType:'Meal delivery',publicInstructions:'Bring a warm meal and spend a little time together. Fictional Preview task.',locationId:PREVIEW_LOCATION_ID,startAt:'2026-11-21T22:00:00Z',endAt:'2026-11-21T23:00:00Z',urgency:'PLANNED',visibility:'VERIFIED_HELPERS',compensationType:'POINTS',pointReward:250});writeFileSync('.tools/points-native.json',JSON.stringify({project:PREVIEW_PROJECT,taskId:task.id},null,2));console.log('Synthetic native Points draft ready; existing lifecycle preserved.');return;}
+ const receipt='.tools/points-cloud-smoke.json';
+ let resumed: any;
+ if(existsSync(receipt)){const old=JSON.parse(readFileSync(receipt,'utf8'));assert.equal(old.project,PREVIEW_PROJECT);if(old.assignmentId && old.releaseId && !old.complete){assert.equal((await tasks.getTask(old.taskId)).status,'COMPLETED');assert.equal((await tasks.getTask(old.releaseId)).status,'CANCELLED');const history=await wallet.getPointTransactions();assert.ok(history.transactions.some(t=>t.type==='TRANSFER_OUT'));assert.ok(history.transactions.some(t=>t.type==='RELEASE'));assert.ok(!(history.transactions[0] as any).sourceId);await earnings.getPointAccount();for(const collection of ['point_accounts','point_transactions']){const url=`https://firestore.googleapis.com/v1/projects/${PREVIEW_PROJECT}/databases/(default)/documents/${collection}/team517_preview_manager`;assert.equal((await fetch(url,{headers:{Authorization:'Bearer '+owner.token}})).status,403);}old.complete=true;writeFileSync(receipt,JSON.stringify(old,null,2));console.log('PASS: completed settlement/release receipt, private history and Firestore denial; no repeated transfers.');return;}if(old.complete){assert.equal((await tasks.getTask(old.taskId)).status,'COMPLETED');assert.equal((await tasks.getTask(old.releaseId)).status,'CANCELLED');await wallet.getPointAccount();await wallet.getPointTransactions();console.log('Previous Points acceptance receipt still valid; no repeat transfers.');return;}const task=await tasks.getTask(old.taskId);assert.equal(task.status,'OPEN','Resume only the known open probe; never rewind progressed state.');assert.equal(task.pointReward,250);assert.equal(task.title,'Points acceptance — synthetic groceries');resumed=old;}
+ const actual=await wallet.getPointAccount();
+ const baseline=resumed ? {...actual,availablePoints:actual.availablePoints+250,reservedPoints:actual.reservedPoints-250} : actual,beforeHelper=await earnings.getPointAccount();assert.ok(baseline.availablePoints>=250);
+ const fields=(title:string,reward:number)=>({title,helpType:'Synthetic Points acceptance',publicInstructions:'Fictional software acceptance, no real assistance.',locationId:PREVIEW_LOCATION_ID,startAt:'2026-11-20T15:00:00Z',endAt:'2026-11-20T17:00:00Z',urgency:'PLANNED' as const,visibility:'VERIFIED_HELPERS' as const,compensationType:'POINTS' as const,pointReward:reward});
+ const task=resumed ? await tasks.getTask(resumed.taskId) : await tasks.createTaskDraft(PREVIEW_CONTEXT_ID,fields('Points acceptance — synthetic groceries',250));
+ const state:any={project:PREVIEW_PROJECT,taskId:task.id};const save=()=>writeFileSync(receipt,JSON.stringify(state,null,2));save();
+ if(!resumed)assert.equal((await wallet.getPointAccount()).reservedPoints,baseline.reservedPoints);
+ await tasks.publishTask(task.id);await tasks.publishTask(task.id);
+ assert.equal((await wallet.getPointAccount()).reservedPoints,baseline.reservedPoints+250);
+ const discovery=await candidate.getDiscoveredTask(task.id);assert.equal(discovery.pointReward,250);assert.ok(!JSON.stringify(discovery).includes('availablePoints'));assert.ok(!JSON.stringify(discovery).includes('SYNTHETIC DEMO ADDRESS'));
+ const offered=await candidate.offerHelp(task.id,{}),selected=await market.selectOffer(task.id,offered.id);state.assignmentId=selected.assignment.id;save();
+ await execution.confirmAssignment(selected.assignment.id);await execution.startTask(selected.assignment.id);await execution.requestCompletion(selected.assignment.id);
+ await assert.rejects(()=>execution.confirmCompletion(selected.assignment.id));
+ await Promise.all([approval.confirmCompletion(selected.assignment.id),approval.confirmCompletion(selected.assignment.id)]);
+ assert.equal((await wallet.getPointAccount()).availablePoints,baseline.availablePoints-250);assert.equal((await wallet.getPointAccount()).reservedPoints,baseline.reservedPoints);assert.equal((await earnings.getPointAccount()).availablePoints,beforeHelper.availablePoints+250);
+ const refund=await tasks.createTaskDraft(PREVIEW_CONTEXT_ID,fields('Points release — synthetic cancellation',150));state.releaseId=refund.id;save();await tasks.publishTask(refund.id);await tasks.cancelTask(refund.id);await tasks.cancelTask(refund.id);assert.equal((await wallet.getPointAccount()).availablePoints,baseline.availablePoints-250);assert.equal((await wallet.getPointAccount()).reservedPoints,baseline.reservedPoints);
+ const history=await wallet.getPointTransactions();assert.ok(history.transactions.some(t=>t.type==='TRANSFER_OUT'));assert.ok(history.transactions.some(t=>t.type==='RELEASE'));assert.ok(!(history.transactions[0] as any).sourceId);
+ for(const collection of ['point_accounts','point_transactions']){const url=`https://firestore.googleapis.com/v1/projects/${PREVIEW_PROJECT}/databases/(default)/documents/${collection}/team517_preview_manager`;assert.equal((await fetch(url,{headers:{Authorization:'Bearer '+owner.token}})).status,403);}
+ state.complete=true;save();console.log('PASS: real Auth, own wallet/history, reserve, paired settlement, release, retries, helper self-settlement denial, direct Firestore denial and safe discovery. No balances/tokens logged.');
+}
+main().catch(error=>{console.error('Points smoke stopped:',(error as Error).message);process.exitCode=1;});

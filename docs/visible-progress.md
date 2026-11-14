@@ -1,3 +1,8 @@
+
+## Sprint 8A — Points (November 14)
+
+[Wallet/ledger, lifecycle policy, cloud and validation report](points.md) now records real available/reserved balance and private paginated activity, POINTS publication reservation, completed-helper reward transfer and whole-task cancellation release. Disputed/reopened tasks keep reservations under the documented policy. This supersedes older metadata-only/future-Points statements below. No money, purchase, cash-out or fee; no wallet data in Discovery/Maps and no mobile business Firestore access. Phone acceptance is queued per Kevin; emulator observations are recorded separately.
+
 # Visible product progress
 
 Current: Sprint7C, November13. Sprint7C complete: native Maps working, source/main CI passed, disconnected-phone user report received. [Maps details](maps.md). Prior Sprint7B.2: [Try the current screens](native-evidence/2026-11-12-sprint7b2/visible-progress.png) · [Acceptance detail](sprint-7b2.md)
@@ -14,7 +19,11 @@ Current: Sprint7C, November13. Sprint7C complete: native Maps working, source/ma
 | Team usability review | NEXT | Hand Kevin's vivo to Yiru/Kingsley and collect unprompted-use feedback |
 | Find Tasks Map | NEW / WORKING | Native approximate Task pins, selected preview, existing detail/Offer, shared List filters; optional one-shot location |
 | Nearby Helpers | FUTURE | Separate opt-in/default-off approximate sharing policy; no helper pins or tracking implemented |
-| Points / Payments / real AI / real verification | FUTURE | Existing visual concepts remain; no fabricated balances, transactions or provider results |
+| Points balance / history | NEW / WORKING | Private backend wallet and real immutable activity |
+| POINTS Task settlement | NEW / WORKING | Publish reserves; completion transfers; Task cancellation releases |
+| Buy Points / cash-out / Payments | FUTURE | No real-money functionality |
+| Real AI / real verification | FUTURE | Existing provider boundary unchanged |
+| iOS | DEFERRED | Android remains target |
 | iOS | DEFERRED | This Sprint validates Android only; no iOS Maps setup or compatibility claim |
 
 Polished refers to the exercised phone scope, not visual perfection or every Android device. See the report for remaining acceptance limits.

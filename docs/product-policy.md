@@ -13,7 +13,7 @@ The table separates **CURRENT BEHAVIOR** from **FUTURE POLICY**. Statements in t
 | Unfulfilled Task | No automatic expiration job | Future expiration at startAt; possibly requester-defined deadline. No new scheduler or auto-transition. |
 | Paid matching | Same Offer/selection/confirmation path | Instant Match may become an explicit future option. No direct paid acceptance now. |
 | Backup offers | ACTIVE backups survive selection | Close as NOT_SELECTED only when the chosen helper actually confirms. Pending selection is not a final arrangement. |
-| Points | Intended platform value/internal currency concept; current Demo/Preview displays Task metadata only, with no ledger, cash-out or payment settlement | Future direction may allow conversion/withdrawal as money. Legal/compliance, accounting, exchange-rate and implementation design remain future work; no wallet, purchase, transfer, payout or fake success UI. |
+| Points | Internal virtual value: private available/reserved wallet, immutable ledger, task reservation and completion settlement (Sprint 8A) | 0% fee. No purchase, cash-out, conversion or money implementation. Disputes hold points; future arbitration/cash-out need separate decisions. See [points.md](points.md). |
 | Platform fee | Demo policy is 0% | Future pricing TBD. No fee calculation or accounting has been implemented. |
 | Payment disputes | No payment processing | team517/platform handles service disputes. Card chargebacks follow payment-provider/network procedures; they are separate processes. |
 | Nearby helpers | Not implemented | Explicit opt-in, approximate location, off by default, no location history; consent/revocation details TBD. Task discovery is a separate existing capability. |

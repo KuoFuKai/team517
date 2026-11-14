@@ -25,6 +25,7 @@
     "demo:reset": "tsx scripts/demo-reset.ts --local-demo-only && npm run demo:prepare",
     "preview:android": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build-android-preview.ps1",
     "preview:prepare": "tsx scripts/preview-prepare.ts",
+    "preview:reconfirmation:smoke": "tsx scripts/preview-reconfirmation-smoke.ts",
     "preview:reconfirmation": "tsx scripts/preview-reconfirmation-prepare.ts",
     "preview:availability": "tsx scripts/preview-availability-prepare.ts",
     "preview:trust": "tsx scripts/preview-trust-prepare.ts",

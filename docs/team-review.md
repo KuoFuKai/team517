@@ -1,3 +1,9 @@
+## Sprint 8D teammate review — November 14
+
+[Current report](sprint-8d-report.md) and [actual screenshots](native-evidence/2026-11-14-reconfirmation/README.md). Kingsley's existing brand/schedule work is preserved; no incoming changes/conflicts found on repeated fetch. Source batches were pushed throughout implementation for review. Try Alex's ACTIVE Library visit Offer edit; selected Morning company old/current availability and Keep; Choose help for a clinic visit demonstrates the existing replacement flow (already selected Marcus during emulator acceptance). These are synthetic development stories, not real care commitments. The Family appointment POINTS70 draft is deliberately unpublished for the later phone walkthrough. Obtain private Preview accounts via the existing secure handoff, never commit login receipts.
+
+Kevin requested emulator first, phone later. Full8A/8B/8C/8D physical closure remains queued together. Do not treat API fixtures or API36 results as vivo passes. No external team messages were sent automatically.
+
 
 ## Sprint 8A — Points (November 14)
 

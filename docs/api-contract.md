@@ -1,3 +1,12 @@
+## Sprint 8D additive availability endpoints
+
+- `PATCH /api/v1/tasks/:taskId/offers/mine/availability`: authenticated own eligible Offer; `{expectedRevision, availableFrom?, availableUntil?}`. Both dates omitted clears availability. Returns own Offer and only its coupled selected pending Assignment when applicable.
+- `POST /api/v1/assignments/:assignmentId/reconfirm-availability`: authorized requester/manager; `{expectedRevision}`. Returns current pending Assignment; exact revision required, duplicate accepted revision is read-only.
+- Existing select-offer accepts availabilityRevision; edited Offers require the version actually reviewed. Unedited legacy callers remain compatible.
+- Existing Assignment cancel accepts optional expectedAvailabilityRevision for guarded pending replacement; ordinary cancellation semantics stay unchanged.
+
+AVAILABILITY_STALE is a standardized409; Helper confirmation during required review returns REQUESTER_RECONFIRMATION_REQUIRED. Public DTOs add availabilityRevision, safe own taskTime and authorized selected/current review snapshots; no Firestore document export. [Semantics/privacy](sprint-8d-report.md).
+
 # Sprint 1 through Sprint 3A API
 
 ## Sprint 7A additions

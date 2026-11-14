@@ -1,3 +1,7 @@
+## Sprint 8D — availability updates (November 14)
+
+Offer-specific edits and revision-checked requester reconfirmation are working. A changed selected window that no longer covers the Task requires review; Keep still waits for Helper confirmation. Task timing, Points and Trust are unaffected. [42-item report](docs/sprint-8d-report.md), [policy](docs/helper-availability.md), [native evidence](docs/native-evidence/2026-11-14-reconfirmation/README.md). Node22: 34 unit / 104 client / 117 integration, smoke/default+mock HTTP/Hermes passed. API36 emulator accepted; combined 8A/8B/8C/8D phone acceptance remains pending at Kevin's request. No Payments, recurring availability, automatic matching or Task rescheduling; iOS deferred.
+
 
 ## Sprint 8A — Points (November 14)
 

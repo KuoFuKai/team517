@@ -1,3 +1,9 @@
+## Sprint 8D final validation — November 14
+
+Node22.23.4/Java21: typecheck PASS; backend unit **34/34**, client **104/104**, emulator integration **117/117**; smoke, default/manual HTTP, mock-AI HTTP and Android Hermes export PASS. This includes existing Points, Trust, Maps/discovery privacy, Community and Messaging regressions. Revision/edit/select/confirm/reconfirm/replacement race loops and retry assertions pass. Real-Auth guarded team517-dev preparation/replay and dedicated reconfirmation smoke pass; no CI credentials required, no full emulator test suite aimed at cloud. Mobile business Firestore boundary scan clean; secret preflight findings zero. Audit remains **28** (1 low/20 moderate/7 high/0 critical), no dependency added.
+
+Final source `f88fd63` [CI passed](https://github.com/KuoFuKai/team517/actions/runs/43646472592). [Detailed report](sprint-8d-report.md) distinguishes API-driven synthetic peers from actual native taps and records fixes/provenance. Final APK `a84aedfd91667cf102b0ab7e0b0277318a026a320f6b6235d2050a12830e055f`. Cold persisted Auth and no Metro/Firebase listener/adb reverse verified; phone deferred, no new physical pass claimed. Local validation logs are ignored `.tools/8d-final-*`.
+
 
 ## Sprint 8A — Points (November 14)
 

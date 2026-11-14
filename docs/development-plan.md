@@ -1,3 +1,7 @@
+## Current — Sprint 8D (November 14)
+
+[Availability changes/reconfirmation report](sprint-8d-report.md): engineering, real team517-dev API and API36 emulator scope accepted. Full physical closure is pending one combined 8A/8B/8C/8D session; Kevin explicitly chose emulator first. No new feature Sprint has started. Next: combined phone/team review, then select visible work from feedback. Task rescheduling, recurring availability, no-show/Early Termination, Payments, real providers and iOS remain outside this work.
+
 
 ## Sprint 8A — Points (November 14)
 

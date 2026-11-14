@@ -1,3 +1,7 @@
+## Current — Sprint 8D (November 14)
+
+Tasks, Maps, Calendar, Messaging, Community, Push, Points, Trust and Task availability are working within their dated scopes. **Availability updates/reconfirmation — NEW / WORKING**: own active/pending edit, old/current window comparison, exact-revision Keep, existing replacement selection. [Report and actual native evidence](sprint-8d-report.md). Recurring availability, Task rescheduling, no-show, Payments and real verification remain future; iOS deferred. Combined 8A/8B/8C/8D physical acceptance remains pending; emulator results do not close it. Older sections below are historical.
+
 ## Current — Sprint8C (November14)
 
 Tasks, Maps, Calendar, Messaging, Community, Push, Points, Trust Profile and Offer comparison are working within dated acceptance scopes. **Task-specific Helper availability — NEW / WORKING**: optional per-Offer window, backend fit, contextual Profile and explicit timing warning. [Full report/actual native evidence](sprint-8c-report.md). Recurring availability, automatic matching, Payments and real verification remain future; iOS deferred. Physical8A/8B/8C are queued together; emulator observations do not close them. Older sections below are historical.

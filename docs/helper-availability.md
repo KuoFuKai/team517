@@ -1,3 +1,11 @@
+## Sprint 8D current policy — November 14
+
+Availability can now be edited on an eligible own ACTIVE Offer or own SELECTED Offer coupled to the current PENDING_CONFIRMATION Assignment. Initial/legacy revision0; different normalized window increments, identical retry is read-only. `PATCH /api/v1/tasks/:taskId/offers/mine/availability` requires expectedRevision. Both dates omitted explicitly clears the pair; create/reactivation omission keeps its prior preservation semantics. No message, Task schedule, offerCount, Points or Trust changes.
+
+Selection captures accepted revision/window. Pending selected edits to PARTIAL_OVERLAP, CONFLICT or NOT_PROVIDED require requester review; covering edits accept the new snapshot and clear review, with a persistent update either way. `POST /api/v1/assignments/:assignmentId/reconfirm-availability` accepts expectedRevision, clears review and **remains pending**. Helper Confirm is gated in the same transaction while review is required. Choose another uses existing cancellation with expectedAvailabilityRevision then ordinary backup selection; it cannot cancel a concurrently confirmed Assignment. Confirmed/executing/historical windows are read-only.
+
+Scoped DTOs show previous/current windows only to authorized participants. Backup edits never return the competing selected Assignment; global profiles carry no availability. Events contain compact revision identifiers, not raw schedule; FCM is generic. Foreground/resume refresh every10 seconds and explicit recovery keep UI current; no realtime/matching service. [Full policy, tests and physical limits](sprint-8d-report.md). Recurring/public schedules, Task rescheduling and Early Termination remain future.
+
 # Sprint 8C — Task-specific Helper availability
 
 Offer availability is decision support, not automatic matching or a trust/reliability score. The existing Offer → requester selects → Helper confirms lifecycle remains authoritative. Candidates are not reordered or rejected because of availability.

@@ -1,3 +1,11 @@
+## Sprint 8D — actual API36 acceptance (November 14)
+
+Pixel_9_Pro / emulator-5554 **device**, Android16/API36 x86_64. Final Preview hash `a84aedfd91667cf102b0ab7e0b0277318a026a320f6b6235d2050a12830e055f`. [Evidence/provenance](native-evidence/2026-11-14-reconfirmation/README.md), [42-item report](sprint-8d-report.md). ACTIVE edit, selected covering/partial/conflict/unspecified edits, native date/time dialogs, explicit success, requester old/current comparison, actual stale rejection → Refresh → Keep, normal backup replacement, Message/Back and both background OS FCM routes exercised. Keep remained PENDING_CONFIRMATION. Final APK review/actions rendered at320/360/390/412dp, font1.3; vertical scrolling makes actions reachable. Restored1280x2856/480dpi/font1.0; cold Auth persisted without local services/reverse.
+
+No BLOCKER/HIGH observed. Fixed MEDIUM hidden save feedback and remote stale error far from action. LOW legacy Helper aliases and expected large-font vertical scrolling retained. This date-picker-only change adds no new docked keyboard claim; earlier keyboard evidence stays separately dated. No new native GPS/exact-location-unlock or full execution claim: existing privacy/execution regression tests pass.
+
+vivo V2324A Android14/API34 was initially detected, then disconnected; Kevin explicitly said **emulator first, phone later**. No new physical acceptance. One combined pending checklist:8A wallet/reward/reservation/settlement;8B comparison/Profile/Review/Message;8C availability input/pickers/keyboard;8D edit/review/stale recovery/Keep/replacement/separate Helper confirmation; Maps, authorization-location clearing, read-only Messaging after termination, both FCM routes, cold Auth and disconnected-network user report. Do not repeatedly request phone connection or close these from emulator results.
+
 
 ## Sprint 8A — Points (November 14)
 

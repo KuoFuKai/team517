@@ -1,3 +1,4 @@
+import { OfferForm } from '../components/OfferForm';
 import { PreviewContentCover } from '../components/PreviewContentCover';
 import { previewPostAuthor } from '../demo/preview-content-policy';
 import { config } from '../config';
@@ -41,8 +42,8 @@ export function CommunityScreen() {
     const task = post.taskPreview; if (!task) return <Text>This task is no longer accepting offers or is unavailable to you.</Text>;
     return <Card><StatusBadge status={task.status} /><Text accessibilityRole="header">{task.title}</Text><Text>{task.helpType} · {statusLabel(task.urgency)}</Text><Text>{dateLabel(task.startAt)} – {dateLabel(task.endAt)}</Text>{detail && <Text>{task.publicInstructions}</Text>}<Text>{statusLabel(task.compensationType)} {task.pointReward ?? task.cashAmount ?? ''} {task.currency ?? ''}</Text><Text>{discoveryAreaLabel(task.approximateLocation.areaLabel)} · {task.offerCount} offers</Text>
       <Button disabled={busy} title="View task" onPress={() => void run(async () => { setDetail(await api.getCommunityPost(post.id)); })} />
-      {detail && <TextInput accessibilityLabel="Optional offer message" maxLength={1000} value={message} onChangeText={setMessage} editable={!busy} />}
-      {detail && <Button disabled={busy || offered[task.id]} title={offered[task.id] ? 'Offer sent' : 'Offer to help'} onPress={() => void run(async () => { await api.offerHelp(task.id, message.trim() ? { message: message.trim() } : {}); setOffered(values => ({ ...values, [task.id]: true })); setMessage(''); setNotice('Offer sent. Return to Tasks → My offers to follow its status.'); await reload(); })} />}
+      {detail && !offered[task.id] && <OfferForm key={task.id} task={task} disabled={busy} submit={body=>run(async()=>{await api.offerHelp(task.id,body);setOffered(values=>({...values,[task.id]:true}));setNotice('Offer sent. Return to Tasks → My offers to follow its status.');await reload();})}/>}
+      {offered[task.id] && <Text>Offer sent</Text>}
     </Card>;
   };
   const resourceCard = (r: ResourceDto, compact = false) => compact ? <Card key={r.id}><MenuRow title={r.title} subtitle={r.category} onPress={() => void run(async () => setResource(await api.getResource(r.id)))} disabled={busy} /><Text numberOfLines={2}>{r.summary}</Text></Card> : <Card key={r.id}><PreviewContentCover kind="resource" id={r.id} /><Text accessibilityRole="header">{r.title}</Text><Text>{r.category}</Text><Text>{r.summary}</Text>

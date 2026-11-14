@@ -1,3 +1,5 @@
+import { OfferForm } from '../components/OfferForm';
+import { OfferAvailability } from '../components/OfferAvailability';
 import { MessageEntry } from './MessageEntry';
 import { statusLabel } from '../utils/presentation';
 import { friendlyError } from '../utils/presentation';
@@ -13,7 +15,7 @@ export function CircleOfferPanel({ task, disabled }: { task: TaskDetailDto; disa
   const [error, setError] = useState(''), [busy, setBusy] = useState(false);
   const [assignment, setAssignment] = useState<AssignmentDto | null>(null);
   const inFlight = useRef(false);
-  const run = async (work: () => Promise<unknown>) => {
+  const run = async (work: () => Promise<unknown>):Promise<void> => {
     if (inFlight.current) return;
     inFlight.current = true; setBusy(true); setError('');
     try {
@@ -25,9 +27,8 @@ export function CircleOfferPanel({ task, disabled }: { task: TaskDetailDto; disa
   };
   return <>
     <Text>Offer support in your circle</Text>
-    <TextInput accessibilityLabel="Circle Offer message" placeholder="Optional message" maxLength={1000} value={message} onChangeText={setMessage} editable={!disabled && !busy} />
-    {['OPEN', 'HAS_OFFERS'].includes(mine?.taskStatus ?? task.status) && !['ACTIVE', 'SELECTED'].includes(mine?.offer?.status ?? '') &&
-      <Button disabled={disabled || busy} title="Offer to help" onPress={() => void run(() => api.offerHelp(task.id, { message }))} />}
+    {['OPEN','HAS_OFFERS'].includes(mine?.taskStatus ?? task.status) && !['ACTIVE','SELECTED'].includes(mine?.offer?.status ?? '') && <OfferForm task={task} existing={mine?.offer} disabled={disabled || busy} submit={body=>run(()=>api.offerHelp(task.id,body))}/>}
+    {mine?.offer && <OfferAvailability value={mine.offer}/>}
     <Button disabled={disabled || busy} title="Check my Offer" onPress={() => void run(async () => {})} />
     {mine?.offer && <MessageEntry taskId={task.id} />}
     {mine && <Text>Your Offer: {mine.offer ? statusLabel(mine.offer.status) : 'No offer yet'} · {statusLabel(mine.taskStatus)}</Text>}

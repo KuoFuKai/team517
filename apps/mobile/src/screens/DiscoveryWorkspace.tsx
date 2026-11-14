@@ -1,3 +1,5 @@
+import { OfferForm } from '../components/OfferForm';
+import { OfferAvailability } from '../components/OfferAvailability';
 import { PreviewContentCover } from '../components/PreviewContentCover';
 import { SuccessScreen } from '../components/Feedback';
 import { DiscoveryMap } from '../components/DiscoveryMap';
@@ -88,7 +90,8 @@ export function DiscoveryWorkspace({ back }: { back: () => void }) {
       <TonePanel title={compensationLabel(task)} />
       <Card><Text style={{ fontSize: 18, fontWeight: '600' }}>Quick summary</Text><Text>{task.publicInstructions || 'No additional public instructions.'}</Text><Text style={{ fontSize: 13.5, color: theme.colors.primary }}>{taskWhenLabel(task.startAt, task.endAt)}</Text></Card>
       <Card><Text style={{ fontSize: 13.5, color: theme.colors.muted }}>Approximate location</Text><Text style={{ fontWeight: '600' }}>{discoveryAreaLabel(task.approximateLocation.areaLabel)}</Text><DiscoveryMap tasks={[task]} compact /><Text style={{ fontSize: 13.5, color: theme.colors.primary }}>Exact address unlocks only for the confirmed helper.</Text></Card>
-      {(!mine?.offer || ['WITHDRAWN', 'NOT_SELECTED'].includes(mine.offer.status)) && <><Disclosure title="Add an offer message"><TextInput accessibilityLabel="Offer message" placeholder="Tell the requester how you can help (optional)" value={message} onChangeText={setMessage} maxLength={1000} multiline editable={!busy} /></Disclosure>{['OPEN', 'HAS_OFFERS'].includes(mine?.taskStatus ?? task.status) && <Button variant="primary" disabled={busy} title="Offer to help" onPress={() => void run(async () => { await api.offerHelp(task.id, { message }); await refreshMine(task.id); setOfferSent(true); })} />}</>}
+      {(!mine?.offer || ['WITHDRAWN','NOT_SELECTED'].includes(mine.offer.status)) && ['OPEN','HAS_OFFERS'].includes(mine?.taskStatus ?? task.status) && <OfferForm key={task.id} task={task} existing={mine?.offer} disabled={busy} submit={body=>run(async()=>{await api.offerHelp(task.id,body);await refreshMine(task.id);setOfferSent(true);})}/>}
+      {mine?.offer && <OfferAvailability value={mine.offer}/>}
       {mine?.offer && <MessageEntry taskId={task.id} />}
       {mine?.offer && <Text>Your Offer: {statusLabel(mine.offer.status)}</Text>}
       {mine?.offer?.status === 'ACTIVE' && <Button disabled={busy} title="Withdraw my Offer" onPress={() => void run(async () => { await api.withdrawOffer(task.id); await refreshMine(task.id); })} />}

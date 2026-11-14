@@ -1,4 +1,4 @@
 {
   "compilerOptions": { "target": "ES2022", "module": "CommonJS", "moduleResolution": "Node", "strict": true, "esModuleInterop": true, "skipLibCheck": true, "noEmit": true, "types": ["node"] },
-  "include": ["preview-trust-prepare.ts"]
+  "include": ["preview-trust-prepare.ts", "preview-availability-prepare.ts"]
 }

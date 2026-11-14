@@ -50,6 +50,7 @@ test('Completed count and Review aggregates are fresh, accurate, bounded and ind
  // Existing policy allows one review per completed Assignment/reviewer relationship.
  for(const id of ids)assert.equal((await call(s.manager,'post',`/assignments/${id}/reviews`,{rating:5,comment:'Reliable support.'})).status,201);
  assert.equal((await call(s.owner,'post',`/assignments/${ids[2]}/reviews`,{rating:5})).status,201);
+ const comparison=await s.draft();await s.publish(comparison);await call(s.helper,'post',`/tasks/${comparison}/offers`,{message:'A fresh comparison.'});const fresh=(await call(s.owner,'get',`/tasks/${comparison}/offers`)).body.offers[0].trust;assert.equal(fresh.completedTaskCount,3);assert.equal(fresh.reviewCount,6);assert.equal(fresh.averageRating,29/6);
  p=(await call(s.owner,'get',`/helpers/${s.helper}/profile`)).body;assert.equal(p.reviewCount,6);assert.equal(p.recentReviews.length,5);assert.equal(p.reviewsTruncated,true);assert.equal(p.reviewLimit,5);
 });
 test('Circle relationship requires Task-management scope and remains distinct from verification',async()=>{

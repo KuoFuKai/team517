@@ -178,3 +178,7 @@ Future trust/safety decisions include reporting/blocking/moderation, account del
 
 
 Sprint 8A adds owner-scoped Points API → PointService → PointRepository → Firestore. Mobile reads only safe public wallet/history contracts. TaskRepository publication and AssignmentRepository terminal transitions prepare PointRepository ledger writes inside the same resource/permission transaction; all reads finish before writes. Immutable entries plus cached private account summaries use deterministic logical source IDs. No payment/provider library, direct mobile Firestore, or Maps/discovery wallet projection. See [points.md](points.md).
+
+## Sprint 8B — trust read projection
+
+Authenticated Helper trust API → TrustService → bounded TrustRepository/SupportRepository → Firestore. Shared contracts export only public DTOs. Explicit projection uses optional backend-controlled first name or stable alias; never Auth/legal/contact identity, wallet or private verification evidence. Counts use completed Assignment COUNT and existing Review COUNT/AVG; no Offer snapshots/counter patches. Offers batch users/memberships and limit aggregate workers, with an explicit100historical-Offer cap. Optional Task scope reuses VIEW_OFFERS before exposing Circle relationship. Profile/Offer/Conversation screens call the API layer only; existing public business Firestore denial remains. [Full semantics](trust-profile.md).

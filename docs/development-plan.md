@@ -72,3 +72,7 @@ Future geospatial indexing must stay behind DiscoveryService's existing contract
 
 
 Sprint7C closure: documented native checks and source/main CI passed; Kevin reported no issue in the requested USB-disconnected Map flow. Closed for the two Android targets and bounded MVP scope; next feature work has not started.
+
+## Sprint 8B — Trust Profile + Offer Comparison
+
+Implemented the safe Helper profile API/DTO, server COUNT/Review aggregation, bounded recent Reviews and comparison read model; new visible native Profile/Offer actions preserve existing Task/Assignment flow. Current-task Circle distinction requires manager/creator authorization and remains independent of verification. Existing backend-controlled verification is not KYC. Domain-backed synthetic Preview histories preserve Points and progressed comparison states. See [report](sprint-8b-report.md) for actual acceptance, CI and remaining limits. Engineering/cloud/emulator scope is ready subject to recorded final checks; Sprint8A and8B physical closure remain separately pending. Next: a short teammate comparison-flow usability review, then choose a visible slice; no automatic new Sprint or real provider/payment work.

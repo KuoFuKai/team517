@@ -274,3 +274,9 @@ Helper Find Tasks now has a native Android Map sharing the existing List discove
 Added five fictional Tasks and five natural Community Feed posts, with five bundled real-photo covers and API-created responses/comments/likes. [Content list, sources and safe seed command](docs/demo-content.md). Cloud text is already available; update the Preview APK to see bundled photos. Normal records, authorization and backend contracts are unchanged.
 
 Photo-content follow-up: all five Task details and five Feed covers exercised on API 36 emulator; duplicate resource-detail cover fixed. Updated Preview APK available locally. Corrected-build vivo acceptance is deferred until the phone returns; see [demo content](docs/demo-content.md).
+
+## Sprint 8B — Helper trust and Offer comparison (November 14)
+
+Helper profiles, fresh completion/review summaries, current-task Circle distinction and clearer Offer comparison are implemented. Profile/list/detail Message reuses existing Conversations; Select explicitly waits for Helper confirmation and keeps backup Offers active. Me exposes the same safe self public profile. [Delivery, privacy, validation and native evidence](docs/sprint-8b-report.md) · [Trust contract](docs/trust-profile.md).
+
+Guarded synthetic Preview setup: `npm run preview:trust -- --project team517-dev` after existing Preview preparation; requires local ignored synthetic credentials, not committed passwords. It uses normal lifecycle/Review APIs and preserves progress/Points. Latest standalone artifact: `artifacts/android/team517-preview.apk`, SHA256 `9a9ce1c5aa8f6ccb13457667cd53e61e4a51b2da55fdab7d44c476294b96c291`. API36 emulator acceptance is documented; vivo Sprint8A/8B physical checks remain queued together per Kevin. VERIFIED is the existing controlled state, not real identity/background-check proof. No Payments/iOS work.

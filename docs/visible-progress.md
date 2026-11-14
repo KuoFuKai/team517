@@ -1,3 +1,7 @@
+## Current — Sprint 8B (November 14)
+
+Tasks, Maps, Calendar, Messaging, Community, Push and Points are working within the dated acceptance scopes below. **Helper trust profile — NEW / WORKING** and **Offer comparison — NEW / WORKING** now add real server-backed completion/Review summaries, safe Profile and Message entry, Circle distinction and explicit pending-confirmation selection. [Report and actual emulator evidence](sprint-8b-report.md). Real identity verification and Payments remain future; iOS deferred. Sprint8A/8B physical checks are queued together, not passed by emulator. Older status sections below are historical.
+
 
 ## Sprint 8A — Points (November 14)
 

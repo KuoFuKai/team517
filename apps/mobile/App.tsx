@@ -13,7 +13,7 @@ import { SafeAreaProvider, SafeAreaView, initialWindowMetrics } from 'react-nati
 import { useFonts } from 'expo-font';
 import { Fraunces_600SemiBold, Fraunces_700Bold } from '@expo-google-fonts/fraunces';
 import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold } from '@expo-google-fonts/inter';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from 'firebase/auth';
+import { signOut } from 'firebase/auth';
 import type { CareContextDto, TaskDetailDto } from '@team517/contracts';
 import { auth } from './src/auth/firebase';
 import * as api from './src/api/client';
@@ -89,10 +89,7 @@ function AppContent() {
     <KeyboardAvoidingView style={s.flex} behavior="padding">
       <ScrollView ref={scroll} nestedScrollEnabled keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag" contentContainerStyle={s.scroll}>
         <ScrollResetContext.Provider value={resetScroll}><View style={s.content}>
-          {!session.ready ? <LoadingState label="Getting things ready…" /> : !user ? <AuthScreen busy={busy} authenticate={(email, password, register) => void run(async () => {
-            try { if (register) await createUserWithEmailAndPassword(auth, email, password); else await signInWithEmailAndPassword(auth, email, password); }
-            catch { setError('We could not sign you in. Check your email, password and connection.'); }
-          })} /> : !profile ? <>
+          {!session.ready ? <LoadingState label="Getting things ready…" /> : !user ? <AuthScreen /> : !profile ? <>
             {session.needsInitialization ? <HomeScreen busy={busy} profile={null} initialize={role => void run(async () => { setProfile(await api.initializeUser({ primaryOnboardingRole: role })); })} loadUser={() => {}} switchRole={() => {}} /> : <><ErrorState message={session.error || 'We could not load your account.'} /><Button title="Try again" disabled={busy} onPress={() => void run(async () => setProfile(await api.getCurrentUser()))} /></>}
             <Button title="Sign out" disabled={busy} onPress={() => void run(async () => { await beforeLogout(); await signOut(auth); })} />
           </> : <>

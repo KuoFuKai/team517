@@ -18,7 +18,8 @@ test('token registration rejects client ownership and unsupported platform', () 
   assert.ok(registerDeviceSchema.safeParse({ token: 'fcm_valid_token_for_test_123', platform: 'android' }).success);
   for (const extra of [{ userId: 'other' }, { enabled: true }, { registrationId: 'x' }]) assert.ok(!registerDeviceSchema.safeParse({ token: 'fcm_valid_token_for_test_123', platform: 'android', ...extra }).success);
   assert.ok(!registerDeviceSchema.safeParse({ token: 'tiny', platform: 'android' }).success);
-  assert.ok(!registerDeviceSchema.safeParse({ token: 'fcm_valid_token_for_test_123', platform: 'ios' }).success);
+  assert.ok(registerDeviceSchema.safeParse({ token: 'fcm_valid_token_for_test_123', platform: 'ios' }).success);
+  assert.ok(!registerDeviceSchema.safeParse({ token: 'fcm_valid_token_for_test_123', platform: 'web' }).success);
 });
 test('provider defaults disabled without explicit real-mode configuration', () => { assert.equal(configuredPushProvider(), undefined); });
 test('FCM adapter isolates errors and only explicit token errors disable registrations', async () => {

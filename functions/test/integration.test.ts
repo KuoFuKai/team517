@@ -10,6 +10,11 @@ initializeApp({projectId:'demo-team517'});
 import {getAuth} from 'firebase-admin/auth';
 import {finishAccountDeletion} from '../src/account/deletion';
 const app=createApp(new Store());
+test('iOS FCM registration keeps Firebase UID ownership and private-token DTO boundary',async()=>{
+ const a=await token(),h='Bearer '+a.idToken;await request(app).post('/api/v1/me/onboarding').set('Authorization',h).send({publicFirstName:'Riley',usage:'HELPER'});
+ const result=await request(app).post('/api/v1/me/device-tokens').set('Authorization',h).send({token:'ios_fcm_emulator_only_'+crypto.randomUUID(),platform:'ios'});assert.equal(result.status,200);assert.equal(result.body.platform,'ios');assert.equal(result.body.token,undefined);assert.equal(result.body.userId,undefined);
+ const denied=await request(app).post('/api/v1/me/device-tokens').set('Authorization',h).send({token:'ios_fcm_emulator_only_'+crypto.randomUUID(),platform:'ios',userId:'other'});assert.equal(denied.status,400);
+});
 test('new onboarding is UID-based, safe-role only, no verification, membership or Points grant',async()=>{
  const a=await token(),header='Bearer '+a.idToken,db=getFirestore();
  assert.equal((await request(app).post('/api/v1/me/onboarding').set('Authorization',header).send({publicFirstName:'Alex',usage:'BOTH',verificationStatus:'VERIFIED'})).status,400);

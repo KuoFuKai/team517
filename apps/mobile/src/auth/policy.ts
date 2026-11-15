@@ -13,7 +13,7 @@ export function authError(error: unknown) {
  if(['auth/operation-not-allowed','PROVIDER_NOT_CONFIGURED'].includes(code))return 'This sign-in method is not available in this build. Continue with email.';
  return 'We could not finish that request. Please try again.';
 }
-export function canUnlink(providers:readonly string[],provider:string){return providers.includes(provider)&&providers.filter(p=>p!==provider).length>0;}
+export function canUnlink(providers:readonly string[],provider:string){return provider!=='apple.com'&&providers.includes(provider)&&providers.filter(p=>p!==provider).length>0;}
 export const resetSuccess='If an account exists for that email, check your inbox for reset instructions.';
 export function validEmail(value:string){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());}
 export class Cooldown {

@@ -84,3 +84,7 @@ Implemented the safe Helper profile API/DTO, server COUNT/Review aggregation, bo
 ## Sprint8C — Helper Availability + Offer Time Comparison
 
 Engineering/cloud/emulator scope accepted: optional Offer Timestamp pair, backend numeric fit, shared native input, safe Task-scoped Profile, readable comparison and nonblocking selection warning. No second Offer lifecycle, ranking, automatic matching, global schedule or provider sync. Missing legacy availability survives reactivation; explicit Use task times respects Task absolute instants across DST/precision differences. Native Select/independent Helper Confirm left Task timing unchanged. [Full report](sprint-8c-report.md). Physical8A/8B/8C are independently pending one consolidated vivo session. Consider active-Offer time updates/change policy only after acceptance/team feedback; it is not implemented here.
+
+## Sprint 8E — Task reschedule
+
+Published-task rescheduling now uses an explicit authorized editor and atomic revision-aware API. Offer windows remain submitted data; fit changes against Task time. Selected/confirmed Helpers explicitly reconfirm and must cover current time first. Same Assignment identity, private execution gate, persistent generic notifications and canonical internal Calendar are retained. [Policy](scheduling.md), [46-item report](sprint-8e-report.md). Engineering/cloud/API36 evidence is recorded separately from queued combined8A–8E vivo acceptance. No new feature Sprint was started; next visible priority is consolidated phone/team usability review.

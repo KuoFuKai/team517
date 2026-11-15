@@ -288,3 +288,15 @@ Authenticated owner-only reads: GET `/api/v1/me/points` → PointAccountDto; GET
 Existing `POST /api/v1/tasks/:id/offers` accepts optional paired `availableFrom`/`availableUntil` ISO absolute instants. Both or neither; until>from; valid supported UTC calendar range. Omission preserves saved pair or missing state during normal reactivation, and a valid explicit pair replaces it. No active-Offer update/availability endpoint or collection. Own/manager Task-context Offer DTOs add raw instants and backend-derived availabilityFit (COVERS_TASK/PARTIAL_OVERLAP/CONFLICT/NOT_PROVIDED). My-offers collection DTOs may omit fit without Task context; clients do not invent a policy. Fit is never persisted.
 
 Authorized `GET /api/v1/helpers/:id/profile?taskId=...` additionally returns taskAvailability with this Offer's pair/fit and safe Task start/end after existing VIEW_OFFERS/matching Offer checks. Unscoped profile, Discovery and Community do not expose Helper availability. Selection endpoint semantics unchanged; all fits remain selectable. No scheduling mutation or automatic matching. [Exact boundary/privacy/reactivation policy](helper-availability.md).
+
+## Sprint 8E scheduling endpoints
+
+All use the existing authenticated `/api/v1` JSON/error contract:
+
+| Method/path | Request | Response |
+| --- | --- | --- |
+| POST `/tasks/:taskId/reschedule/preview` | `startAt`, `endAt`, `expectedRevision`, `expectedAssignmentId` (explicit null when absent) | Current/proposed time and transactional impact projection; no writes |
+| POST `/tasks/:taskId/reschedule` | Same | Current Task and optional current Assignment |
+| POST `/assignments/:assignmentId/reconfirm-schedule` | `expectedRevision` | Assignment after exact-current-revision acceptance |
+
+Only eligible current creator/manager relationships may reschedule, and a selected Helper cannot use manager membership to move their own assignment. OPEN/HAS_OFFERS/AWAITING_CONFIRMATION/ARRANGED are allowed before execution; drafts retain their ordinary editor. Normalized identical retries are read-only. Selection also carries the viewed `scheduleRevision`; decline and guarded pending cancellation carry `expectedScheduleRevision`. Relevant stable errors: `SCHEDULE_STALE`, `TASK_NOT_RESCHEDULABLE`, `SCHEDULE_RECONFIRMATION_REQUIRED`, `AVAILABILITY_UPDATE_REQUIRED`, `SCHEDULE_NOT_RECONFIRMABLE`. Errors expose no Firestore exception. Public DTOs expose safe scheduling snapshots, never persistence documents. See [policy](scheduling.md).

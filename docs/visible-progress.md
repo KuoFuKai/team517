@@ -1,3 +1,7 @@
+## Current — Sprint 8E (November 14–15)
+
+Tasks, Maps, Calendar, Messaging, Community, Push, Points, Trust, Task-specific Helper availability and availability-change/requester reconfirmation are working within dated scopes. **Task rescheduling — NEW / WORKING**: current Task revision, impact preview, fit recalculation, explicit Helper acceptance, stale recovery and existing decline/replacement. [Report](sprint-8e-report.md). Recurring/global availability, external calendars, no-show, Payments and real verification remain future; iOS deferred. Combined8A–8E phone acceptance remains pending. Older sections below are historical.
+
 ## Current — Sprint 8D (November 14)
 
 Tasks, Maps, Calendar, Messaging, Community, Push, Points, Trust and Task availability are working within their dated scopes. **Availability updates/reconfirmation — NEW / WORKING**: own active/pending edit, old/current window comparison, exact-revision Keep, existing replacement selection. [Report and actual native evidence](sprint-8d-report.md). Recurring availability, Task rescheduling, no-show, Payments and real verification remain future; iOS deferred. Combined 8A/8B/8C/8D physical acceptance remains pending; emulator results do not close it. Older sections below are historical.

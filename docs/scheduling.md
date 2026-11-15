@@ -1,6 +1,6 @@
 # Task rescheduling — Sprint 8E
 
-Engineering checkpoint, November 14. Native/cloud acceptance is in progress, not yet claimed.
+November14–15 acceptance: engineering, guarded development-cloud and API36 emulator checks completed within the [46-item report](sprint-8e-report.md) and [actual evidence](native-evidence/2026-11-15-task-reschedule/README.md). Consolidated physical acceptance remains queued.
 
 Task startAt/endAt remain authoritative. An authorized active Task owner/manager may explicitly reschedule OPEN, HAS_OFFERS, AWAITING_CONFIRMATION or ARRANGED before execution. The currently selected Helper cannot reschedule their own assignment through manager privileges. DRAFT retains its ordinary editor; executing, disputed and terminal Tasks reject this operation.
 

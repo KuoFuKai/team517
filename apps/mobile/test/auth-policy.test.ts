@@ -1,5 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';
-import {authError,canUnlink,Cooldown,validEmail,resetSuccess} from '../src/auth/policy';
+import {authError,canUnlink,Cooldown,validEmail,resetSuccess,shouldClearSession} from '../src/auth/policy';
+test('logout and account switch clear queued account scope but initial cold Auth restoration preserves its pending route',()=>{assert.equal(shouldClearSession('a',undefined),true);assert.equal(shouldClearSession('a','b'),true);assert.equal(shouldClearSession('a','a'),false);assert.equal(shouldClearSession(undefined,'a'),false);});
 test('auth errors do not expose provider details and invalid credential is enumeration-safe',()=>{assert.equal(authError({code:'auth/user-not-found'}),authError({code:'auth/wrong-password'}));assert.doesNotMatch(authError({message:'private token'}),/private token/);assert.equal(authError({code:'SIGN_IN_CANCELLED'}),'');});
 test('collision recovery requires existing authentication rather than email merge',()=>{assert.match(authError({code:'auth/account-exists-with-different-credential'}),/existing method/);assert.match(authError({code:'auth/credential-already-in-use'}),/cannot be combined/);});
 test('unlink never leaves zero sign-in methods',()=>{assert.equal(canUnlink(['google.com'],'google.com'),false);assert.equal(canUnlink(['google.com','password'],'google.com'),true);assert.equal(canUnlink(['password'],'apple.com'),false);assert.equal(canUnlink(['apple.com','password'],'apple.com'),false);});

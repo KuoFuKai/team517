@@ -37,8 +37,9 @@
     "preview:scheduling": "tsx scripts/preview-scheduling.ts"
   },
   "devDependencies": {
+    "@firebase/app": "0.15.0",
     "firebase-tools": "^15.35.0",
-    "typescript": "~5.9.2",
-    "tsx": "^4.19.0"
+    "tsx": "^4.19.0",
+    "typescript": "~5.9.2"
   }
 }

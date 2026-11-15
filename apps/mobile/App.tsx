@@ -1,3 +1,4 @@
+import {shouldClearSession} from './src/auth/policy';
 import {OnboardingScreen} from './src/screens/OnboardingScreen';
 import {AccountScreen} from './src/screens/AccountScreen';
 import {logoutAuth} from './src/auth/logout';
@@ -48,6 +49,7 @@ function AppContent() {
   const scroll = useRef<ScrollView>(null);
   const resetScroll = useCallback(() => scroll.current?.scrollTo({ y: 0, animated: false }), []);
   const session = useSession();
+  const previousAuthUid=useRef<string|undefined>(undefined);
   const { user, profile, setProfile } = session;
   const [tab, setTab] = useState<MainTab>('tasks'), [overlay, setOverlay] = useState<'inbox' | 'notifications' | 'verification' | 'create' | 'account' | null>(null);
   const [circleTasks, setCircleTasks] = useState(false);
@@ -70,7 +72,7 @@ function AppContent() {
     if (auth.currentUser?.uid !== uid) return;
     setContexts(data.careContexts); setContext(current => data.careContexts.find(c => c.id === current?.id) ?? data.careContexts[0] ?? null);
   };
-  useEffect(() => { setContexts([]); setContext(null); setTab('tasks'); setOverlay(null); setError(''); setUnread(false); setMessageUnread(false); setCircleTasks(false); setPostDraftId(null); postDraftSession.reset(); }, [user?.uid]);
+  useEffect(() => { if(shouldClearSession(previousAuthUid.current,user?.uid))setPushId(null);previousAuthUid.current=user?.uid;setContexts([]); setContext(null); setTab('tasks'); setOverlay(null); setError(''); setUnread(false); setMessageUnread(false); setCircleTasks(false); setPostDraftId(null); postDraftSession.reset(); }, [user?.uid]);
   // Auth restoration resets navigation first. Apply a queued notification only
   // after the session is ready so the initial account reset cannot erase it.
   useEffect(() => {

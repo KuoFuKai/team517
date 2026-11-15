@@ -15,6 +15,7 @@ export function authError(error: unknown) {
 }
 export function canUnlink(providers:readonly string[],provider:string){return provider!=='apple.com'&&providers.includes(provider)&&providers.filter(p=>p!==provider).length>0;}
 export const resetSuccess='If an account exists for that email, check your inbox for reset instructions.';
+export const shouldClearSession=(previous:string|undefined,next:string|undefined)=>Boolean(previous&&previous!==next);
 export function validEmail(value:string){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());}
 export class Cooldown {
  private until=new Map<string,number>();constructor(private now=Date.now){}

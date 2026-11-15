@@ -9,8 +9,14 @@ if (!process.env.FIRESTORE_EMULATOR_HOST || !process.env.FIREBASE_AUTH_EMULATOR_
 initializeApp({projectId:'demo-team517'});
 import {getAuth} from 'firebase-admin/auth';
 import {finishAccountDeletion} from '../src/account/deletion';
-import {DeviceTokenRepository} from '../src/repositories/device-tokens';
+import {DeviceTokenRepository,type DeviceToken} from '../src/repositories/device-tokens';
 const app=createApp(new Store());
+test('inactive account stops delivery and clears tokens even if external Auth deletion must retry',async()=>{
+ const a=await token(),db=getFirestore(),ref=db.collection('device_tokens').doc('pending-'+a.localId);await db.collection('users').doc(a.localId).set({id:a.localId,roles:[],accountStatus:'DELETING'});await ref.set({id:ref.id,userId:a.localId,platform:'android',token:'synthetic-pending-token',enabled:true,registrationId:crypto.randomUUID()});
+ const repo=new DeviceTokenRepository();assert.deepEqual(await repo.active(a.localId),[]);assert.equal(await repo.stillOwned((await ref.get()).data() as DeviceToken),false);
+ await assert.rejects(finishAccountDeletion(a.localId,{updateUser:async()=>{throw new Error('synthetic external Auth outage');},revokeRefreshTokens:async()=>{},deleteUser:async()=>{}}));
+ assert.equal((await ref.get()).data()!.enabled,false);assert.equal((await ref.get()).data()!.token,undefined);assert.equal((await db.collection('users').doc(a.localId).get()).data()!.accountStatus,'DELETING');assert.equal((await request(app).get('/api/v1/me').set('Authorization','Bearer '+a.idToken)).status,403);await finishAccountDeletion(a.localId);
+});
 test('real Auth emulator supports email verification and password recovery without changing business UID or helper eligibility',async()=>{
  const a=await token(),email=(await getAuth().getUser(a.localId)).email!,base='http://'+process.env.FIREBASE_AUTH_EMULATOR_HOST;
  const post=(path:string,body:unknown)=>fetch(base+'/identitytoolkit.googleapis.com/v1/accounts:'+path+'?key=demo-key',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});

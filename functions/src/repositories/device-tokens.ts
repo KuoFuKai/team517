@@ -42,11 +42,13 @@ export class DeviceTokenRepository {
     return { disabled: true };
   }
   async active(uid: string) {
+    const user=await this.db.collection('users').doc(uid).get();if(['DELETING','DELETED'].includes(user.data()?.accountStatus))return [];
     // Bounded read; excess devices are explicitly omitted in this MVP.
     const docs = await this.db.collection('device_tokens').where('userId', '==', uid).where('enabled', '==', true).limit(100).get();
     return docs.docs.map(d => d.data() as DeviceToken).filter(d => d.enabled);
   }
   async stillOwned(d: DeviceToken) {
+    const user=await this.db.collection('users').doc(d.userId).get();if(['DELETING','DELETED'].includes(user.data()?.accountStatus))return false;
     const current = (await this.db.collection('device_tokens').doc(d.id).get()).data() as DeviceToken | undefined;
     return current?.enabled && current.userId === d.userId && current.registrationId === d.registrationId;
   }

@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import {requireRecentAuth,firstNamePattern} from '../src/account/policy';
+import {requireRecentAuth,requireAppleAuth,firstNamePattern} from '../src/account/policy';
+test('Apple-linked deletion cannot substitute recent Google authentication for fresh Apple proof',()=>{assert.throws(()=>requireAppleAuth('google.com'));assert.throws(()=>requireAppleAuth(undefined));assert.doesNotThrow(()=>requireAppleAuth('apple.com'));});
 test('account deletion requires recent server-authenticated proof and safe public name',()=>{assert.throws(()=>requireRecentAuth(undefined));assert.throws(()=>requireRecentAuth(1,400000));assert.doesNotThrow(()=>requireRecentAuth(100,101000));assert.equal(firstNamePattern.test('alex@example.com'),false);assert.equal(firstNamePattern.test('Alex'),true);});
 import request from 'supertest';
 import { createApp } from '../src/api/app';

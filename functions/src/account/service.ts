@@ -4,7 +4,7 @@ import type {CompleteOnboardingRequest,UserRole} from '@team517/contracts';
 import type {User} from '../domain/models';
 import {ApiFailure} from '../shared/errors';
 import {userDto} from '../care-context/service';
-import {requireRecentAuth} from './policy';
+import {requireRecentAuth,requireAppleAuth} from './policy';
 import {finishAccountDeletion} from './deletion';
 export class AccountService {
  private get db(){return getFirestore();}
@@ -30,6 +30,7 @@ export class AccountService {
    this.db.collection('point_accounts').doc(uid).get()]);
   if(!tasks.empty||!assignments.empty||!offers.empty||(wallet.data()?.reservedPoints??0)>0)throw new ApiFailure(409,'ACTIVE_COMMITMENTS','Resolve active requests, offers, arrangements and reserved points before deleting your account. Your history will be preserved.');
   if(firebaseUser.providerData.some(p=>p.providerId==='apple.com')){
+   requireAppleAuth(token.firebase.sign_in_provider);
    const key=process.env.FIREBASE_WEB_API_KEY,redirectUri=process.env.APPLE_AUTH_REDIRECT_URI;
    if(!appleCode||!key||!redirectUri)throw new ApiFailure(503,'APPLE_REVOCATION_REQUIRED','Fresh Apple authorization and configured token revocation are required before account deletion.');
    const r=await fetch('https://identitytoolkit.googleapis.com/v2/accounts:revokeToken?key='+encodeURIComponent(key),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({providerId:'apple.com',tokenType:'CODE',token:appleCode,idToken:bearer,redirectUri}),signal:AbortSignal.timeout(15000)});

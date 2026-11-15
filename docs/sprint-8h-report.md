@@ -78,7 +78,7 @@ November15,2026. [Auth](authentication.md) · [Deletion](account-deletion.md) ·
 
 38. **Safe areas.** Shared SafeAreaProvider/View retained; Android responsive captures recorded. No iPhone safe-area acceptance.
 
-39. **Keyboard.** Existing scroll/KeyboardAvoidingView architecture retained; native fictional-name/password entry exercised. No iOS/floating-keyboard acceptance inferred.
+39. **Keyboard.** Existing scroll/KeyboardAvoidingView architecture retained; native fictional-name/password and Message input/send exercised; IME capture did not establish a docked keyboard. No iOS/floating-keyboard acceptance inferred.
 
 40. **Back.** Visible Auth Back and Android hardware handler; actual visible Back/scroll in responsive matrix. All iOS native navigation remains pending runtime.
 
@@ -94,7 +94,7 @@ November15,2026. [Auth](authentication.md) · [Deletion](account-deletion.md) ·
 
 46. **Android responsive.** Actual 320/360/390/412dp font1.0/1.3 Auth landing/signup/scroll/Back matrix recorded in native evidence; it does not imply every Auth action at every size.
 
-47. **Standalone regression.** FinalAPK installed successfully, Google Auth retained afterupgrade/coldlaunch, GoogleConnected rechecked, fictionalEmail signup/onboarding/logout exercised. Physical phone absent; broad final business/FCM matrix retains separate pendingitems.
+47. **Standalone regression.** FinalAPK installed successfully, Google Auth retained afterupgrade/coldlaunch, GoogleConnected rechecked, fictionalEmail signup/onboarding/logout exercised. Physical phone absent; Final0193 existing Alex login/cold persistence, Me/Trust summary, private wallet570/0reserved and history scroll/Back, native Map tiles/markers, actual Task+Message background OS alerts/taps and native Message send passed. Full lifecycle/physical/native real-mailbox matrix retains separate pendingitems.
 
 48. **APK.** 0193d2e8223b7494185074dbe375376fedc23a58d5fda37d5e7b8654a242c235; builtfromb0de62ba48889874ce3e122d899be0e28c399101; docs/auth-build.json. Later repository/config/test edits do not alter bundledJS. Frozen8G hash/source unchanged.
 
@@ -110,7 +110,7 @@ November15,2026. [Auth](authentication.md) · [Deletion](account-deletion.md) ·
 
 54. **Commits/pushes.** Dedicated featurebranch batches cc266e0 through93f0b2a; gitlog records intermediate build/registry fixes. Main and8G frozenartifact untouched.
 
-55. **Hosted CI.** 93f0b2a: success https://github.com/KuoFuKai/team517/actions/runs/43760592623 . Prior1cf9bc6 failed missingnativeconfig on credential-freeexport; fixed and regressiontested, not hidden.
+55. **Hosted CI.** 93f0b2a: success https://github.com/KuoFuKai/team517/actions/runs/43760592623 ; documentation checkpoint cff76e7 also passed https://github.com/KuoFuKai/team517/actions/runs/43765777730 . Prior1cf9bc6 failed missingnativeconfig on credential-freeexport; fixed and regressiontested, not hidden.
 
 56. **iOS READY/PENDING.** Source/config ready for firstMac attempt; compilation, runtime, Applelogin/revocation, APNs, physical/distribution remainPENDING. Full matrix ios-readiness.md.
 

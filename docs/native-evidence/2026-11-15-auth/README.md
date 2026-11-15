@@ -30,3 +30,15 @@ No BLOCKER/HIGH observed in these rendered landing/registration layouts. Narrow/
 ## Remaining scope
 
 Real iOS Apple/Google/APNs, Mac compilation, phone8A–8H, unaided8G teammate study, native real mailbox verification/reset and the complete final business/FCM route matrix remain separately pending unless explicitly recorded. Earlier Sprint native evidence remains historical and is never relabelled as this APK.
+
+## Final standalone business / Push follow-up
+
+Final0193 APK: existing Alex Email login succeeded after clearing preserved email text; a real force-stop/relaunch restored authenticated Your caregiving tasks, and later Me rendered Alex/Verified/rating4.7/reviews3. Interruption from Android Password Manager and duplicated harness input are not counted as product auth failures. No fixture password reset.
+
+Discovery List and native Google Map tiles/approximate markers actually rendered: [Map PNG](map-final.png). No GPS grant/action was exercised. New8H fictional Appointment check-in practice was created/published/offered/selected by normal peer APIs, leaving PENDING_CONFIRMATION without Points transfer; no frozen8G story was rewound or consumed. Actual Android background Task OS card showed generic You have a task update.; tapping opened that Task/confirmation destination. Private fixture instructions were absent in the captured pending route; broader authorization-change clearing was not re-exercised natively here.
+
+A single idempotent peer API Message on that new Task triggered an actual generic You have a new message. OS card; tap opened the correct Task conversation and peer text. Native composer input/send then rendered the fictional reply: [PNG](message-sent.png). The input was exercised using adb text injection. The attempted IME capture did not establish a fully rendered docked keyboard; do not count it as docked/floating overlap acceptance. Prior show_ime_with_hard_keyboard=0 was restored. Real iOS/physical keyboard behavior remains pending.
+
+These are finalAPK-specific checks, not a complete rerun of every Task lifecycle/Community/Review/Calendar native action. Those flows have automated regression evidence and their earlier dated native records. The consolidated physical checklist remains pending.
+
+Final wallet rendered570 available/0reserved with existing earned activity; native history scrolled and visible Back returned to Me. [Wallet PNG](points-final.png). This is private fictional-account wallet evidence, no new settlement or grant.

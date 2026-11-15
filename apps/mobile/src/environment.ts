@@ -16,6 +16,7 @@ export function resolveEnvironment(input: { environment?: string; developmentHos
     authEmulatorUrl: input.authEmulatorUrl ?? `http://${host}:9199`, firebaseProjectId: 'demo-team517' } as const;
 }
 export interface FirebaseClientConfig { apiKey?: string; projectId?: string; appId?: string; authDomain?: string }
+export function firebaseForPlatform(platform:string,extra:Record<string,any>|undefined):FirebaseClientConfig{return (platform==='ios'?extra?.team517FirebaseIos:extra?.team517Firebase)??{};}
 export function resolveFirebaseClient(environment: AppEnvironment, input: FirebaseClientConfig) {
   if (environment === 'PRODUCTION') throw new Error('PRODUCTION is reserved.');
   if (environment === 'LOCAL') return { apiKey: input.apiKey ?? 'demo-key', projectId: input.projectId ?? 'demo-team517', appId: input.appId ?? 'demo-app', authDomain: input.authDomain ?? 'demo-team517.firebaseapp.com' };

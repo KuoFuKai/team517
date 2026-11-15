@@ -10,6 +10,16 @@ initializeApp({projectId:'demo-team517'});
 import {getAuth} from 'firebase-admin/auth';
 import {finishAccountDeletion} from '../src/account/deletion';
 const app=createApp(new Store());
+test('real Auth emulator supports email verification and password recovery without changing business UID or helper eligibility',async()=>{
+ const a=await token(),email=(await getAuth().getUser(a.localId)).email!,base='http://'+process.env.FIREBASE_AUTH_EMULATOR_HOST;
+ const post=(path:string,body:unknown)=>fetch(base+'/identitytoolkit.googleapis.com/v1/accounts:'+path+'?key=demo-key',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+ assert.equal((await post('sendOobCode',{requestType:'VERIFY_EMAIL',idToken:a.idToken})).status,200);
+ const codes=async()=>{const r=await fetch(base+'/emulator/v1/projects/demo-team517/oobCodes');return (await r.json() as {oobCodes:{email:string;requestType:string;oobCode:string}[]}).oobCodes;};
+ const verify=(await codes()).find(c=>c.email===email&&c.requestType==='VERIFY_EMAIL')!;assert.ok(verify);assert.equal((await post('update',{oobCode:verify.oobCode})).status,200);assert.equal((await getAuth().getUser(a.localId)).emailVerified,true);
+ assert.equal((await post('sendOobCode',{requestType:'PASSWORD_RESET',email})).status,200);const reset=(await codes()).find(c=>c.email===email&&c.requestType==='PASSWORD_RESET')!;assert.ok(reset);assert.equal((await post('resetPassword',{oobCode:reset.oobCode,newPassword:'testing456'})).status,200);
+ assert.equal((await post('signInWithPassword',{email,password:'testing123',returnSecureToken:true})).status,400);const login=await post('signInWithPassword',{email,password:'testing456',returnSecureToken:true});assert.equal(login.status,200);const current=await login.json() as {localId:string;idToken:string};assert.equal(current.localId,a.localId);
+ const profile=await request(app).post('/api/v1/me/onboarding').set('Authorization','Bearer '+current.idToken).send({publicFirstName:'Jordan',usage:'HELPER'});assert.equal(profile.status,200);assert.equal(profile.body.verificationStatus,'UNVERIFIED');
+});
 test('iOS FCM registration keeps Firebase UID ownership and private-token DTO boundary',async()=>{
  const a=await token(),h='Bearer '+a.idToken;await request(app).post('/api/v1/me/onboarding').set('Authorization',h).send({publicFirstName:'Riley',usage:'HELPER'});
  const result=await request(app).post('/api/v1/me/device-tokens').set('Authorization',h).send({token:'ios_fcm_emulator_only_'+crypto.randomUUID(),platform:'ios'});assert.equal(result.status,200);assert.equal(result.body.platform,'ios');assert.equal(result.body.token,undefined);assert.equal(result.body.userId,undefined);

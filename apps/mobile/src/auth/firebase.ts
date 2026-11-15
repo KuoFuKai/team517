@@ -3,8 +3,9 @@ import { initializeAuth, getReactNativePersistence, connectAuthEmulator } from '
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { config } from '../config';
 import Constants from 'expo-constants';
-import { resolveFirebaseClient } from '../environment';
-const bundled = config.useEmulators ? {} : Constants.expoConfig?.extra?.team517Firebase ?? {};
+import {Platform} from 'react-native';
+import { resolveFirebaseClient,firebaseForPlatform } from '../environment';
+const bundled = config.useEmulators ? {} : firebaseForPlatform(Platform.OS,Constants.expoConfig?.extra);
 const app = initializeApp(resolveFirebaseClient(config.environment, {
   apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY ?? bundled.apiKey,
   projectId: process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID ?? bundled.projectId,

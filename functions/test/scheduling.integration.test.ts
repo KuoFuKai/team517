@@ -43,7 +43,7 @@ const audit=async(s:Story,type:string)=>(await db.collection('task_events').wher
 const view=(s:Story,id:string)=>call(s.helper,'get',`/assignments/${id}`);
 
 test('Reschedule preview is read-only, authorize current owner/manager, zero-compatible revisions and idempotent normalized retries',async()=>{
- const s=await story();assert.equal((await call(s.helper,'get',`/tasks/${s.task}`)).status,403);
+ const s=await story();assert.equal((await request(app).post(`/api/v1/tasks/${s.task}/reschedule`).send({})).status,401);assert.equal((await call(s.owner,'patch','/me/preferences',{lastActiveRole:'HELPER'})).status,200);assert.equal((await call(s.helper,'get',`/tasks/${s.task}`)).status,403);
  assert.equal((await move(s,0,null,moved,s.backup)).status,403);
  const before=await taskData(s),p=await move(s,0,null,moved,s.manager,true);assert.equal(p.status,200);assert.equal(p.body.affectedHelpers,2);assert.equal(p.body.requiresHelperReconfirmation,false);assert.deepEqual(await taskData(s),before);assert.equal((await audit(s,'TASK_RESCHEDULED')).length,0);
  const r=await move(s,0,null,moved,s.manager);assert.equal(r.status,200,JSON.stringify(r.body));assert.equal(r.body.task.scheduleRevision,1);
@@ -53,7 +53,7 @@ test('Reschedule preview is read-only, authorize current owner/manager, zero-com
 });
 test('Only active published states allow reschedule; drafts and execution/terminal states reject without writes',async()=>{
  const s=await story();for(const status of ['DRAFT','IN_PROGRESS','COMPLETION_PENDING','COMPLETED','CANCELLED','DISPUTED']){await db.collection('tasks').doc(s.task).update({status});assert.equal((await move(s)).body.error.code,'TASK_NOT_RESCHEDULABLE');}assert.equal((await audit(s,'TASK_RESCHEDULED')).length,0);
- await db.collection('tasks').doc(s.task).update({status:'OPEN',offerCount:0});assert.equal((await move(s)).status,200);
+ await db.collection('tasks').doc(s.task).update({status:'HAS_OFFERS',offerCount:2});await call(s.helper,'post',`/tasks/${s.task}/offers/mine/withdraw`);await call(s.backup,'post',`/tasks/${s.task}/offers/mine/withdraw`);assert.equal((await taskData(s)).status,'OPEN');assert.equal((await move(s)).status,200);
 });
 test('ACTIVE Offer fits recompute against new Task, Offer bytes/history stay unchanged and notifications have safe scoped routes',async()=>{
  const s=await story();const refs=[s.offer.id,s.backupOffer.id].map(id=>db.collection('offers').doc(id));const before=await Promise.all(refs.map(async r=>(await r.get()).data()));assert.equal((await move(s)).status,200);
@@ -99,6 +99,8 @@ test('Reschedule versus selection, confirmation, reconfirmation and start never 
   const p=await story(),id=await select(p);await Promise.all([move(p,0,id),call(p.helper,'post',`/assignments/${id}/confirm`)]);assert.equal((await taskData(p)).status,'AWAITING_CONFIRMATION');assert.equal((await view(p,id)).body.requiresHelperReconfirmation,true);
   await call(p.helper,'patch',`/tasks/${p.task}/offers/mine/availability`,{...newWindow,expectedRevision:0});await Promise.all([reconfirm(p,id,1),move(p,1,id,{startAt:'2026-12-02T18:00:00Z',endAt:'2026-12-02T20:00:00Z'})]);const after=await taskData(p);assert.equal(after.scheduleRevision,2);assert.equal(after.status,'AWAITING_CONFIRMATION');assert.equal((await call(p.helper,'get',`/assignments/${id}/execution`)).status,403);
   const edited=await story(),eid=await select(edited);const editRace=await Promise.all([move(edited,0,eid),call(edited.helper,'patch',`/tasks/${edited.task}/offers/mine/availability`,{...newWindow,expectedRevision:0})]);assert.deepEqual(editRace.map(r=>r.status),[200,200]);const latest=(await view(edited,eid)).body;assert.equal(latest.scheduleReview.requiresHelperReconfirmation,true);assert.equal(latest.scheduleReview.availability.availabilityFit,'COVERS_TASK');
+  const cancel=await story(),cancelId=await select(cancel);await move(cancel,0,cancelId);await call(cancel.helper,'patch',`/tasks/${cancel.task}/offers/mine/availability`,{...newWindow,expectedRevision:0});const cancelled=await Promise.all([reconfirm(cancel,cancelId,1),call(cancel.owner,'post',`/assignments/${cancelId}/cancel`,{expectedScheduleRevision:1})]);assert.deepEqual(cancelled.map(r=>r.status).sort(),[200,409]);const ct=await taskData(cancel);assert.ok(ct.status==='ARRANGED' || ct.status==='HAS_OFFERS');
+  const declining=await story(),did=await select(declining);await move(declining,0,did);const declined=await Promise.all([call(declining.helper,'post',`/assignments/${did}/decline`,{expectedScheduleRevision:1}),move(declining,1,did,{startAt:'2026-12-02T18:00:00Z',endAt:'2026-12-02T20:00:00Z'})]);assert.deepEqual(declined.map(r=>r.status).sort(),[200,409]);
   const c=await story(),aid=await select(c);await c.action(aid,'confirm');const results=await Promise.all([move(c,0,aid),call(c.helper,'post',`/assignments/${aid}/start`)]);assert.deepEqual(results.map(r=>r.status).sort(),[200,409]);const final=await taskData(c);assert.ok(final.status==='IN_PROGRESS' || final.status==='AWAITING_CONFIRMATION');if(final.status==='IN_PROGRESS')assert.equal(final.scheduleRevision ?? 0,0);else assert.equal((await call(c.helper,'get',`/assignments/${aid}/execution`)).status,403);
  }
 });

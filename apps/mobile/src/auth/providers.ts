@@ -8,7 +8,7 @@ export type AuthIntent='signin'|'link'|'reauth';
 export const googleAvailable=()=>['android','ios'].includes(Platform.OS)&&Constants.executionEnvironment!=='storeClient'&&Boolean(Constants.expoConfig?.extra?.team517GoogleClientId);
 let firstName:string|undefined;
 let firstNameUid:string|undefined;
-export const suggestedFirstName=()=>auth.currentUser?.uid===firstNameUid?firstName:undefined;
+export const suggestedFirstName=()=>firstNameUid&&auth.currentUser?.uid===firstNameUid?firstName:undefined;
 export const clearProviderMemory=()=>{firstName=undefined;firstNameUid=undefined;};
 export async function nativeCredential(provider:SocialProvider):Promise<{credential:AuthCredential;authorizationCode?:string}|undefined>{
  if(provider==='google.com'){

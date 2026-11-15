@@ -11,6 +11,6 @@ export const deliverNotification = onDocumentCreated({ document: 'notifications/
   await new NotificationDeliveryService(configuredPushProvider()).deliver(event.params.notificationId);
 });
 
-import {onDocumentUpdated} from 'firebase-functions/v2/firestore';
+import {onDocumentWritten} from 'firebase-functions/v2/firestore';
 import {finishAccountDeletion} from './account/deletion';
-export const finishDeletion=onDocumentUpdated({document:'users/{uid}',region:'us-central1',retry:true},async event=>{if(event.data?.after.data().accountStatus==='DELETING')await finishAccountDeletion(event.params.uid);});
+export const finishDeletion=onDocumentWritten({document:'users/{uid}',region:'us-central1',retry:true},async event=>{if(event.data?.after.data()?.accountStatus==='DELETING')await finishAccountDeletion(event.params.uid);});

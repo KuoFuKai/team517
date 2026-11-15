@@ -9,7 +9,8 @@
   "scripts": {
     "start": "expo start",
     "typecheck": "tsc --noEmit",
-    "export": "expo export --platform android"
+    "export": "expo export --platform android",
+    "eas-build-post-install": "npm --prefix ../.. run build -w @team517/contracts"
   },
   "dependencies": {
     "@expo-google-fonts/fraunces": "^0.4.1",

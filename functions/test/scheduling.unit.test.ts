@@ -1,3 +1,4 @@
+import {assignmentDto} from '../src/marketplace/dto';
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {Timestamp} from 'firebase-admin/firestore';
@@ -15,3 +16,5 @@ test('Reschedule notifications deduplicate affected Helpers, omit actor and keep
  const records=lifecycleNotifications('event','TASK_RESCHEDULED','owner',task,Timestamp.now(),a,undefined,['selected','backup','backup','owner']);assert.equal(records.length,2);assert.equal(records[0].resourceType,'ASSIGNMENT');assert.equal(records[1].resourceType,'TASK');assert.equal(records[1].resourceId,'task');
  const payload=pushPayload({...records[0],title:'PRIVATE clinic 10AM',body:'PRIVATE location'});assert.equal(payload?.notification.body,'You have a task update.');assert.ok(!JSON.stringify(payload).includes('PRIVATE'));
 });
+
+test('Historical terminal Assignment never asks for schedule reconfirmation from legacy metadata',()=>{const now=Timestamp.now();const a={id:'a',taskId:'t',careContextId:'c',offerId:'o',helperId:'h',selectedBy:'u',status:'CANCELLED_BY_REQUESTER',requiresHelperReconfirmation:true,selectedAt:now,createdAt:now,updatedAt:now} as Assignment;assert.equal(assignmentDto(a).requiresHelperReconfirmation,false);assert.equal(assignmentDto({...a,status:'PENDING_CONFIRMATION'}).requiresHelperReconfirmation,true);});

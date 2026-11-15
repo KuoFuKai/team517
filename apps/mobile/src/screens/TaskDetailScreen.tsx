@@ -4,7 +4,7 @@ import {CoordinationCard} from '../components/CoordinationCard';
 import {taskStatusPresentation,requesterCoordination} from '../utils/coordination';
 import {taskWhenLabel,compensationLabel} from '../utils/design-presentation';
 import { PreviewContentCover } from '../components/PreviewContentCover';
-import React from 'react';
+import React,{useState} from 'react';
 import { View } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
 import type { TaskDetailDto, LocationDto } from '@team517/contracts';
@@ -17,17 +17,19 @@ import { theme as t } from '../theme';
 export function TaskDetailScreen({ task, locations, busy, edit, cancel, back, viewOffers, contextName, postedByYou, scheduleChanged }: { task: TaskDetailDto; locations: LocationDto[]; busy: boolean; edit?: () => void; cancel?: () => void; back: () => void; viewOffers?: () => void; contextName?: string; postedByYou?: boolean; scheduleChanged?:(task:TaskDetailDto)=>Promise<void> }) {
   useScreenHeader({ title: 'Task details', back, disabled: busy, priority: 2 });
   const location = locations.find(l => l.id === task.locationId);
-  const context=useCoordinationContext(task.id,undefined,Boolean(viewOffers) && task.status!=='DRAFT',false,task.updatedAt);
+  const [contextRevision,setContextRevision]=useState(0);
+  const context=useCoordinationContext(task.id,undefined,Boolean(viewOffers) && task.status!=='DRAFT',false,task.updatedAt+'|'+contextRevision);
   const input=requesterCoordination(task,context),currentStatus=input.status;
   const coordination=taskStatusPresentation(input);
   const compensation = compensationLabel(task);
   return <>
     <PageHeading title={task.title || 'Untitled draft'} />
-    <Text style={{ fontSize: 16, color: t.colors.muted }}>{postedByYou ? 'Posted by you' : 'Care-circle task'}{contextName ? ` · ${contextName}` : ''}</Text>
+    <Text style={{ fontSize: 16, color: t.colors.muted }}>{postedByYou ? 'Posted by you' : 'Task request'}{contextName ? ` · ${contextName}` : ''}</Text>
     <Text>{taskWhenLabel(context?.startAt ?? task.startAt,context?.endAt ?? task.endAt)}</Text>
     <CoordinationCard value={coordination}>
     {task.status === 'DRAFT' && edit && <Button variant="primary" disabled={busy} title="Edit draft" onPress={edit} />}
-    {viewOffers && task.status !== 'DRAFT' && <Button variant={currentStatus==='HAS_OFFERS'?'primary':'secondary'} title={currentStatus==='HAS_OFFERS'?'Review offers':['OPEN'].includes(currentStatus)?'View offers':'View arrangement'} disabled={busy} onPress={viewOffers} />}
+    {viewOffers && context && task.status !== 'DRAFT' && <Button variant={currentStatus==='HAS_OFFERS'?'primary':'secondary'} title={currentStatus==='HAS_OFFERS'?'Review offers':['OPEN'].includes(currentStatus)?'View offers':'View arrangement'} disabled={busy} onPress={viewOffers} />}
+    {!context && task.status!=='DRAFT' && <Button title="Refresh status" disabled={busy} onPress={()=>setContextRevision(value=>value+1)}/>}
     </CoordinationCard>
     <PreviewContentCover kind="task" id={task.id} />
     {task.canReschedule && scheduleChanged && <RescheduleTask task={task} saved={scheduleChanged}/>}

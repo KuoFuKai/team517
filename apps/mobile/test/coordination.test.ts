@@ -47,3 +47,11 @@ test('pending summary does not assign a turn until current protected review cont
  assert.match(assignmentListSummary({status:'PENDING_CONFIRMATION',helper:true,scheduleChanged:true}),/^Your turn/);
  const {taskRowNote}=await import('../src/utils/task-groups');assert.equal(taskRowNote({id:'t',careContextId:'c',status:'AWAITING_CONFIRMATION'}),'Open arrangement for the next step');
 });
+
+test('a readable Task without current management context never assigns the viewer a privileged turn',async()=>{
+ const {requesterCoordination}=await import('../src/utils/coordination');
+ for(const status of ['HAS_OFFERS','AWAITING_CONFIRMATION','COMPLETION_PENDING']){
+  const value=present(requesterCoordination({status}));assert.notEqual(value.nextActor,'Your turn');assert.equal(value.nextActionLabel,undefined);assert.doesNotMatch(value.summary,/you selected|your request/i);
+ }
+ assert.equal(present(requesterCoordination({status:'HAS_OFFERS'},{status:'HAS_OFFERS',offerCount:2})).nextActionLabel,'Review offers');
+});

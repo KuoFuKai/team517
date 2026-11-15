@@ -2,13 +2,14 @@ import {countLabel} from './presentation';
 import type {AssignmentDto} from '@team517/contracts';
 
 export function requesterCoordination(task:{status:string;requiresHelperReconfirmation?:boolean},context?:{status?:string;assignment?:AssignmentDto;name?:string;offerCount?:number}):CoordinationInput {
- return {status:context?.assignment?.status ?? context?.status ?? task.status,helperName:context?.name,offerCount:context?.offerCount,scheduleChanged:context?.assignment?.scheduleReview?.requiresHelperReconfirmation ?? task.requiresHelperReconfirmation,availabilityChanged:context?.assignment?.availabilityReview?.requiresRequesterReconfirmation};
+ return {status:context?.assignment?.status ?? context?.status ?? task.status,requesterContextKnown:task.status==='DRAFT'||context!==undefined,helperName:context?.name,offerCount:context?.offerCount,scheduleChanged:context?.assignment?.scheduleReview?.requiresHelperReconfirmation ?? task.requiresHelperReconfirmation,availabilityChanged:context?.assignment?.availabilityReview?.requiresRequesterReconfirmation};
 }
 
 // Explanation only: callers retain their existing server-checked action handlers.
 export interface CoordinationInput {
   status: string; helper?: boolean; helperName?: string; offerCount?: number;
   scheduleChanged?: boolean; availabilityChanged?: boolean;
+  requesterContextKnown?: boolean;
 }
 export interface TaskStatusPresentation {
   title: string; summary: string; nextActor: string; nextActionLabel?: string;
@@ -26,6 +27,10 @@ export function taskStatusPresentation(input: CoordinationInput): TaskStatusPres
   const {helper=false}=input, name=safeHelperName(input.helperName);
   const status=({PENDING_CONFIRMATION:'AWAITING_CONFIRMATION',CONFIRMED:'ARRANGED'} as Record<string,string>)[input.status] ?? input.status;
   const result=(title:string,summary:string,nextActor:string,nextActionLabel:string|undefined,supportingDetail:string,tone:TaskStatusPresentation['tone']='waiting')=>({title,summary,nextActor,nextActionLabel,supportingDetail,tone});
+  if(!helper && input.requesterContextKnown===false){
+    const titles:Record<string,string>={OPEN:'Waiting for helpers',HAS_OFFERS:'Helpers have responded',AWAITING_CONFIRMATION:'Arrangement needs a response',ARRANGED:'Help arranged',IN_PROGRESS:'Help is in progress',COMPLETION_PENDING:'Completion awaiting review',COMPLETED:'Completed',CANCELLED:'Task cancelled',DISPUTED:'Completion needs attention'};
+    return result(titles[status] ?? 'Current task status','This request is part of your care context.','Current status',undefined,'Refresh the status to check the current next steps.','neutral');
+  }
   // A requester review takes precedence if both independently guarded changes exist.
   if(status==='AWAITING_CONFIRMATION' && input.availabilityChanged) return result(helper?'Your availability needs review':`${name === 'your helper'?'Your helper':name} updated availability`,helper?'Your new availability does not fully cover the task.':'The updated availability does not fully cover this task.',helper?'Waiting for requester':'Your turn',helper?undefined:'Review availability',helper?'The requester must review it before you can confirm.':'Keep this helper selected or choose another. Keeping them selected still needs their confirmation.',helper?'waiting':'action');
   if(status==='AWAITING_CONFIRMATION' && input.scheduleChanged) return result(helper?'Task schedule changed':`Waiting for ${name} to confirm the new time`,helper?'The requester changed the task time.':'The earlier confirmation no longer covers this schedule.',helper?'Your turn':`Waiting for ${name}`,helper?'Review new schedule':undefined,helper?'Check your availability, then explicitly confirm the new schedule or decline.':'Help is arranged only after your helper confirms the new time.',helper?'action':'waiting');

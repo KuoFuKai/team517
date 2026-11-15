@@ -10,7 +10,7 @@ import { useScreenTop } from '../navigation/scroll';
 import { theme as t } from '../theme';
 import { MenuRow, TonePanel } from '../components/Details';
 import { Text, Button, Card, PageHeading, Avatar } from '../components/ui';
-import { statusLabel } from '../utils/presentation';
+import { statusLabel , countLabel} from '../utils/presentation';
 import * as api from '../api/client';
 import { DesignPreviewScreen, type DesignPreview } from './DesignPreviewScreen';
 const roleName = (value: UserRole) => value === 'HELPER' ? 'Caregiver' : value === 'CARE_MANAGER' ? 'Care coordinator' : 'Care receiver';
@@ -33,7 +33,7 @@ export function HomeScreen({ busy, profile, initialize, loadUser, switchRole, ch
     <Card>{helper ? <Text accessibilityRole="header" style={{ fontSize: 28, lineHeight: 34 }}>{title}</Text> : <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}><Avatar label={title} /><Text accessibilityRole="header" style={{ flex: 1, fontSize: 22, lineHeight: 28 }}>{title}</Text></View>}<Text style={{ color: t.colors.muted }}>{demoPerson(profile.id)?.relationship ?? `${roleName(profile.lastActiveRole ?? profile.primaryOnboardingRole)} · ${statusLabel(profile.verificationStatus ?? 'UNVERIFIED')}`}</Text>
       {helper && <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingTop: 8 }}>{[[rating?.averageRating?.toFixed(1) ?? '—', 'Rating'], [rating?.reviewCount?.toString() ?? '—', 'Reviews'], [statusLabel(profile.verificationStatus ?? 'UNVERIFIED'), 'Identity']].map(([value,label]) => <View key={label} style={{ gap: 4, flex: 1 }}><Text style={{ color: t.colors.primary, fontSize: 18, fontWeight: '600' }}>{value}</Text><Text style={{ fontSize: 13.5, color: t.colors.muted }}>{label}</Text></View>)}</View>}
     </Card>
-    <Pressable accessibilityRole="button" accessibilityLabel="My points" onPress={() => setPreview('points')}><TonePanel title="My points">{pointsBalance === null ? 'View your balance and activity' : `${pointsBalance.toLocaleString()} points available`}</TonePanel></Pressable>
+    <Pressable accessibilityRole="button" accessibilityLabel="My points" onPress={() => setPreview('points')}><TonePanel title="My points">{pointsBalance === null ? 'View your balance and activity' : countLabel(pointsBalance,'point')+' available'}</TonePanel></Pressable>
     {profile.roles.includes('HELPER') && <MenuRow contained title="View my helper profile" onPress={()=>setTrustOpen(true)} />}
     {helper && <MenuRow contained title="Skills and availability" onPress={() => setPreview('skills')} />}
     {verification && <MenuRow contained title={helper ? 'Caregiver verification' : 'Identity verification'} onPress={verification} />}

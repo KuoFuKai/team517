@@ -1,3 +1,4 @@
+import {countLabel} from '../utils/presentation';
 import { pointActivity } from '../utils/points';
 import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
@@ -19,8 +20,8 @@ export function PointsScreen({ back }: { back: () => void }) {
   return <>
     {loading && <Text >Loading your points…</Text>}
     {error ? <Text accessibilityRole="alert">{error}</Text> : null}
-    {account && !loading && !error && <><View style={{backgroundColor:t.colors.primarySoft,borderRadius:12,padding:16,gap:8}}><Text style={{fontWeight:'600'}}>Available points</Text><Text accessibilityRole="header" style={{ color: t.colors.primary, fontSize: 44, lineHeight: 56 }}>{account.availablePoints.toLocaleString()}</Text><Text>points available</Text></View>
-      <Card><View style={{ gap: 8 }}><Text accessibilityRole="header">{account.reservedPoints.toLocaleString()} points reserved</Text><Text>Reserved for active tasks. Points stay reserved until the task is completed or cancelled.</Text></View></Card>
+    {account && !loading && !error && <><View style={{backgroundColor:t.colors.primarySoft,borderRadius:12,padding:16,gap:8}}><Text style={{fontWeight:'600'}}>Available points</Text><Text accessibilityRole="header" style={{ color: t.colors.primary, fontSize: 44, lineHeight: 56 }}>{account.availablePoints.toLocaleString()}</Text><Text>{account.availablePoints===1?'point available':'points available'}</Text></View>
+      <Card><View style={{ gap: 8 }}><Text accessibilityRole="header">{countLabel(account.reservedPoints,'point')} reserved</Text><Text>Reserved for active tasks. Points stay reserved until the task is completed or cancelled.</Text></View></Card>
       <Text>Points are for help within 517. They are separate from ratings and reviews.</Text>
       <Text accessibilityRole="header">Recent activity</Text>
       {history?.transactions.length===0 && <Card><Text>No activity yet. Points you receive or reserve for tasks will appear here.</Text></Card>}

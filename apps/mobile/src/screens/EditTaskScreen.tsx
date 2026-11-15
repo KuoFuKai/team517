@@ -1,3 +1,4 @@
+import {countLabel} from '../utils/presentation';
 import * as pointApi from '../api/client';
 import { Disclosure } from '../components/Details';
 import { useScreenHeader } from '../components/ScreenHeader';
@@ -159,7 +160,7 @@ export function EditTaskScreen({ task, locations, busy: requestBusy, save, locat
       {([['VOLUNTEER', 'Volunteer'], ['POINTS', 'Points'], ['PAID', 'Paid']] as [TaskCompensationType, string][]).map(([value, label]) =>
         <OptionCard key={value} title={label} selected={compensationType === value} disabled={busy} choose={() => setCompensation(value)} />)}
     </Field>
-    {compensationType === 'POINTS' && <><TextInput accessibilityLabel="Point reward" value={points} onChangeText={setPoints} editable={!busy} keyboardType="number-pad" maxLength={12} />{availablePoints !== null && <Text>Available balance: {availablePoints.toLocaleString()} points</Text>}<Text>Points are reserved from the task creator when this task is published.</Text></>}
+    {compensationType === 'POINTS' && <><TextInput accessibilityLabel="Point reward" value={points} onChangeText={setPoints} editable={!busy} keyboardType="number-pad" maxLength={12} />{availablePoints !== null && <Text>Available balance: {countLabel(availablePoints,'point')}</Text>}<Text>Points are reserved from the task creator when this task is published.</Text></>}
     {compensationType === 'PAID' && <>
       <TextInput accessibilityLabel="Cash amount (major currency units)" value={cash} onChangeText={setCash} editable={!busy} maxLength={12} />
       <TextInput accessibilityLabel="Currency (three uppercase letters)" value={currency} onChangeText={setCurrency} editable={!busy} maxLength={3} />

@@ -26,7 +26,7 @@ export class AssignmentService {
       const assignment = { ...s.assignment!, updatedAt: now };
       const selected = { ...s.offer!, updatedAt: now };
       const closeBackups = (): Offer[] => s.backups.map(offer => ({ ...offer, status: 'NOT_SELECTED', updatedAt: now }));
-      const result = (status: Assignment['status'], taskStatus: Task['status'], event: LifecycleChange['events'][number], offers: Offer[] = []): LifecycleChange => ({ task: { ...s.task, status: taskStatus, requiresHelperReconfirmation:false }, assignment: { ...assignment, status }, offers, events: [event] });
+      const result = (status: Assignment['status'], taskStatus: Task['status'], event: LifecycleChange['events'][number], offers: Offer[] = []): LifecycleChange => ({ task: { ...s.task, status: taskStatus, requiresHelperReconfirmation:false }, assignment: { ...assignment, status, requiresHelperReconfirmation:false }, offers, events: [event] });
       if (operation === 'confirm') {
         requirePair(s, 'PENDING_CONFIRMATION', 'AWAITING_CONFIRMATION', 'ASSIGNMENT_NOT_CONFIRMABLE');
         if(s.assignment?.requiresHelperReconfirmation)throw new ApiFailure(409,'SCHEDULE_RECONFIRMATION_REQUIRED','Review and confirm the new schedule explicitly.');
@@ -74,7 +74,7 @@ export class AssignmentService {
       const result: LifecycleChange = { task: { ...clearRelationship(s.task), status: 'CANCELLED', requiresHelperReconfirmation:false, offerCount: 0 }, offers: s.backups.map(offer => ({ ...offer, status: 'NOT_SELECTED', updatedAt: now })), events: ['TASK_CANCELLED'] };
       if (s.assignment) {
         requirePair(s, s.task.status === 'AWAITING_CONFIRMATION' ? 'PENDING_CONFIRMATION' : 'CONFIRMED', s.task.status === 'AWAITING_CONFIRMATION' ? 'AWAITING_CONFIRMATION' : 'ARRANGED', 'ASSIGNMENT_NOT_CANCELLABLE');
-        result.assignment = { ...s.assignment, status: 'CANCELLED_BY_REQUESTER', updatedAt: now };
+        result.assignment = { ...s.assignment, status: 'CANCELLED_BY_REQUESTER', requiresHelperReconfirmation:false, updatedAt: now };
         result.offers.push({ ...s.offer!, status: 'NOT_SELECTED', updatedAt: now }); result.events.push('ASSIGNMENT_CANCELLED');
       }
       return result;

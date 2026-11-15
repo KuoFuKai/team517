@@ -12,7 +12,7 @@ import { useScreenTop } from '../navigation/scroll';
 import { resolvePushNotification } from '../push/resolve';
 import { useHardwareBack } from '../navigation/useHardwareBack';
 import React, { useEffect, useRef, useState } from 'react';
-import { View } from 'react-native';
+import { View,AppState } from 'react-native';
 import type { LocationDto, CalendarDto, CalendarTaskDto, NotificationsDto, AssignmentDto, TaskDetailDto, VerificationStatusDto } from '@team517/contracts';
 import * as api from '../api/client';
 import { AssignmentPanel } from './AssignmentPanel';
@@ -51,6 +51,7 @@ export function SupportScreen({ mode, back, onNotificationsLoaded, pushId, consu
     void api.getCalendar(query).then(result => { if (active) setCalendar(result); }).catch(e => { if (active) setCalendarError(friendlyError(e)); }).finally(() => { if (active) setCalendarLoading(false); });
     return () => { active = false; };
   }, [mode, range.start, range.end, calendarRefresh]);
+  useEffect(()=>{if(mode!=='calendar' || task || assignment)return;let active=true,inFlight=false;const query=calendarQuery(range);const refresh=()=>{if(!query || !active || inFlight || AppState.currentState!=='active')return;inFlight=true;void api.getCalendar(query).then(value=>{if(active){setCalendar(value);setCalendarError('');}}).catch(e=>{if(active){if(['FORBIDDEN','UNAUTHENTICATED'].includes(e?.code))setCalendar(null);setCalendarError(friendlyError(e));}}).finally(()=>{inFlight=false;});};refresh();const timer=setInterval(refresh,10000),focus=AppState.addEventListener('change',state=>{if(state==='active')refresh();});return()=>{active=false;clearInterval(timer);focus.remove();};},[mode,range.start,range.end,task?.id,assignment?.id]);
   const changeMonth = (value: string, selected = value + '-01') => {
     try { const next = monthRange(value); setMonth(value); setRange(next); setStart(next.start); setEnd(next.end); setDate(selected); setLastDay(selected); setCalendarError(''); }
     catch { setCalendarError('That month is outside the supported calendar range.'); }
@@ -79,7 +80,7 @@ export function SupportScreen({ mode, back, onNotificationsLoaded, pushId, consu
   if (conversationId) return <ConversationScreen id={conversationId} backLabel="Back to notifications" back={() => setConversationId(null)} />;
   if (offersVisible && task) return <OffersWorkspace task={task} taskId={task.id} back={() => setOffersVisible(false)} />;
   if (task || assignment) return <>
-    {assignment ? <><AssignmentPanel key={assignment.id} assignment={assignment} chooseAnother={async()=>setOffersVisible(true)} />{task && <Button title="View offers" onPress={() => setOffersVisible(true)} />}</> : task && <TaskDetailScreen scheduleChanged={async()=>{setTask(await api.getTask(task.id));setCalendarRefresh(v=>v+1);}} task={task} locations={taskLocations} busy={busy} back={() => { setTask(null); setAssignment(null); }} viewOffers={() => setOffersVisible(true)} />}
+    {assignment ? <><AssignmentPanel key={assignment.id} assignment={assignment} chooseAnother={async()=>{setTask(await api.getTask(assignment.taskId));setOffersVisible(true);}} />{task && <Button title="View offers" onPress={() => setOffersVisible(true)} />}</> : task && <TaskDetailScreen scheduleChanged={async()=>{setTask(await api.getTask(task.id));setCalendarRefresh(v=>v+1);}} task={task} locations={taskLocations} busy={busy} back={() => { setTask(null); setAssignment(null); }} viewOffers={() => setOffersVisible(true)} />}
     {error ? <ErrorState message={error} /> : null}
   </>;
   const groups = groupCalendarTasks(calendar?.tasks ?? []);

@@ -1,3 +1,4 @@
+import {friendlyError} from '../src/utils/presentation';
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {createSchedulingApi} from '../src/api/scheduling';
@@ -19,3 +20,5 @@ test('Active external Helper schedule push resolves through own safe Offer, with
 test('Schedule editor preserves untouched precision/repeated-hour instants and rejects DST gaps',()=>{
  const old=process.env.TZ;process.env.TZ='America/New_York';try{const repeated='2027-11-07T06:30:15.123Z';assert.equal(taskTimeValue(taskTimeInput(repeated),repeated),repeated);assert.equal(parseTaskTime('2027-03-14 02:30'),null);assert.equal(parseTaskTime('2027-03-14 03:30'),'2027-03-14T07:30:00.000Z');assert.equal(parseTaskTime('2026-12-31 23:30'),'2027-01-01T04:30:00.000Z');}finally{if(old===undefined)delete process.env.TZ;else process.env.TZ=old;}
 });
+
+test('Schedule conflict feedback gives safe actionable copy without vendor details',()=>{assert.equal(friendlyError({code:'SCHEDULE_STALE',message:'PRIVATE vendor details'}),'Schedule changed elsewhere. Refresh before updating or confirming.');assert.ok(friendlyError({code:'AVAILABILITY_UPDATE_REQUIRED'}).includes('cover the new task time'));assert.ok(!friendlyError(Error('PRIVATE')).includes('PRIVATE'));});

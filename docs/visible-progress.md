@@ -1,3 +1,7 @@
+## Current — Sprint8H authentication (November15)
+
+Visible landing/register/reset/verification/first-name/role/Account/deletion routes are implemented. Kevin's real Google entry was followed by observed Connected status and finalAPK cold Auth persistence. Fictional Email registration/onboarding/logout and eight landing/signup responsive combinations rendered on API36. [Evidence and exact scope](native-evidence/2026-11-15-auth/README.md), [60-item report](sprint-8h-report.md). Apple/iOS runtime, physical-phone and pending native items are not marked passed.
+
 ## Current — Sprint 8G review readiness (November 15)
 
 |Visible area|Truthful review status|Evidence boundary|

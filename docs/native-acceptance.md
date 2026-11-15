@@ -1,3 +1,11 @@
+## Sprint8H — Android Auth acceptance (November15)
+
+Actual emulator-5554 state device; Pixel_9_Pro Android16/API36/x86_64. [Native evidence/matrix](native-evidence/2026-11-15-auth/README.md), [exact finalAPK source/hash](auth-build.json). Real Google system credential entry was Kevin's action; agent observed new-user onboarding, completed fictional public-name/ordinary roles, and Google — Connected. Final correctedAPK0193 update and force-stop/relaunch retained that Auth; Connected rechecked. No personal Google identity is committed.
+
+Native fresh fictional-account deletion before onboarding displayed Account deleted after DELETE + recent password. Native Email signup rendered verification/onboarding, public-name/role setup reached app, and logout returned to landing. Password-manager overlays caused interrupted automation assertions; those are not product passes or proof of a backend defect. Landing/registration/scroll/visibleBack exercised at320/360/390/412dp, fonts1.0/1.3 (8 combinations); 24 original PNGs. No BLOCKER/HIGH observed in that scoped layout inspection. LOW: narrow/large-font copy requires more vertical scrolling. Every Auth function at every size, real inbox verification/reset, complete final business/FCM route matrix and docked/floating keyboard matrix are not implied by those screenshots.
+
+Original1280×2856/density480/font1.0 restored, adb reverse empty. Mac/Xcode/iOS/Apple/APNs, phone8A–8H and pending8G humanstudy remain open. No repeated phone connection request. Historical Sprint native results below retain their original candidate provenance.
+
 ## Sprint 8G — physical acceptance READY / NOT RUN
 
 November15 adb inventory: only Pixel_9_Pro emulator-5554 / Android16 API36 x86_64; no vivo. Consolidated physical8A–8F stays pending per Kevin, without repeated reconnection prompts. [Single-session checklist](physical-review-checklist.md). Docked Gboard, physical navigation/FCM/privacy/cold Auth and USB-disconnected8G results are **NOT RUN**, not carried forward from earlier phone sessions.

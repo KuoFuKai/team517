@@ -1,3 +1,9 @@
+## Sprint8H — authentication / iOS source readiness (November15)
+
+Real Google Android sign-in was completed by Kevin and verified in-app, including Auth persistence after APK update/cold launch. Email registration/onboarding and responsive landing/registration were exercised on the API36 emulator. [60-item report](docs/sprint-8h-report.md), [Auth](docs/authentication.md), [deletion/retention](docs/account-deletion.md), [iOS readiness](docs/ios-readiness.md), [Mac build handoff](docs/ios-build-handoff.md), [new APK receipt](docs/auth-build.json), [native evidence](docs/native-evidence/2026-11-15-auth/README.md).
+
+Use the dedicated8H branch for auth work; frozen8G review APK/manifest remain unchanged for the pending study. iOS source preparation does not mean Xcode/runtime/distribution acceptance. Apple/APNs credentials and Mac/iPhone validation remain pending. No Payments work.
+
 ## Current — Sprint 8G review preparation (November 15)
 
 **READY materials; physical Android and teammate review PENDING.** Kevin explicitly approved the completed8F fast-forward; shared main now includes `6727e94`. No product source/backend change in8G. Fixed [canonical review APK](artifacts/android/team517-8g-review.apk), [SHA/source manifest](docs/review-build.json), [short unaided protocol](docs/usability-review.md), [single vivo8A–8F checklist](docs/physical-review-checklist.md), [38-item status report](docs/sprint-8g-report.md). Kevin confirmed Yiru/Kingsley will review later; adb currently sees only API36 emulator. Existing functionality is engineering-validated, not a new physical or comprehension pass. Older entries below are historical.

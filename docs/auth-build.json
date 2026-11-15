@@ -1,0 +1,14 @@
+{
+  "source": "b0de62ba48889874ce3e122d899be0e28c399101",
+  "sha256": "0193d2e8223b7494185074dbe375376fedc23a58d5fda37d5e7b8654a242c235",
+  "buildDate": "2026-11-15T15:21:41-05:00",
+  "package": "edu.cornelltech.team517",
+  "version": "0.2.0",
+  "environment": "PREVIEW",
+  "firebaseProject": "team517-dev",
+  "apk": "artifacts/android/team517-8h-auth-preview.apk",
+  "nativeTarget": "emulator-5554, Android 16 / API 36 x86_64",
+  "nativeEvidence": "docs/native-evidence/2026-11-15-auth/README.md",
+  "frozen8gUnchanged": true,
+  "distribution": "Internal development Preview, not store distribution"
+}

@@ -1,3 +1,7 @@
+## Sprint8H candidate — separate from frozen8G study
+
+Auth candidate [manifest](auth-build.json), [report](sprint-8h-report.md), [Android evidence](native-evidence/2026-11-15-auth/README.md). Real Google entry was performed privately by Kevin; report/screenshots exclude personal Google identity. Do not silently substitute8H during the frozen8G unaided study. Apple/iOS/physical acceptance and actual Yiru/Kingsley study remain pending. [Mac handoff](ios-build-handoff.md).
+
 ## Sprint 8G — review kit ready, study pending
 
 November15: completed8F explicitly approved and fast-forwarded to main (`6727e94`), no incoming Kingsley conflict. [Canonical build manifest](review-build.json), [unaided protocol / raw observations](usability-review.md), [single physical checklist](physical-review-checklist.md), [38-item status report](sprint-8g-report.md). Keep the same binary during all participant tasks; don't teach navigation. Kevin confirmed teammates will test later. No external messages were sent. Actual findings file is deliberately deferred until real observations; no fake participant quotes/pass.

@@ -10,7 +10,7 @@ import { ZodError } from 'zod';
 import { authenticate } from '../auth/authenticate';
 import { Store } from '../repositories/store';
 import { CareContextService, userDto } from '../care-context/service';
-import { ApiFailure } from '../shared/errors';
+import { ApiFailure, transactionConflict } from '../shared/errors';
 import { initializeSchema, createContextSchema, contextIdSchema } from '../validation/requests';
 import { taskRoutes } from './task-routes';
 import { validationFields } from '../validation/tasks';
@@ -49,6 +49,7 @@ export function createApp(store: Store, verify = authenticate, aiProvider: AiPro
     if (err instanceof ZodError) {res.status(400).json({error:{code:'VALIDATION_ERROR',message:'Invalid request.',fields:validationFields(err)}}); return;}
     if (err instanceof ApiFailure) {res.status(err.status).json({error:{code:err.code,message:err.message,...(err.fields ? {fields:err.fields} : {})}}); return;}
     if (err.type === 'entity.parse.failed' || err.type === 'entity.too.large') {res.status(400).json({error:{code:'INVALID_BODY',message:'Invalid JSON body.'}}); return;}
+    const conflict=transactionConflict(err);if(conflict){res.status(conflict.status).json({error:{code:conflict.code,message:conflict.message}});return;}
     console.error('Request failed',err); res.status(500).json({error:{code:'INTERNAL',message:'Internal server error.'}});
   }; app.use(errors); return app;
 }

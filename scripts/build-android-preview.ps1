@@ -9,7 +9,7 @@ try {
   if(-not $env:ANDROID_HOME){$env:ANDROID_HOME='C:/Users/kevin/AppData/Local/Android/Sdk'}
   $env:PATH=(Join-Path $env:JAVA_HOME 'bin')+';'+$env:PATH
   foreach($key in @('GOOGLE_APPLICATION_CREDENTIALS','EXPO_PUBLIC_DEV_HOST','EXPO_PUBLIC_API_URL','EXPO_PUBLIC_AUTH_EMULATOR_URL','EXPO_PUBLIC_FIREBASE_API_KEY','EXPO_PUBLIC_FIREBASE_PROJECT_ID','EXPO_PUBLIC_FIREBASE_APP_ID','EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN')){Remove-Item "Env:$key" -ErrorAction SilentlyContinue}
-  $env:EXPO_PUBLIC_APP_ENV='PREVIEW'; $env:EXPO_NO_TELEMETRY='1'; $env:EXPO_NO_DOTENV='1'
+  $env:EXPO_PUBLIC_APP_ENV='PREVIEW'; $env:TEAM517_NATIVE_PLATFORM='android'; $env:EXPO_NO_TELEMETRY='1'; $env:EXPO_NO_DOTENV='1'
   $env:TEAM517_GOOGLE_SERVICES_FILE=(Resolve-Path 'apps/mobile/google-services.json').Path
   $env:__UNSAFE_EXPO_HOME_DIRECTORY=Join-Path $repoRoot '.tools/expo'
   npm run build

@@ -5,19 +5,19 @@ import {auth} from './firebase';
 import {providerFlow} from './provider-flow';
 export type SocialProvider='google.com'|'apple.com';
 export type AuthIntent='signin'|'link'|'reauth';
-export const googleAvailable=()=>Boolean(Constants.expoConfig?.extra?.team517GoogleClientId);
+export const googleAvailable=()=>['android','ios'].includes(Platform.OS)&&Constants.executionEnvironment!=='storeClient'&&Boolean(Constants.expoConfig?.extra?.team517GoogleClientId);
 let firstName:string|undefined;
 let firstNameUid:string|undefined;
 export const suggestedFirstName=()=>auth.currentUser?.uid===firstNameUid?firstName:undefined;
 export const clearProviderMemory=()=>{firstName=undefined;firstNameUid=undefined;};
 export async function nativeCredential(provider:SocialProvider):Promise<{credential:AuthCredential;authorizationCode?:string}|undefined>{
  if(provider==='google.com'){
-  const clientId=Constants.expoConfig?.extra?.team517GoogleClientId;if(!clientId)throw {code:'PROVIDER_NOT_CONFIGURED'};
+  const clientId=Constants.expoConfig?.extra?.team517GoogleClientId;if(!googleAvailable()||!clientId)throw {code:'PROVIDER_NOT_CONFIGURED'};
   const g=await import('react-native-nitro-google-signin');g.GoogleOneTapSignIn.configure({webClientId:clientId,autoSelectOnSignIn:false});await g.GoogleOneTapSignIn.checkPlayServices();
   const response=await g.GoogleOneTapSignIn.presentExplicitSignIn();if(g.isCancelledResponse(response))return;if(!g.isSuccessResponse(response)||!response.data.idToken)throw {code:'PROVIDER_NOT_CONFIGURED'};
   return {credential:GoogleAuthProvider.credential(response.data.idToken)};
  }
- if(Platform.OS!=='ios'||Constants.expoConfig?.extra?.team517AppleAuthEnabled!==true)throw {code:'PROVIDER_NOT_CONFIGURED'};
+ if(Platform.OS!=='ios'||Constants.executionEnvironment==='storeClient'||Constants.expoConfig?.extra?.team517AppleAuthEnabled!==true)throw {code:'PROVIDER_NOT_CONFIGURED'};
  const apple=await import('expo-apple-authentication'),crypto=await import('expo-crypto');if(!await apple.isAvailableAsync())throw {code:'PROVIDER_NOT_CONFIGURED'};
  const nonce=Array.from(await crypto.getRandomBytesAsync(32),x=>x.toString(16).padStart(2,'0')).join('');const hashed=await crypto.digestStringAsync(crypto.CryptoDigestAlgorithm.SHA256,nonce);
  const result=await apple.signInAsync({requestedScopes:[apple.AppleAuthenticationScope.FULL_NAME,apple.AppleAuthenticationScope.EMAIL],nonce:hashed});if(!result.identityToken)throw {code:'PROVIDER_NOT_CONFIGURED'};

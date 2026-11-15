@@ -16,6 +16,7 @@ export class DeviceTokenRepository {
     return this.db.runTransaction(async tx => {
       const [user, snap] = await Promise.all([tx.get(this.db.collection('users').doc(uid)), tx.get(ref)]);
       if (!user.exists) throw new ApiFailure(404, 'USER_NOT_FOUND', 'Initialize your app user first.');
+      if(['DELETING','DELETED'].includes(user.data()?.accountStatus))throw new ApiFailure(403,'ACCOUNT_INACTIVE','This account is no longer active.');
       const old = snap.data() as DeviceToken | undefined, now = Timestamp.now();
       const { deliveryEnabled: enabled = true, ...fields } = input;
       if (enabled && old?.disabledReason === 'INVALID_TOKEN') throw new ApiFailure(409, 'PUSH_TOKEN_INVALID', 'This device token is no longer valid. A fresh native token is required.');

@@ -11,7 +11,7 @@ import {SocialAuthButtons} from '../components/SocialAuthButtons';
 export function AuthScreen(){
  const [mode,setMode]=useState<'landing'|'signin'|'signup'|'reset'|'privacy'|'terms'>('landing');
  const [email,setEmail]=useState(''),[password,setPassword]=useState(''),[show,setShow]=useState(false),[busy,setBusy]=useState(false),[error,setError]=useState(''),[notice,setNotice]=useState('');const lock=useRef(false);
- const navigate=(next:typeof mode)=>{if(lock.current)return;setMode(next);setError('');setNotice('');setPassword('');};
+ const navigate=(next:typeof mode)=>{if(lock.current)return;setMode(next);setError('');setNotice('');setPassword('');setShow(false);};
  const back=()=>navigate('landing');useScreenHeader({title:mode==='reset'?'Reset password':mode==='signup'?'Create account':mode==='signin'?'Sign in':mode==='privacy'?'Privacy':mode==='terms'?'Terms':'Help Me Help',back:mode==='landing'?undefined:back,priority:3,disabled:busy,enabled:mode!=='landing'});
  useHardwareBack(()=>{if(mode==='landing')return false;if(!busy)back();return true;},3);
  const run=async(work:()=>Promise<unknown>)=>{if(lock.current)return;lock.current=true;setBusy(true);setError('');setNotice('');try{await work();}catch(e){setError(authError(e));}finally{lock.current=false;setBusy(false);}};

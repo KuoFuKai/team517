@@ -22,3 +22,5 @@ test('Schedule editor preserves untouched precision/repeated-hour instants and r
 });
 
 test('Schedule conflict feedback gives safe actionable copy without vendor details',()=>{assert.equal(friendlyError({code:'SCHEDULE_STALE',message:'PRIVATE vendor details'}),'Schedule changed elsewhere. Refresh before updating or confirming.');assert.ok(friendlyError({code:'AVAILABILITY_UPDATE_REQUIRED'}).includes('cover the new task time'));assert.ok(!friendlyError(Error('PRIVATE')).includes('PRIVATE'));});
+
+test('Old active-Offer schedule notification follows a subsequently selected current Assignment',async()=>{let reads=0;const assignment={id:'current',status:'PENDING_CONFIRMATION'};const api:any={getNotification:async()=>({type:'TASK_RESCHEDULED',resourceType:'TASK',resourceId:'task'}),getMyOffer:async()=>({offer:{id:'own',status:'SELECTED',assignmentId:'current'}}),getAssignment:async(id:string)=>{assert.equal(id,'current');reads++;return assignment;},getTask:async()=>{throw Error('Never access private Task');}};assert.deepEqual(await resolvePushNotification('old',api),{kind:'ASSIGNMENT',assignment});assert.equal(reads,1);});

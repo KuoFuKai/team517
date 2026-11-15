@@ -11,6 +11,6 @@ export async function resolvePushNotification(id: string, api: PushReader): Prom
   const n = await api.getNotification(id); // Authenticated, recipient-owned source of truth.
   if (n.resourceType === 'CONVERSATION') { await api.getConversation(n.resourceId); return { kind: 'CONVERSATION', id: n.resourceId }; }
   if (n.resourceType === 'ASSIGNMENT') return { kind: 'ASSIGNMENT', assignment: await api.getAssignment(n.resourceId) };
-  if(n.type==='TASK_RESCHEDULED' && api.getMyOffer){const mine=await api.getMyOffer(n.resourceId);if(!mine.offer)throw new Error('This task update is no longer available.');return {kind:'OFFER',id:n.resourceId};}
+  if(n.type==='TASK_RESCHEDULED' && api.getMyOffer){const mine=await api.getMyOffer(n.resourceId);if(!mine.offer)throw new Error('This task update is no longer available.');if(mine.offer.assignmentId)return {kind:'ASSIGNMENT',assignment:await api.getAssignment(mine.offer.assignmentId)};return {kind:'OFFER',id:n.resourceId};}
   return { kind: 'TASK', task: await api.getTask(n.resourceId) };
 }

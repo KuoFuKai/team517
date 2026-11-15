@@ -4,13 +4,13 @@ export const statusLabels: Record<string, string> = {
   READ: 'Read', UNREAD: 'New', DRAFT: 'Draft', OPEN: 'Open for offers', HAS_OFFERS: 'Offers received', AWAITING_CONFIRMATION: 'Waiting for helper confirmation',
   PENDING_CONFIRMATION: 'Waiting for helper confirmation', ARRANGED: 'Scheduled', CONFIRMED: 'Scheduled', IN_PROGRESS: 'In progress',
   COMPLETION_PENDING: 'Waiting for completion review', COMPLETED: 'Completed', CANCELLED: 'Cancelled', DISPUTED: 'Issue reported',
-  ACTIVE: 'Available', WITHDRAWN: 'Withdrawn', SELECTED: 'Selected', NOT_SELECTED: 'Not selected', EXPIRED: 'Expired', DECLINED: 'Declined',
+  ACTIVE: 'Offer sent', WITHDRAWN: 'Withdrawn', SELECTED: 'Selected', NOT_SELECTED: 'Not selected', EXPIRED: 'Expired', DECLINED: 'Declined',
   CANCELLED_BY_HELPER: 'Cancelled by helper', CANCELLED_BY_REQUESTER: 'Cancelled by requester', UNVERIFIED: 'Not verified', PENDING: 'Verification in review', VERIFIED: 'Verified', FAILED: 'Verification not approved',
   PLANNED: 'Planned', URGENT: 'Urgent', VOLUNTEER: 'Volunteer', POINTS: 'Points', PAID: 'Paid', CARE_CIRCLE: 'My care circle', VERIFIED_HELPERS: 'Verified helpers', REQUESTER: 'Requester',
 };
 export const statusLabel = (status: string) => statusLabels[status] ?? status.toLowerCase().replace(/_/g, ' ');
 export const roleLabel = (role: UserRole) => ({ CARE_MANAGER: 'Family & care manager', CARE_RECEIVER: 'Care receiver', HELPER: 'Helper' })[role];
-export const personLabel = (id: string) => displayPerson(id, 'Helper ' + id.slice(-4).toUpperCase()); // Ordinary sessions retain identifier aliases; explicit LOCAL presentation uses documented fictional identities.
+export const personLabel = (id: string) => displayPerson(id, 'Helper'); // Ordinary sessions use neutral aliases; explicit LOCAL presentation uses documented fictional identities.
 export const countLabel = (count: number, singular: string, plural = singular + 's') => `${count} ${count === 1 ? singular : plural}`;
 export function scheduledTime(value?: string) {
   const time = value ? Date.parse(value) : NaN;

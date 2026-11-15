@@ -32,7 +32,7 @@ test('product error copy handles verification/AI/privacy and never renders arbit
   assert.match(friendlyError({ code: 'LOCATION_NOT_VISIBLE' }), /current confirmed/);
   assert.ok(!friendlyError(new Error('PRIVATE address or vendor stack')).includes('PRIVATE'));
   assert.equal(dateLabel('not a date'), 'Time to be arranged');
-  assert.equal(personLabel('backend-uid-1234'), 'Helper 1234');
+  assert.equal(personLabel('backend-uid-1234'), 'Helper');
   const validation = validationSummary([{ field: 'visibility', message: 'expected CARE_CIRCLE|VERIFIED_HELPERS' }, { field: 'startAt', message: 'Invalid input: undefined' }]);
   assert.match(validation, /Choose your circle or verified helpers/);
   assert.match(validation, /timezone/); assert.doesNotMatch(validation, /undefined|CARE_CIRCLE|Invalid input/);

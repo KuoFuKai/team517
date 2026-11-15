@@ -3,7 +3,7 @@ import { ScreenModal } from '../components/ScreenModal';
 import { ResponsiveActions } from '../components/ResponsiveActions';
 import { demoPerson } from '../demo/maker-day3';
 import { HelperTrustScreen,TrustSignals } from './HelperTrustScreen';
-import { ConfirmationSheet } from '../components/Feedback';
+import { ConfirmationSheet,SuccessScreen } from '../components/Feedback';
 import { useHardwareBack } from '../navigation/useHardwareBack';
 import { useScreenTop } from '../navigation/scroll';
 import { Disclosure } from '../components/Details';
@@ -26,6 +26,7 @@ export function OffersWorkspace({taskId,task:taskDetails,back}:{taskId:string;ta
  const [data,setData]=useState<OfferListDto|null>(null),[assignment,setAssignment]=useState<AssignmentDto|null>(null),[busy,setBusy]=useState(false),[error,setError]=useState(''),[selectedId,setSelectedId]=useState<string|null>(null),[profileId,setProfileId]=useState<string|null>(null),[confirmId,setConfirmId]=useState<string|null>(null),[confirmRevision,setConfirmRevision]=useState(0);
  const [confirmScheduleRevision,setConfirmScheduleRevision]=useState(0);
  const [confirmFit,setConfirmFit]=useState<OfferAvailabilityFit>();
+ const [selectedFeedback,setSelectedFeedback]=useState<string|null>(null);
  const lock=useRef(false);
  useScreenHeader({title:assignment && !selectedId?'Your arrangement':selectedId?'Offer details':'Offers',back:selectedId?()=>setSelectedId(null):back,disabled:busy,priority:3});
  useScreenTop(selectedId ?? 'offers');useHardwareBack(()=>{if(selectedId){if(!busy)setSelectedId(null);return true;}return false;},3);
@@ -37,7 +38,7 @@ export function OffersWorkspace({taskId,task:taskDetails,back}:{taskId:string;ta
  const actions=(offer:OfferSummaryDto,revision=offer.availabilityRevision ?? 0,scheduleRevision=data?.task.scheduleRevision ?? 0,fit=offer.availabilityFit)=><ResponsiveActions>{['ACTIVE','SELECTED'].includes(offer.status) && <MessageEntry taskId={taskId} otherUserId={offer.helperId}/>}
  {canSelect(offer) && <Button title={'Select '+helperName(offer)} variant="primary" disabled={busy} onPress={()=>requestSelect(offer,revision,scheduleRevision,fit)}/>}</ResponsiveActions>;
  const choosing=data?.offers.find(o=>o.id===confirmId),copy=choosing?selectionCopy(helperName(choosing),confirmFit):null;
- const confirmation=choosing && copy ? <ConfirmationSheet title={copy.title} message={copy.message} confirmLabel={copy.confirmLabel} dismissLabel="Cancel" dismissAccessibilityLabel="Cancel helper selection" confirmVariant="primary" busy={busy} error={error} dismiss={()=>{setConfirmId(null);setError('');}} confirm={()=>void run(async()=>{const result=await api.selectOffer(taskId,choosing.id,confirmRevision,confirmScheduleRevision);setAssignment(result.assignment);setConfirmId(null);setProfileId(null);setSelectedId(null);await load();})}/> : null;
+ const confirmation=choosing && copy ? <ConfirmationSheet title={copy.title} message={copy.message} confirmLabel={copy.confirmLabel} dismissLabel="Cancel" dismissAccessibilityLabel="Cancel helper selection" confirmVariant="primary" busy={busy} error={error} dismiss={()=>{setConfirmId(null);setError('');}} confirm={()=>void run(async()=>{const result=await api.selectOffer(taskId,choosing.id,confirmRevision,confirmScheduleRevision);setAssignment(result.assignment);setSelectedFeedback(helperName(choosing));setConfirmId(null);setProfileId(null);setSelectedId(null);await load();})}/> : null;
  const list=(offers:OfferSummaryDto[])=>offers.map(offer=><Card key={offer.id}><View style={{flexDirection:'row',gap:12,alignItems:'flex-start'}}><Avatar label={helperName(offer)}/><Text accessibilityRole="header" style={{flex:1,fontSize:22,lineHeight:30}}>{helperName(offer)}</Text></View>
    <OfferTrust offer={offer}/><OfferAvailability value={offer}/><Text style={{fontStyle:'italic'}} numberOfLines={4}>{offer.message || 'Offered to help with this task.'}</Text><StatusBadge status={offer.status}/>
    <ResponsiveActions minimum={128}><Button title="View profile" accessibilityLabel={'View profile of '+helperName(offer)} onPress={()=>setProfileId(offer.helperId)} disabled={busy}/>
@@ -45,6 +46,7 @@ export function OffersWorkspace({taskId,task:taskDetails,back}:{taskId:string;ta
  </Card>);
  const selected=data?.offers.find(o=>o.id===selectedId),profileOffer=data?.offers.find(o=>o.helperId===profileId);
  const profileModal=profileId ? <ScreenModal title="Helper profile" close={()=>{if(!busy)setProfileId(null);}}><HelperTrustScreen scheduleRevision={data?.task.scheduleRevision ?? 0} availabilityRevision={profileOffer?.availabilityRevision ?? 0} helperId={profileId} taskId={taskId} back={()=>{if(!busy)setProfileId(null);}}>{profile=><>{profileOffer && <><Card><Text accessibilityRole="header">Their offer</Text><Text>{profileOffer.message || 'Offered to help with this task.'}</Text><Text>Sent {dateLabel(profileOffer.createdAt)}</Text></Card>{actions(profileOffer,profile.taskAvailability?.availabilityRevision ?? 0,profile.taskAvailability?.scheduleRevision ?? 0,profile.taskAvailability?.availabilityFit)}</>}{error && !confirmId ? <ErrorState message={error}/> : null}</>}</HelperTrustScreen></ScreenModal> : null;
+ if(selectedFeedback)return <SuccessScreen header="Helper selected" title={selectedFeedback+' selected'} message="Your helper still needs to confirm. The task is not arranged yet." action="View arrangement" done={()=>setSelectedFeedback(null)}/>;
  return <>{profileModal}{confirmation}{busy && <LoadingState label="Loading offers…"/>}{error && !confirmId ? <ErrorState message={error}/> : null}
  {selected ? <><Card><Avatar label={helperName(selected)}/><Text accessibilityRole="header">{helperName(selected)}</Text><OfferTrust offer={selected}/><OfferAvailability value={selected}/></Card><Card><Text accessibilityRole="header">Their offer</Text><Text>{selected.message || 'Offered to help with this task.'}</Text><Text>Sent {dateLabel(selected.createdAt)}</Text><StatusBadge status={selected.status}/></Card><Button title="View helper profile" onPress={()=>setProfileId(selected.helperId)}/>{taskDetails && <Card><Text>{taskDetails.title}</Text><Text>{taskWhenLabel(data?.task.startAt ?? taskDetails.startAt,data?.task.endAt ?? taskDetails.endAt)}</Text><Text>{compensationLabel(taskDetails)}</Text></Card>}{actions(selected)}<Disclosure title="Reviews"><ReviewsPanel helperId={selected.helperId}/></Disclosure></>
  : assignment ? <><AssignmentPanel assignment={assignment} refresh={load} chooseAnother={load}/><Disclosure title="Backup offers">{list(data?.offers.filter(o=>o.status==='ACTIVE') ?? [])}</Disclosure></>

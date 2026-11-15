@@ -1,3 +1,4 @@
+import {useCoordinationContext} from '../utils/useCoordinationContext';
 import {RescheduleTask} from './RescheduleTask';
 import {CoordinationCard} from '../components/CoordinationCard';
 import {taskStatusPresentation} from '../utils/coordination';
@@ -16,7 +17,8 @@ import { theme as t } from '../theme';
 export function TaskDetailScreen({ task, locations, busy, edit, cancel, back, viewOffers, contextName, postedByYou, scheduleChanged }: { task: TaskDetailDto; locations: LocationDto[]; busy: boolean; edit?: () => void; cancel?: () => void; back: () => void; viewOffers?: () => void; contextName?: string; postedByYou?: boolean; scheduleChanged?:(task:TaskDetailDto)=>Promise<void> }) {
   useScreenHeader({ title: 'Task details', back, disabled: busy, priority: 2 });
   const location = locations.find(l => l.id === task.locationId);
-  const coordination=taskStatusPresentation({status:task.status,scheduleChanged:task.requiresHelperReconfirmation});
+  const context=useCoordinationContext(task.id,undefined,Boolean(viewOffers) && task.status!=='DRAFT',false,task.updatedAt);
+  const coordination=taskStatusPresentation({status:context?.assignment?.status ?? task.status,helperName:context?.name,offerCount:context?.offerCount,scheduleChanged:context?.assignment?.scheduleReview?.requiresHelperReconfirmation ?? task.requiresHelperReconfirmation,availabilityChanged:context?.assignment?.availabilityReview?.requiresRequesterReconfirmation});
   const compensation = task.compensationType === 'PAID' ? `Paid task${task.cashAmount !== undefined ? ` · ${task.cashAmount} ${task.currency ?? ''}` : ''}` : task.compensationType === 'POINTS' ? `${task.pointReward ?? '—'} points` : task.compensationType === 'VOLUNTEER' ? 'Volunteer task' : 'Compensation not selected';
   return <>
     <PreviewContentCover kind="task" id={task.id} />

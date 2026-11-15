@@ -1,8 +1,8 @@
 import {countLabel} from './presentation';
 import type {AssignmentDto} from '@team517/contracts';
 
-export function requesterCoordination(task:{status:string;requiresHelperReconfirmation?:boolean},context?:{status?:string;assignment?:AssignmentDto;name?:string;offerCount?:number}):CoordinationInput {
- return {status:context?.assignment?.status ?? context?.status ?? task.status,requesterContextKnown:task.status==='DRAFT'||context!==undefined,helperName:context?.name,offerCount:context?.offerCount,scheduleChanged:context?.assignment?.scheduleReview?.requiresHelperReconfirmation ?? task.requiresHelperReconfirmation,availabilityChanged:context?.assignment?.availabilityReview?.requiresRequesterReconfirmation};
+export function requesterCoordination(task:{status:string;requiresHelperReconfirmation?:boolean},context?:{status?:string;assignment?:AssignmentDto;name?:string;offerCount?:number},actorId?:string):CoordinationInput {
+ return {status:context?.assignment?.status ?? context?.status ?? task.status,helper:Boolean(actorId && context?.assignment?.helperId===actorId),requesterContextKnown:task.status==='DRAFT'||context!==undefined,helperName:context?.name,offerCount:context?.offerCount,scheduleChanged:context?.assignment?.scheduleReview?.requiresHelperReconfirmation ?? task.requiresHelperReconfirmation,availabilityChanged:context?.assignment?.availabilityReview?.requiresRequesterReconfirmation};
 }
 
 // Explanation only: callers retain their existing server-checked action handlers.

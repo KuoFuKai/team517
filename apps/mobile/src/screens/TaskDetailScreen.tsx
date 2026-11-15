@@ -1,3 +1,4 @@
+import {auth} from '../auth/firebase';
 import {useCoordinationContext} from '../utils/useCoordinationContext';
 import {RescheduleTask} from './RescheduleTask';
 import {CoordinationCard} from '../components/CoordinationCard';
@@ -19,7 +20,7 @@ export function TaskDetailScreen({ task, locations, busy, edit, cancel, back, vi
   const location = locations.find(l => l.id === task.locationId);
   const [contextRevision,setContextRevision]=useState(0);
   const context=useCoordinationContext(task.id,undefined,Boolean(viewOffers) && task.status!=='DRAFT',false,task.updatedAt+'|'+contextRevision);
-  const input=requesterCoordination(task,context),currentStatus=input.status;
+  const input=requesterCoordination(task,context,auth.currentUser?.uid),currentStatus=input.status;
   const coordination=taskStatusPresentation(input);
   const compensation = compensationLabel(task);
   return <>

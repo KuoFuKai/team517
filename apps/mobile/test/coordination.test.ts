@@ -54,4 +54,6 @@ test('a readable Task without current management context never assigns the viewe
   const value=present(requesterCoordination({status}));assert.notEqual(value.nextActor,'Your turn');assert.equal(value.nextActionLabel,undefined);assert.doesNotMatch(value.summary,/you selected|your request/i);
  }
  assert.equal(present(requesterCoordination({status:'HAS_OFFERS'},{status:'HAS_OFFERS',offerCount:2})).nextActionLabel,'Review offers');
+ const a={id:'a',taskId:'t',offerId:'o',helperId:'dual-role',selectedBy:'manager',status:'PENDING_CONFIRMATION' as const,selectedAt:'time',createdAt:'time',updatedAt:'time'};
+ assert.equal(present(requesterCoordination({status:'AWAITING_CONFIRMATION',requiresHelperReconfirmation:true},{assignment:a},'dual-role')).nextActor,'Your turn');
 });

@@ -15,6 +15,8 @@ const request = createTransport({
 export const { registerDeviceToken, getDeviceToken, disableDeviceToken, getNotification } = createPushApi(request);
 export const {previewReschedule,rescheduleTask,reconfirmSchedule}=createSchedulingApi(request);
 const api = createCareApi(request);
+import {createAccountApi} from './account';
+export const {completeOnboarding,addAccountRole,deleteAccount}=createAccountApi(request);
 
 export const { getCurrentUser, initializeUser, listCareContexts, createCareContext, getCareContext } = api;
 export const { createTaskDraft, updateTaskDraft, publishTask, getTask, listTasks, cancelTask, listLocations, createLocation } = createTaskApi(request);

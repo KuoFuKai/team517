@@ -19,7 +19,7 @@ export class Store {
     const ref = this.db.collection('users').doc(uid);
     return this.db.runTransaction(async tx => {
       const existing = await tx.get(ref);
-      if (existing.exists) return existing.data() as User;
+      if (existing.exists) {const user=existing.data() as User;if(user.accountStatus==='DELETING'||user.accountStatus==='DELETED')throw new Error('Account inactive');return user;}
       const now = Timestamp.now();
       const user: User = {id:uid, roles:[role], primaryOnboardingRole:role, lastActiveRole:role, onboardingStatus:'STARTED', createdAt:now, updatedAt:now};
       tx.create(ref,user); return user;

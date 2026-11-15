@@ -1,0 +1,2 @@
+import {signOut} from 'firebase/auth';import {auth} from './firebase';import {beforeLogout} from '../push/session';import {nativeProviderLogout} from './providers';
+export async function logoutAuth(){const user=auth.currentUser;await beforeLogout();try{if(auth.currentUser===user)await Promise.race([nativeProviderLogout(),new Promise<void>(resolve=>setTimeout(resolve,1500))]);}finally{if(auth.currentUser===user)await signOut(auth);}}

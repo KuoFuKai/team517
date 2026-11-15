@@ -3,7 +3,7 @@ import type { CareContext, User } from '../domain/models';
 import { Store } from '../repositories/store';
 import { authorize } from '../permissions/authorize';
 import { ApiFailure } from '../shared/errors';
-export const userDto = (u: User): UserDto => ({id:u.id,roles:u.roles,primaryOnboardingRole:u.primaryOnboardingRole,lastActiveRole:u.lastActiveRole,verificationStatus:u.verificationStatus ?? 'UNVERIFIED',onboardingStatus:u.onboardingStatus,createdAt:u.createdAt.toDate().toISOString(),updatedAt:u.updatedAt.toDate().toISOString()});
+export const userDto = (u: User): UserDto => ({publicFirstName:u.publicFirstName,accountStatus:u.accountStatus??'ACTIVE',id:u.id,roles:u.roles,primaryOnboardingRole:u.primaryOnboardingRole,lastActiveRole:u.lastActiveRole,verificationStatus:u.verificationStatus ?? 'UNVERIFIED',onboardingStatus:u.onboardingStatus,createdAt:u.createdAt.toDate().toISOString(),updatedAt:u.updatedAt.toDate().toISOString()});
 export const contextDto = (c: CareContext): CareContextDto => ({id:c.id,name:c.name,createdBy:c.createdBy,careReceiverUserId:c.careReceiverUserId,status:c.status,createdAt:c.createdAt.toDate().toISOString(),updatedAt:c.updatedAt.toDate().toISOString()});
 export class CareContextService {
   constructor(private store: Store) {}

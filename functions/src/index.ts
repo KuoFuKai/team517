@@ -10,3 +10,7 @@ export const api = onRequest({region:'us-central1'},createApp(new Store()));
 export const deliverNotification = onDocumentCreated({ document: 'notifications/{notificationId}', region: 'us-central1', retry: false }, async event => {
   await new NotificationDeliveryService(configuredPushProvider()).deliver(event.params.notificationId);
 });
+
+import {onDocumentUpdated} from 'firebase-functions/v2/firestore';
+import {finishAccountDeletion} from './account/deletion';
+export const finishDeletion=onDocumentUpdated({document:'users/{uid}',region:'us-central1',retry:true},async event=>{if(event.data?.after.data().accountStatus==='DELETING')await finishAccountDeletion(event.params.uid);});

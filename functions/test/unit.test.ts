@@ -1,5 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import {requireRecentAuth,firstNamePattern} from '../src/account/policy';
+test('account deletion requires recent server-authenticated proof and safe public name',()=>{assert.throws(()=>requireRecentAuth(undefined));assert.throws(()=>requireRecentAuth(1,400000));assert.doesNotThrow(()=>requireRecentAuth(100,101000));assert.equal(firstNamePattern.test('alex@example.com'),false);assert.equal(firstNamePattern.test('Alex'),true);});
 import request from 'supertest';
 import { createApp } from '../src/api/app';
 import type { Store } from '../src/repositories/store';

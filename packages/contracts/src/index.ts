@@ -1,6 +1,6 @@
 export type UserRole = 'CARE_RECEIVER' | 'CARE_MANAGER' | 'HELPER';
 export type VerificationStatus = 'UNVERIFIED' | 'PENDING' | 'VERIFIED' | 'FAILED';
-export interface UserDto { id: string; roles: UserRole[]; primaryOnboardingRole: UserRole; lastActiveRole?: UserRole; verificationStatus?: VerificationStatus; onboardingStatus: 'STARTED' | 'COMPLETE'; createdAt: string; updatedAt: string }
+export interface UserDto { publicFirstName?: string; accountStatus?: 'ACTIVE'|'DELETING'|'DELETED'; id: string; roles: UserRole[]; primaryOnboardingRole: UserRole; lastActiveRole?: UserRole; verificationStatus?: VerificationStatus; onboardingStatus: 'STARTED' | 'COMPLETE'; createdAt: string; updatedAt: string }
 export interface InitializeUserRequest { primaryOnboardingRole: UserRole }
 export interface CreateCareContextRequest { name: string }
 export interface CareContextDto { id: string; name: string; createdBy: string; careReceiverUserId?: string; status: 'ACTIVE' | 'ARCHIVED'; createdAt: string; updatedAt: string }
@@ -160,8 +160,8 @@ export interface CalendarDto { tasks: CalendarTaskDto[]; truncated: boolean; lim
 export type NotificationType = 'TASK_RESCHEDULED' | 'SCHEDULE_RECONFIRMED' | 'OFFER_AVAILABILITY_UPDATED' | 'OFFER_RECEIVED' | 'HELPER_SELECTED' | 'ASSIGNMENT_CONFIRMED' | 'ASSIGNMENT_DECLINED' | 'ASSIGNMENT_CANCELLED' | 'TASK_STARTED' | 'COMPLETION_REQUESTED' | 'TASK_COMPLETED' | 'COMPLETION_DISPUTED' | 'NEW_MESSAGE';
 export interface NotificationDto { id: string; type: NotificationType; resourceType: 'TASK' | 'ASSIGNMENT' | 'CONVERSATION'; resourceId: string; title: string; body: string; readAt?: string; createdAt: string }
 export interface NotificationsDto { notifications: NotificationDto[]; limit: number; truncated: boolean }
-export interface RegisterDeviceTokenRequest { token: string; platform: 'android'; deviceId?: string; appVersion?: string; deliveryEnabled?: boolean }
-export interface DeviceTokenDto { id: string; platform: 'android'; enabled: boolean; registrationId: string; lastSeenAt: string }
+export interface RegisterDeviceTokenRequest { token: string; platform: 'android' | 'ios'; deviceId?: string; appVersion?: string; deliveryEnabled?: boolean }
+export interface DeviceTokenDto { id: string; platform: 'android' | 'ios'; enabled: boolean; registrationId: string; lastSeenAt: string }
 export interface DisableDeviceTokenRequest { registrationId: string }
 export interface CreateReviewRequest { rating: number; comment?: string }
 export interface ReviewDto { id: string; rating: number; comment?: string; reviewerLabel: string; createdAt: string }
@@ -211,3 +211,8 @@ export interface PointTransactionListDto { transactions: PointTransactionDto[]; 
 
 export interface HelperTrustSummaryDto { userId: string; displayName: string; verificationStatus: VerificationStatus; completedTaskCount: number; averageRating?: number; reviewCount: number }
 export interface HelperTrustProfileDto extends HelperTrustSummaryDto { taskAvailability?: TaskOfferAvailabilityDto; memberSince?: string; relationship?: 'CARE_CIRCLE' | 'EXTERNAL'; recentReviews: ReviewDto[]; reviewLimit: number; reviewsTruncated: boolean }
+
+export interface CompleteOnboardingRequest { publicFirstName: string; usage: 'NEED_HELP'|'HELPER'|'BOTH' }
+export interface AddRoleRequest { role: UserRole }
+export interface DeleteAccountRequest { confirmation: 'DELETE'; appleAuthorizationCode?: string }
+export interface DeleteAccountResult { status: 'DELETED'|'PENDING' }

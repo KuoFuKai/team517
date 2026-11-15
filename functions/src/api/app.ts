@@ -1,3 +1,4 @@
+import {accountRoutes} from './account-routes';
 import { trustRoutes } from './trust-routes';
 import { pointRoutes } from './point-routes';
 import { pushRoutes } from './push-routes';
@@ -27,13 +28,14 @@ export function createApp(store: Store, verify = authenticate, aiProvider: AiPro
   app.disable('x-powered-by'); app.use(cors()); app.use(express.json({limit:'16kb'}));
   app.get('/api/v1/health',(_req,res)=>{res.json({status:'ok',service:'team517-api'});});
   const api = express.Router();
-  api.use(asyncRoute(async (req,res,next)=>{res.locals.uid=await verify(req.header('authorization')); next();}));
+  api.use(asyncRoute(async (req,res,next)=>{res.locals.uid=await verify(req.header('authorization')); const account=await store.user(res.locals.uid); if(account?.accountStatus==='DELETING'||account?.accountStatus==='DELETED')throw new ApiFailure(403,'ACCOUNT_INACTIVE','This account is no longer active.'); next();}));
   api.get('/me',asyncRoute(async (_req,res)=>{const u=await store.user(res.locals.uid); if (!u) throw new ApiFailure(404,'USER_NOT_FOUND','Initialize your app user first.'); res.json(userDto(u));}));
   api.patch('/me/preferences', asyncRoute(async (req, res) => { res.json(await updateRolePreference(store, res.locals.uid, rolePreferenceSchema.parse(req.body).lastActiveRole)); }));
   api.post('/users/initialize',asyncRoute(async (req,res)=>{const body=initializeSchema.parse(req.body); res.json(userDto(await store.initialize(res.locals.uid,body.primaryOnboardingRole)));}));
   api.post('/care-contexts',asyncRoute(async (req,res)=>{const body=createContextSchema.parse(req.body); res.status(201).json(await contexts.create(res.locals.uid,body.name));}));
   api.get('/care-contexts',asyncRoute(async (_req,res)=>{res.json({careContexts:await contexts.list(res.locals.uid)});}));
   api.get('/care-contexts/:id',asyncRoute(async (req,res)=>{res.json(await contexts.get(res.locals.uid,contextIdSchema.parse(req.params.id)));}));
+  api.use(accountRoutes(store));
   api.use(trustRoutes());
   api.use(pointRoutes());
   api.use(pushRoutes());

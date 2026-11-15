@@ -3,7 +3,7 @@ import { getFirestore, Timestamp } from 'firebase-admin/firestore';
 import type { RegisterDeviceTokenRequest, DeviceTokenDto } from '@team517/contracts';
 import { ApiFailure } from '../shared/errors';
 export interface DeviceToken {
-  id: string; userId: string; token: string; platform: 'android'; deviceId?: string; appVersion?: string;
+  id: string; userId: string; token: string; platform: 'android' | 'ios'; deviceId?: string; appVersion?: string;
   enabled: boolean; registrationId: string; createdAt: Timestamp; updatedAt: Timestamp; lastSeenAt: Timestamp;
   disabledReason?: 'USER' | 'INVALID_TOKEN';
 }

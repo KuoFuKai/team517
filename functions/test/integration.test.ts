@@ -7,7 +7,36 @@ import { createApp } from '../src/api/app';
 import { Store, membershipId } from '../src/repositories/store';
 if (!process.env.FIRESTORE_EMULATOR_HOST || !process.env.FIREBASE_AUTH_EMULATOR_HOST) throw new Error('Run through npm run test:integration at root; emulators required.');
 initializeApp({projectId:'demo-team517'});
+import {getAuth} from 'firebase-admin/auth';
+import {finishAccountDeletion} from '../src/account/deletion';
 const app=createApp(new Store());
+test('new onboarding is UID-based, safe-role only, no verification, membership or Points grant',async()=>{
+ const a=await token(),header='Bearer '+a.idToken,db=getFirestore();
+ assert.equal((await request(app).post('/api/v1/me/onboarding').set('Authorization',header).send({publicFirstName:'Alex',usage:'BOTH',verificationStatus:'VERIFIED'})).status,400);
+ const result=await request(app).post('/api/v1/me/onboarding').set('Authorization',header).send({publicFirstName:'Alex',usage:'BOTH'});assert.equal(result.status,200);assert.equal(result.body.id,a.localId);assert.deepEqual(result.body.roles,['CARE_MANAGER','HELPER']);assert.equal(result.body.verificationStatus,'UNVERIFIED');assert.equal(result.body.onboardingStatus,'COMPLETE');
+ assert.equal((await db.collection('care_context_members').where('userId','==',a.localId).get()).size,0);assert.equal((await db.collection('point_accounts').doc(a.localId).get()).exists,false);
+ const add=await request(app).post('/api/v1/me/roles').set('Authorization',header).send({role:'CARE_RECEIVER'});assert.equal(add.status,200);assert.equal(add.body.id,a.localId);assert.equal(add.body.roles.length,3);
+ assert.equal((await request(app).post('/api/v1/me/roles').set('Authorization',header).send({role:'ADMIN'})).status,400);
+});
+test('explicit Firebase provider linking preserves app UID and ordinary backend ID-token authentication',async()=>{
+ const a=await token(),header='Bearer '+a.idToken;await request(app).post('/api/v1/me/onboarding').set('Authorization',header).send({publicFirstName:'Jamie',usage:'HELPER'});
+ const claims={sub:'google-'+crypto.randomUUID(),email:'linked-'+crypto.randomUUID()+'@example.test',email_verified:true,iss:'https://accounts.google.com',aud:'emulator-test'};const credential=Buffer.from(JSON.stringify({alg:'none'})).toString('base64url')+'.'+Buffer.from(JSON.stringify(claims)).toString('base64url')+'.';
+ const linked=await fetch('http://'+process.env.FIREBASE_AUTH_EMULATOR_HOST+'/identitytoolkit.googleapis.com/v1/accounts:signInWithIdp?key=demo-key',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({idToken:a.idToken,requestUri:'http://localhost',postBody:new URLSearchParams({providerId:'google.com',id_token:credential}).toString(),returnSecureToken:true})});assert.equal(linked.status,200);const result=await linked.json() as {localId:string;idToken:string};assert.equal(result.localId,a.localId);
+ const me=await request(app).get('/api/v1/me').set('Authorization','Bearer '+result.idToken);assert.equal(me.status,200);assert.equal(me.body.id,a.localId);assert.equal(me.body.publicFirstName,'Jamie');assert.equal((await getAuth().getUser(a.localId)).providerData.some(p=>p.providerId==='google.com'),true);
+});
+test('account deletion blocks active commitments, then removes Auth/name while retaining immutable history',async()=>{
+ const a=await token(),h='Bearer '+a.idToken,db=getFirestore();await request(app).post('/api/v1/me/onboarding').set('Authorization',h).send({publicFirstName:'Taylor',usage:'BOTH'});
+ const task=db.collection('tasks').doc();await task.set({id:task.id,createdBy:a.localId,status:'OPEN'});
+ assert.equal((await request(app).post('/api/v1/me/delete-account').set('Authorization',h).send({confirmation:'DELETE'})).status,409);assert.equal((await getAuth().getUser(a.localId)).disabled,false);
+ await task.update({status:'COMPLETED'});await db.collection('point_accounts').doc(a.localId).set({availablePoints:42,reservedPoints:0});await db.collection('point_transactions').doc('deletion-'+a.localId).set({userId:a.localId,amount:42,type:'TRANSFER_IN'});
+ const deleted=await request(app).post('/api/v1/me/delete-account').set('Authorization',h).send({confirmation:'DELETE'});assert.equal(deleted.status,200);assert.equal(deleted.body.status,'DELETED');await assert.rejects(getAuth().getUser(a.localId));
+ const tombstone=(await db.collection('users').doc(a.localId).get()).data()!;assert.equal(tombstone.accountStatus,'DELETED');assert.equal(tombstone.publicFirstName,undefined);assert.deepEqual(tombstone.roles,[]);assert.equal((await task.get()).data()!.status,'COMPLETED');assert.equal((await db.collection('point_accounts').doc(a.localId).get()).data()!.availablePoints,42);assert.equal((await request(app).get('/api/v1/me').set('Authorization',h)).status,401);
+ await assert.rejects(new Store().initialize(a.localId,'HELPER'));await finishAccountDeletion(a.localId);
+});
+test('durable deletion worker retries idempotently and clears more than one token page',async()=>{
+ const a=await token(),db=getFirestore();await db.collection('users').doc(a.localId).set({id:a.localId,roles:[],accountStatus:'DELETING'});const batch=db.batch();for(let i=0;i<103;i++)batch.set(db.collection('device_tokens').doc(a.localId+'_'+i),{userId:a.localId,token:'synthetic-'+i,enabled:true});await batch.commit();await finishAccountDeletion(a.localId);await finishAccountDeletion(a.localId);
+ assert.equal((await db.collection('device_tokens').where('userId','==',a.localId).where('enabled','==',true).get()).size,0);assert.equal((await db.collection('users').doc(a.localId).get()).data()!.accountStatus,'DELETED');
+});
 async function token() {const res=await fetch('http://'+process.env.FIREBASE_AUTH_EMULATOR_HOST+'/identitytoolkit.googleapis.com/v1/accounts:signUp?key=demo-key',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:crypto.randomUUID()+'@example.test',password:'testing123',returnSecureToken:true})});assert.equal(res.status,200);return await res.json() as {idToken:string;localId:string};}
 test('identity and care context slice with real Auth and Firestore emulators',async()=>{
   const a=await token(), b=await token(); const header='Bearer '+a.idToken;

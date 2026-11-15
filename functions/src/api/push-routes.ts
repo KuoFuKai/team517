@@ -1,7 +1,7 @@
 import { Router, type RequestHandler } from 'express';
 import { z } from 'zod';
 import { DeviceTokenService } from '../push/devices';
-export const registerDeviceSchema = z.object({ token: z.string().min(20).max(4096).regex(/^[A-Za-z0-9_:.-]+$/), platform: z.literal('android'), deviceId: z.string().min(1).max(128).optional(), appVersion: z.string().min(1).max(64).optional(), deliveryEnabled: z.boolean().optional() }).strict();
+export const registerDeviceSchema = z.object({ token: z.string().min(20).max(4096).regex(/^[A-Za-z0-9_:.-]+$/), platform: z.enum(['android','ios']), deviceId: z.string().min(1).max(128).optional(), appVersion: z.string().min(1).max(64).optional(), deliveryEnabled: z.boolean().optional() }).strict();
 const id = z.string().regex(/^[a-f0-9]{64}$/), disable = z.object({ registrationId: z.string().uuid() }).strict();
 const route = (fn: RequestHandler): RequestHandler => (req, res, next) => { Promise.resolve(fn(req, res, next)).catch(next); };
 export function pushRoutes() {

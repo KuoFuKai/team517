@@ -3,7 +3,7 @@ import { Card, Text, Button, ErrorState } from '../components/ui';
 import { refreshPush, disableCurrentPush } from '../push/session';
 import { pushAvailable, notificationsModule } from '../push/native';
 export function PushSettings() {
-  const [status, setStatus] = useState(pushAvailable() ? 'Not checked' : 'Unavailable in Expo Go; Android development build required');
+  const [status, setStatus] = useState(pushAvailable() ? 'Not checked' : 'Device notifications are unavailable in this build; in-app updates still work');
   const [busy, setBusy] = useState(false), [error, setError] = useState('');
   const lock = useRef(false), [permission, setPermission] = useState(pushAvailable() ? 'Checking' : 'Unavailable');
   const checkPermission = async () => { const n = await notificationsModule(); if (n) setPermission((await n.getPermissionsAsync()).status); };

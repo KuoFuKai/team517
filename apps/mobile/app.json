@@ -2,13 +2,14 @@
   "expo": {
     "name": "team517 Development",
     "slug": "team517",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "orientation": "portrait",
     "ios": {
       "bundleIdentifier": "edu.cornelltech.team517"
     },
     "android": {
-      "package": "edu.cornelltech.team517"
+      "package": "edu.cornelltech.team517",
+      "versionCode": 2
     }
   }
 }

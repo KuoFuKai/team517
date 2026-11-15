@@ -1,3 +1,4 @@
+import {Platform} from 'react-native';
 import { auth } from '../auth/firebase';
 import { config } from '../config';
 import { createTransport } from '../api/transport';
@@ -26,7 +27,7 @@ export async function refreshPush(requestPermission = false, refreshedToken?: st
     async () => {
       const oldJson = await AsyncStorage.getItem(receiptKey(user.uid));
       // An opted-out B still takes inactive ownership from A after offline logout.
-      const record = await api.registerDeviceToken({ token: result.token!, platform: 'android', deliveryEnabled: !disabled });
+      const record = await api.registerDeviceToken({ token: result.token!, platform: Platform.OS==='ios'?'ios':'android', deliveryEnabled: !disabled });
       await AsyncStorage.setItem(receiptKey(user.uid), JSON.stringify(record));
       if (oldJson) { const old = JSON.parse(oldJson) as DeviceTokenDto; if (old.id !== record.id) try { await api.disableDeviceToken(old.id, { registrationId: old.registrationId }); } catch {} }
       return record;

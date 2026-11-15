@@ -1,0 +1,2 @@
+import type {CompleteOnboardingRequest,DeleteAccountRequest,DeleteAccountResult,UserDto,UserRole} from '@team517/contracts';import type {ApiRequest} from './transport';
+export const createAccountApi=(request:ApiRequest)=>({completeOnboarding:(body:CompleteOnboardingRequest)=>request<UserDto>('/me/onboarding',body),addAccountRole:(role:UserRole)=>request<UserDto>('/me/roles',{role}),deleteAccount:(body:DeleteAccountRequest)=>request<DeleteAccountResult>('/me/delete-account',body)});

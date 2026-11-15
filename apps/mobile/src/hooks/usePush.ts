@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { AppState } from 'react-native';
+import { AppState, Platform } from 'react-native';
 import { notificationsModule } from '../push/native';
 import { refreshPush } from '../push/session';
 export function usePush(uid: string | undefined, foreground: () => void, tapped: (id: string) => void) {
@@ -23,8 +23,9 @@ export function usePush(uid: string | undefined, foreground: () => void, tapped:
       };
       const received = n.addNotificationReceivedListener(() => { if (active) current.current.foreground(); });
       const response = n.addNotificationResponseReceivedListener(r => { if (active) open(r); });
-      const token = n.addPushTokenListener(value => { if (active && current.current.uid) void refreshPush(false, String(value.data)).catch(() => {}); });
+      const token = n.addPushTokenListener(value => { if (active && current.current.uid) void refreshPush(false, Platform.OS==='android'?String(value.data):undefined).catch(() => {}); });
       cleanup.push(() => received.remove(), () => response.remove(), () => token.remove());
+      if(Platform.OS==='ios'){const m=await import('@react-native-firebase/messaging');if(active)cleanup.push(m.onTokenRefresh(m.getMessaging(),token=>{if(active&&current.current.uid)void refreshPush(false,token).catch(()=>{});}));}
       const last = await n.getLastNotificationResponseAsync();
       if (active && last) open(last);
     }).catch(() => {});

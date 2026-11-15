@@ -1,3 +1,11 @@
+## Sprint 8G validation — November 15, 2026
+
+Canonical source6727e94, Node22.23.4 / existing Java21. Full unchanged local suite first run **PASS**: typecheck;38/38 backend units;120/120 client;127/127 integration; smoke; default/manual HTTP; AI-mock HTTP; Community/Messaging/Maps/Points/Trust/privacy/concurrency regressions; Android Hermes export. Results retained in `.tools/8g-review-results.json` and corresponding logs. No failing contention assertion, ABORTED lock-timeout output or Functions discovery/fetch startup failure recurred in this run; this is not a claim that emulator contention is eliminated. Existing safe409 mapping and original concurrency assertions remain unchanged. Historical8E/8F failures below are preserved.
+
+Rebuilt standalone PREVIEW / team517-dev APK with configured Maps/FCM, package edu.cornelltech.team517, source6727e94; [fixed build manifest](review-build.json). Hash matches installed emulator APK. Limited read-only API36 baseline and cold Auth/local-services-independent checks [recorded separately](native-evidence/2026-11-15-review-baseline/README.md). No new phone, USB-disconnected, docked Gboard or unaided participant pass. Yiru/Kingsley review explicitly deferred by Kevin.
+
+Frontend business-Firestore scan: no matches. Secret preflight: no findings. Fresh npm audit:28 (1low/20moderate/7high/0critical), no dependency/code changes or force fixes. Gradle future-version deprecations remain. Auth9199/Firestore8280/Functions5001/UI4300 unchanged. No production deployment, real provider expansion or backend changes. Integrated main6727e94 [CI SUCCESS](https://github.com/KuoFuKai/team517/actions/runs/43735337928); exact8G documentation handoff CI is reported at completion.
+
 ## Sprint 8F validation — November 15, 2026
 
 Node 22.23.4 / Java 21: **38/38 backend units, 120/120 client tests, 127/127 emulator integrations**. Typecheck, smoke, default/manual HTTP, AI-mock HTTP, Community/Messaging/Maps/Points/Trust/privacy/concurrency regressions and Android Hermes export passed. [Exact final product source b826d7a CI SUCCESS](https://github.com/KuoFuKai/team517/actions/runs/43702657180). Ten focused client presentation tests supplement the preserved 110; one private transaction-conflict unit supplements the preserved 37. No framework or dependency addition; original concurrency assertions retained.

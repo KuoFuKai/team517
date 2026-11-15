@@ -1,3 +1,19 @@
+## Current — Sprint 8G review readiness (November 15)
+
+|Visible area|Truthful review status|Evidence boundary|
+|---|---|---|
+|Core marketplace|READY|Existing native/cloud lifecycle, no new8G lifecycle feature.|
+|Maps|READY|Existing native nearby Task map; no new location/provider scope.|
+|Points|READY|Wallet/reservation/settlement rules unchanged.|
+|Trust|READY|Existing safe profile and comparison; no invented verification.|
+|Availability|READY|Current task-specific windows/review; no recurring calendar.|
+|Rescheduling|READY|Revision-aware explicit Helper acceptance retained.|
+|Coordination clarity|READY|Integrated8F actor/state/action UI and dated API36 evidence.|
+|Physical Android review|READY — PENDING execution|One combined vivo8A–8F session queued; no connected phone in8G.|
+|Teammate usability review|READY — PENDING execution|Kevin confirmed later; no Yiru/Kingsley result or invented P0/P1/P2.|
+
+One frozen [APK manifest](review-build.json), [protocol](usability-review.md), [phone checklist](physical-review-checklist.md), [status report](sprint-8g-report.md). No speculative quick fixes or new feature Sprint. Earlier completed engineering/API36 claims do not substitute for real evaluation.
+
 ## Current — Sprint 8F (November15)
 
 **Coordination / lifecycle clarity — NEW / polished**: state/actor/next-action cards, role-specific current responsibility, separate availability-vs-schedule review, safe contextual names, current pending-list reads, human Timeline/Calendar/Notification copy, grammar and focused-header cleanup. [Report](sprint-8f-report.md), [policy](coordination-ux.md), [actual matrix](native-evidence/2026-11-15-coordination-clarity/README.md). Tasks, Maps, Calendar, Messaging, Community, Push, Points, Trust, task-specific availability, availability updates/reconfirmation and Task rescheduling remain working within dated acceptance scopes. Recurring availability, provider calendars, no-show, Payments and real verification remain future; iOS deferred. Combined8A–8F physical checks and unaided Yiru/Kingsley comprehension validation are still pending. Older checkpoints below are historical.

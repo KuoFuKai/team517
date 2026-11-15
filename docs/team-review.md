@@ -1,3 +1,9 @@
+## Sprint 8G — review kit ready, study pending
+
+November15: completed8F explicitly approved and fast-forwarded to main (`6727e94`), no incoming Kingsley conflict. [Canonical build manifest](review-build.json), [unaided protocol / raw observations](usability-review.md), [single physical checklist](physical-review-checklist.md), [38-item status report](sprint-8g-report.md). Keep the same binary during all participant tasks; don't teach navigation. Kevin confirmed teammates will test later. No external messages were sent. Actual findings file is deliberately deferred until real observations; no fake participant quotes/pass.
+
+Some historical synthetic smoke requests are visible in the shared development feed/discovery. Treat this as known fixture noise, not participant feedback or an excuse to guide first taps; preserve histories. Distinguish data-quality confusion from product-copy findings when the real session runs. Pending change examples remain unresolved and the study candidate remains OPEN; no preparatory mutation consumed them.
+
 ## Sprint 8F review handoff — November 15
 
 [48-item report](sprint-8f-report.md), [state / actor / next-step policy](coordination-ux.md), [actual Android evidence](native-evidence/2026-11-15-coordination-clarity/README.md). Source lives on `codex/sprint-8f-status-clarity`; only previously approved8E was fast-forwarded to main. No automated message was sent to teammates.

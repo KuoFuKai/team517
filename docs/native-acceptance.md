@@ -1,3 +1,9 @@
+## Sprint 8G — physical acceptance READY / NOT RUN
+
+November15 adb inventory: only Pixel_9_Pro emulator-5554 / Android16 API36 x86_64; no vivo. Consolidated physical8A–8F stays pending per Kevin, without repeated reconnection prompts. [Single-session checklist](physical-review-checklist.md). Docked Gboard, physical navigation/FCM/privacy/cold Auth and USB-disconnected8G results are **NOT RUN**, not carried forward from earlier phone sessions.
+
+Canonical PREVIEW APK rebuilt from integrated8F `6727e94`; [manifest](review-build.json). Its hash exactly matches the already-installed final8F binary, so no evaluation build swap was needed. Limited8G emulator baseline is preparation, not a full rerun of8A–8F or unaided comprehension. [Baseline/provenance](native-evidence/2026-11-15-review-baseline/README.md). Prior exact-location and OS push evidence remains separately dated under8F, not a new physical pass. No laptop-off claim.
+
 ## Sprint 8F native — November 15, 2026
 
 Pixel_9_Pro, emulator-5554 **device**, Android 16 / API 36 / x86_64. [Actual evidence and per-build matrix](native-evidence/2026-11-15-coordination-clarity/README.md), [48-item report](sprint-8f-report.md). Requester selection and Helper confirmation; changed availability → native Keep → native confirmation; native Task reschedule → Helper edit / explicit reconfirmation; native Start / request / approval / completed / Review entry / Timeline exercised. Peer actions used authenticated synthetic development APIs where specified; no simultaneous-device or unaided-comprehension claim.

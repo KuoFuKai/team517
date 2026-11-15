@@ -1,0 +1,14 @@
+{
+  "source": "6727e94bc4a867fb040641ca7390b265b1f568f7",
+  "sha256": "4c28b567eef7486e2e207fabe0b0829e7ae9ac8a8b30a6cdf8ec5a7225faadf7",
+  "buildDate": "2026-11-15T11:27:00-05:00",
+  "package": "edu.cornelltech.team517",
+  "environment": "PREVIEW",
+  "firebaseProject": "team517-dev",
+  "apk": "artifacts/android/team517-8g-review.apk",
+  "appVersion": "0.1.0",
+  "buildDateTimezone": "America/New_York",
+  "distribution": "Internal Product Studio review only; not production / Play Store",
+  "freeze": "One canonical binary. No replacement between participant tasks except a recorded BLOCKER / new round.",
+  "installedEmulatorHashVerified": true
+}

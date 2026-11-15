@@ -1,3 +1,4 @@
+import {countLabel} from './presentation';
 export function taskWhenLabel(start?: string, end?: string): string {
   if (!start || !Number.isFinite(Date.parse(start))) return 'Time to be arranged';
   const first = new Date(start);
@@ -23,7 +24,7 @@ export function discoveryAreaLabel(value: string): string {
 }
 export function compensationLabel(task: { compensationType?: string; pointReward?: number; cashAmount?: number; currency?: string }): string {
   if (task.compensationType === 'VOLUNTEER') return 'Volunteer task';
-  if (task.compensationType === 'POINTS') return task.pointReward !== undefined ? `${task.pointReward} points` : 'Points task';
+  if (task.compensationType === 'POINTS') return task.pointReward !== undefined ? countLabel(task.pointReward,'point') : 'Points task';
   if (task.compensationType === 'PAID') return task.cashAmount !== undefined ? `${task.cashAmount} ${task.currency ?? ''}`.trim() : 'Paid task';
   return 'Compensation not selected';
 }

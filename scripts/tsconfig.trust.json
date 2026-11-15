@@ -16,6 +16,7 @@
     "preview-availability-prepare.ts",
     "preview-reconfirmation-prepare.ts",
     "preview-reconfirmation-smoke.ts",
-    "preview-scheduling.ts"
+    "preview-scheduling.ts",
+    "preview-coordination.ts"
   ]
 }

@@ -1,3 +1,4 @@
+import {countLabel} from '../utils/presentation';
 import { OfferForm } from '../components/OfferForm';
 import { PreviewContentCover } from '../components/PreviewContentCover';
 import { previewPostAuthor } from '../demo/preview-content-policy';
@@ -40,7 +41,7 @@ export function CommunityScreen() {
   useHardwareBack(() => { if (!detail && !saved && !resource && !compose && !share) return false; if (!busy) returnFeed(); return true; }, 1);
   const need = (post: CommunityPostDto) => {
     const task = post.taskPreview; if (!task) return <Text>This task is no longer accepting offers or is unavailable to you.</Text>;
-    return <Card><StatusBadge status={task.status} /><Text accessibilityRole="header">{task.title}</Text><Text>{task.helpType} · {statusLabel(task.urgency)}</Text><Text>{dateLabel(task.startAt)} – {dateLabel(task.endAt)}</Text>{detail && <Text>{task.publicInstructions}</Text>}<Text>{statusLabel(task.compensationType)} {task.pointReward ?? task.cashAmount ?? ''} {task.currency ?? ''}</Text><Text>{discoveryAreaLabel(task.approximateLocation.areaLabel)} · {task.offerCount} offers</Text>
+    return <Card><StatusBadge status={task.status} /><Text accessibilityRole="header">{task.title}</Text><Text>{task.helpType} · {statusLabel(task.urgency)}</Text><Text>{dateLabel(task.startAt)} – {dateLabel(task.endAt)}</Text>{detail && <Text>{task.publicInstructions}</Text>}<Text>{statusLabel(task.compensationType)} {task.pointReward ?? task.cashAmount ?? ''} {task.currency ?? ''}</Text><Text>{discoveryAreaLabel(task.approximateLocation.areaLabel)} · {countLabel(task.offerCount,'offer')}</Text>
       <Button disabled={busy} title="View task" onPress={() => void run(async () => { setDetail(await api.getCommunityPost(post.id)); })} />
       {detail && !offered[task.id] && <OfferForm key={task.id} task={task} disabled={busy} submit={body=>run(async()=>{await api.offerHelp(task.id,body);setOffered(values=>({...values,[task.id]:true}));setNotice('Offer sent. Return to Tasks → My offers to follow its status.');await reload();})}/>}
       {offered[task.id] && <Text>Offer sent</Text>}

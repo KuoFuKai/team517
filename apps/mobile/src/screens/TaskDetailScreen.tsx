@@ -12,7 +12,7 @@ import { useScreenHeader } from '../components/ScreenHeader';
 import { Disclosure, TonePanel } from '../components/Details';
 import { TimelinePanel } from './TimelinePanel';
 import { Text, Button, Card, StatusBadge, PageHeading } from '../components/ui';
-import { dateLabel, statusLabel } from '../utils/presentation';
+import { dateLabel, statusLabel, countLabel } from '../utils/presentation';
 import { theme as t } from '../theme';
 export function TaskDetailScreen({ task, locations, busy, edit, cancel, back, viewOffers, contextName, postedByYou, scheduleChanged }: { task: TaskDetailDto; locations: LocationDto[]; busy: boolean; edit?: () => void; cancel?: () => void; back: () => void; viewOffers?: () => void; contextName?: string; postedByYou?: boolean; scheduleChanged?:(task:TaskDetailDto)=>Promise<void> }) {
   useScreenHeader({ title: 'Task details', back, disabled: busy, priority: 2 });
@@ -21,7 +21,6 @@ export function TaskDetailScreen({ task, locations, busy, edit, cancel, back, vi
   const coordination=taskStatusPresentation({status:context?.assignment?.status ?? task.status,helperName:context?.name,offerCount:context?.offerCount,scheduleChanged:context?.assignment?.scheduleReview?.requiresHelperReconfirmation ?? task.requiresHelperReconfirmation,availabilityChanged:context?.assignment?.availabilityReview?.requiresRequesterReconfirmation});
   const compensation = task.compensationType === 'PAID' ? `Paid task${task.cashAmount !== undefined ? ` · ${task.cashAmount} ${task.currency ?? ''}` : ''}` : task.compensationType === 'POINTS' ? `${task.pointReward ?? '—'} points` : task.compensationType === 'VOLUNTEER' ? 'Volunteer task' : 'Compensation not selected';
   return <>
-    <PreviewContentCover kind="task" id={task.id} />
     <PageHeading title={task.title || 'Untitled draft'} />
     <Text style={{ fontSize: 16, color: t.colors.muted }}>{postedByYou ? 'Posted by you' : 'Care-circle task'}{contextName ? ` · ${contextName}` : ''}</Text>
     <Text>{taskWhenLabel(task.startAt,task.endAt)}</Text>
@@ -29,6 +28,7 @@ export function TaskDetailScreen({ task, locations, busy, edit, cancel, back, vi
     {task.status === 'DRAFT' && edit && <Button variant="primary" disabled={busy} title="Edit draft" onPress={edit} />}
     {viewOffers && task.status !== 'DRAFT' && <Button variant={task.status==='HAS_OFFERS'?'primary':'secondary'} title={task.status==='HAS_OFFERS'?'Review offers':['OPEN'].includes(task.status)?'View offers':'View arrangement'} disabled={busy} onPress={viewOffers} />}
     </CoordinationCard>
+    <PreviewContentCover kind="task" id={task.id} />
     {task.canReschedule && scheduleChanged && <RescheduleTask task={task} saved={scheduleChanged}/>}
     <Card><View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}><Feather name="star" size={18} color={t.colors.primary} /><Text style={{ fontSize: 18, fontWeight: '600', color: t.colors.ink }}>Quick task summary</Text></View><Text>{task.publicInstructions || task.helpType || 'Add the task details before publishing.'}</Text><Text style={{ fontSize: 13.5, color: t.colors.primary }}>{dateLabel(task.startAt)}{location ? ` · ${location.label}` : ''}</Text></Card>
     <Card><Text style={{ fontSize: 18, fontWeight: '600', color: t.colors.ink }}>{compensation}</Text></Card>

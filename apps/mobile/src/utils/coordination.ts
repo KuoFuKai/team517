@@ -29,7 +29,7 @@ export function taskStatusPresentation(input: CoordinationInput): TaskStatusPres
     case 'COMPLETION_PENDING': return result(helper?'Waiting for completion approval':'Review completion',helper?'You marked the help finished.':`${name === 'your helper'?'Your helper':name} marked the help finished.`,helper?'Waiting for requester':'Your turn',helper?undefined:'Confirm completion',helper?'The requester will approve completion or report an issue.':'Confirm the help is complete, or report an issue if something needs checking.',helper?'waiting':'action');
     case 'COMPLETED': return result('Completed',helper?'The requester approved your help.':'The help has been completed and approved.','Task complete',undefined,'You can view the activity and any reviews available to you.','complete');
     case 'DISPUTED': return result('Completion needs attention','An issue was reported about completion.','No action available',undefined,'The task is not approved as completed. Resolution is not available here.','neutral');
-    default: return result(['CANCELLED','CANCELLED_BY_HELPER','CANCELLED_BY_REQUESTER','DECLINED'].includes(status)?'This arrangement has ended':'Check the current task','No current commitment is shown here.','No action needed',undefined,'Open the current task to see whether help is still needed.','neutral');
+    default: return result(status==='CANCELLED'?'Task cancelled':['CANCELLED_BY_HELPER','CANCELLED_BY_REQUESTER','DECLINED'].includes(status)?'This arrangement has ended':'Check the current task','No current commitment is shown here.','No action needed',undefined,'Open the current task to see whether help is still needed.','neutral');
   }
 }
 export function offerPresentation(status:string){

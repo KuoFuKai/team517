@@ -39,3 +39,11 @@ test('fresh authorized context supersedes stale parent Task copy without changin
  assert.equal(present(current).title,'2 helpers responded');assert.equal(present(current).nextActionLabel,'Review offers');
  assert.equal(present(requesterCoordination({status:'OPEN'})).title,'Waiting for helpers');
 });
+
+test('pending summary does not assign a turn until current protected review context is available',async()=>{
+ const {assignmentListSummary}=await import('../src/utils/coordination');
+ assert.equal(assignmentListSummary({status:'PENDING_CONFIRMATION',helper:true},false),'Open the arrangement to see who needs to act.');
+ assert.match(assignmentListSummary({status:'PENDING_CONFIRMATION',helper:true,availabilityChanged:true}),/^Waiting for requester/);
+ assert.match(assignmentListSummary({status:'PENDING_CONFIRMATION',helper:true,scheduleChanged:true}),/^Your turn/);
+ const {taskRowNote}=await import('../src/utils/task-groups');assert.equal(taskRowNote({id:'t',careContextId:'c',status:'AWAITING_CONFIRMATION'}),'Open arrangement for the next step');
+});

@@ -20,6 +20,7 @@ export function groupTasks(tasks: TaskSummaryDto[], filter: TaskListFilter) {
   return sections.map(section => ({ title: section.title, tasks: included.filter(task => section.statuses.includes(task.status)).sort((a, b) => scheduledTime(a.startAt) - scheduledTime(b.startAt) || a.id.localeCompare(b.id)) })).filter(section => section.tasks.length);
 }
 export function taskRowNote(task: TaskSummaryDto) {
+  if(task.status==='AWAITING_CONFIRMATION')return 'Open arrangement for the next step';
   if(!['OPEN','HAS_OFFERS','AWAITING_CONFIRMATION','COMPLETION_PENDING','ARRANGED','IN_PROGRESS'].includes(task.status))return undefined;
   const value=taskStatusPresentation({status:task.status,scheduleChanged:task.requiresHelperReconfirmation});
   if(task.status==='OPEN' && task.urgency==='URGENT')return 'Urgent · '+value.title;

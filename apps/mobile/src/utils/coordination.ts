@@ -14,6 +14,11 @@ export interface TaskStatusPresentation {
   title: string; summary: string; nextActor: string; nextActionLabel?: string;
   supportingDetail: string; tone: 'action' | 'waiting' | 'complete' | 'neutral';
 }
+export function assignmentListSummary(input:CoordinationInput,contextReady=true):string {
+  if(input.status==='PENDING_CONFIRMATION' && !contextReady)return 'Open the arrangement to see who needs to act.';
+  const value=taskStatusPresentation(input);
+  return input.status==='COMPLETED' || value.title.startsWith(value.nextActor)?value.title:`${value.nextActor} · ${value.title}`;
+}
 export function safeHelperName(displayName?: string): string {
   return displayName?.trim() || 'your helper';
 }

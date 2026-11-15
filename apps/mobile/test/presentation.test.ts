@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { statusLabel, roleLabel, friendlyError, dateLabel, personLabel, countLabel, localDateKey, localDayInstant, workPriority, assignmentNextAction, validationSummary } from '../src/utils/presentation';
 test('product labels preserve distinct lifecycle meanings without exposing backend enum wording', () => {
-  assert.equal(statusLabel('PENDING_CONFIRMATION'), 'Waiting for helper confirmation');
+  assert.equal(statusLabel('PENDING_CONFIRMATION'), 'Selection pending');
   assert.equal(statusLabel('CONFIRMED'), statusLabel('ARRANGED'));
   assert.equal(statusLabel('COMPLETION_PENDING'), 'Waiting for completion review');
   assert.equal(statusLabel('DISPUTED'), 'Issue reported');

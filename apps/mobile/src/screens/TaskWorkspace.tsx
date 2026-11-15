@@ -93,7 +93,7 @@ export function TaskWorkspace({ context, back, viewerId, helper = false, calenda
       })}
       locationsScreen={() => { setLocationsReturn('edit'); setScreen('locations'); }}
       back={() => { setError(''); setScreen('list'); }} /></View>}
-    {screen === 'detail' && task && <><TaskDetailScreen contextName={context.name} postedByYou={task.createdBy === viewerId} task={task} locations={locations} busy={busy} viewOffers={() => setScreen('offers')}
+    {screen === 'detail' && task && <><TaskDetailScreen scheduleChanged={async()=>{setTask(await api.getTask(task.id));await refresh();}} contextName={context.name} postedByYou={task.createdBy === viewerId} task={task} locations={locations} busy={busy} viewOffers={() => setScreen('offers')}
       edit={() => { setError(''); setScreen('edit'); }}
       cancel={() => { setError(''); setCancelOpen(true); }}
       back={() => { setError(''); setScreen('list'); }} />

@@ -1,3 +1,4 @@
+import {RescheduledOfferScreen} from './RescheduledOfferScreen';
 import {taskWhenLabel} from '../utils/design-presentation';
 import {EditOfferAvailability} from './EditOfferAvailability';
 import { Choices, TonePanel } from '../components/Details';
@@ -15,6 +16,7 @@ import { TaskPreviewCard } from '../components/Cards';
 export function MyWorkScreen({ back }: { back: () => void }) {
   const [offers, setOffers] = useState<MyOffersDto | null>(null), [assignments, setAssignments] = useState<MyAssignmentsDto | null>(null), [titles, setTitles] = useState<Record<string, string>>({});
   const [selected, setSelected] = useState<AssignmentDto | null>(null), [error, setError] = useState(''), [busy, setBusy] = useState(false), [section, setSection] = useState<'assignments' | 'offers'>('assignments');
+  const [offerTaskId,setOfferTaskId]=useState<string|null>(null);
   const lock = useRef(false);
   useScreenTop(selected?.id ?? section);
   const load = async () => {
@@ -28,18 +30,20 @@ export function MyWorkScreen({ back }: { back: () => void }) {
   const run = async (work: () => Promise<void>) => { if (lock.current) return; lock.current = true; setBusy(true); setError(''); try { await work(); } catch (e) { setError(friendlyError(e)); } finally { lock.current = false; setBusy(false); } };
   useEffect(() => { void run(load); }, []);
   useHardwareBack(() => { if (!selected) return false; if (!busy) setSelected(null); return true; }, 1);
+  if(offerTaskId)return <RescheduledOfferScreen taskId={offerTaskId} back={()=>setOfferTaskId(null)}/>;
   if (selected) return <SelectedWork assignment={selected} back={() => setSelected(null)} refresh={load} />;
   return <><Choices value={section} options={[{ value: 'assignments', label: 'My tasks' }, { value: 'offers', label: 'My offers' }]} change={setSection} />
     {busy && <LoadingState />}{error ? <ErrorState message={error} /> : null}
     {section === 'offers' && <>{!busy && offers?.offers.length === 0 && <EmptyState title="Ready to lend a hand?" message="Find a task and send your first offer." />}
       {offers?.offers.map(offer => <Card key={offer.id}><StatusBadge status={offer.status} /><Text accessibilityRole="header">{titles[offer.taskId] || (offer.assignmentId ? titles[offer.assignmentId] : undefined) || 'Your offer'}</Text><Text>{offer.message || 'You offered to help with this task.'}</Text><Text>Sent {dateLabel(offer.createdAt)}</Text><Text>{offer.availableFrom && offer.availableUntil?'Available '+taskWhenLabel(offer.availableFrom,offer.availableUntil):'Availability not provided'}</Text>
+        {offer.status==='ACTIVE' && <Button title="View current task time" onPress={()=>setOfferTaskId(offer.taskId)}/>}
         {offer.status==='ACTIVE' && <EditOfferAvailability taskId={offer.taskId} saved={load}/>}
         {offer.status === 'ACTIVE' && <Button title="Withdraw offer" disabled={busy} onPress={() => void run(async () => { await api.withdrawOffer(offer.taskId); await load(); })} />}
         {offer.assignmentId && <Button title="View assignment" disabled={busy} onPress={() => void run(async () => setSelected(await api.getAssignment(offer.assignmentId!)))} />}
       </Card>)}
     </>}
     {section === 'assignments' && <><Text accessibilityRole="header">Your tasks</Text>{!busy && assignments?.assignments.length === 0 && <EmptyState title="No assignments yet" message="When a requester selects your offer, it will appear here for you to confirm." />}
-      {assignments?.assignments.slice().sort((a, b) => workPriority(a.status) - workPriority(b.status)).map(a => <TaskPreviewCard key={a.id} status={a.status} title={titles[a.id] || 'Your task'} when={'Selected ' + dateLabel(a.selectedAt)} detail={assignmentNextAction(a.status, true)} busy={busy} open={() => setSelected(a)} />)}
+      {assignments?.assignments.slice().sort((a, b) => workPriority(a.status) - workPriority(b.status)).map(a => <TaskPreviewCard key={a.id} status={a.status} title={titles[a.id] || 'Your task'} when={'Selected ' + dateLabel(a.selectedAt)} detail={a.requiresHelperReconfirmation?'Schedule changed · review the new time':assignmentNextAction(a.status, true)} busy={busy} open={() => setSelected(a)} />)}
     </>}
     {(offers?.truncated || assignments?.truncated) && <Text>Showing your 50 most recently updated items.</Text>}
     <Button variant="quiet" title="Refresh my tasks" disabled={busy} onPress={() => void run(load)} />

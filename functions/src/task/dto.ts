@@ -6,6 +6,7 @@ export const locationDto = (location: Location): LocationDto => ({
   formattedAddress: location.formattedAddress, latitude: location.latitude, longitude: location.longitude,
 });
 export const taskSummaryDto = (task: Task): TaskSummaryDto => ({
+  scheduleRevision:task.scheduleRevision ?? 0, requiresHelperReconfirmation:task.requiresHelperReconfirmation===true,
   id: task.id, careContextId: task.careContextId, title: task.title, status: task.status,
   startAt: task.startAt?.toDate().toISOString(), urgency: task.urgency,
 });

@@ -16,21 +16,23 @@ function requirePair(s: LifecycleSnapshot, assignmentStatus: Assignment['status'
 function clearRelationship(task: Task): Task { const { activeAssignmentId: _id, ...rest } = task; return rest; }
 export class AssignmentService {
   constructor(private repo = new AssignmentRepository()) {}
-  async transition(uid: string, id: string, operation: Transition, reason?: string, expectedAvailabilityRevision?:number) {
+  async transition(uid: string, id: string, operation: Transition, reason?: string, expectedAvailabilityRevision?:number,expectedScheduleRevision?:number) {
     const result = await this.repo.change(uid, { assignmentId: id }, async s => {
       const side = await authorizeAssignment(s.permissions, uid, actions[operation], s.task, s.assignment);
       if (s.task.compensationType === 'POINTS' && operation === 'confirm-completion' && s.task.status === 'COMPLETED' && s.assignment?.status === 'COMPLETED' && s.task.activeAssignmentId === s.assignment.id) return {task:s.task,assignment:s.assignment,offers:[],events:[]};
+      if(expectedScheduleRevision!==undefined || (operation==='decline' && s.assignment?.requiresHelperReconfirmation)){requirePair(s,'PENDING_CONFIRMATION','AWAITING_CONFIRMATION','ASSIGNMENT_NOT_DECLINABLE');if(expectedScheduleRevision!==(s.task.scheduleRevision ?? 0))throw new ApiFailure(409,'SCHEDULE_STALE','Review the latest schedule before responding.');}
       if(expectedAvailabilityRevision!==undefined){requirePair(s,'PENDING_CONFIRMATION','AWAITING_CONFIRMATION','ASSIGNMENT_NOT_CANCELLABLE');if(expectedAvailabilityRevision!==(s.offer?.availabilityRevision ?? 0))throw new ApiFailure(409,'AVAILABILITY_STALE','Review the latest availability before changing your selection.');}
       const now = Timestamp.now();
       const assignment = { ...s.assignment!, updatedAt: now };
       const selected = { ...s.offer!, updatedAt: now };
       const closeBackups = (): Offer[] => s.backups.map(offer => ({ ...offer, status: 'NOT_SELECTED', updatedAt: now }));
-      const result = (status: Assignment['status'], taskStatus: Task['status'], event: LifecycleChange['events'][number], offers: Offer[] = []): LifecycleChange => ({ task: { ...s.task, status: taskStatus }, assignment: { ...assignment, status }, offers, events: [event] });
+      const result = (status: Assignment['status'], taskStatus: Task['status'], event: LifecycleChange['events'][number], offers: Offer[] = []): LifecycleChange => ({ task: { ...s.task, status: taskStatus, requiresHelperReconfirmation:false }, assignment: { ...assignment, status }, offers, events: [event] });
       if (operation === 'confirm') {
         requirePair(s, 'PENDING_CONFIRMATION', 'AWAITING_CONFIRMATION', 'ASSIGNMENT_NOT_CONFIRMABLE');
+        if(s.assignment?.requiresHelperReconfirmation)throw new ApiFailure(409,'SCHEDULE_RECONFIRMATION_REQUIRED','Review and confirm the new schedule explicitly.');
         if(s.assignment?.requiresRequesterReconfirmation)throw new ApiFailure(409,'REQUESTER_RECONFIRMATION_REQUIRED','The requester needs to review your updated availability before you confirm.');
         const changed = result('CONFIRMED', 'ARRANGED', 'ASSIGNMENT_CONFIRMED', closeBackups());
-        changed.assignment!.confirmedAt = now; changed.task.offerCount = 1; return changed;
+        changed.assignment!.confirmedAt = now; changed.assignment!.confirmedScheduleRevision=s.task.scheduleRevision ?? 0; changed.assignment!.acceptedScheduleStartAt=s.task.startAt!;changed.assignment!.acceptedScheduleEndAt=s.task.endAt!; changed.task.offerCount = 1; return changed;
       }
       if (operation === 'decline' || operation === 'cancel') {
         const pending = s.assignment!.status === 'PENDING_CONFIRMATION';
@@ -45,6 +47,7 @@ export class AssignmentService {
         changed.task = { ...clearRelationship(changed.task), offerCount: remaining }; return changed;
       }
       if (operation === 'start') {
+        if(s.assignment?.requiresHelperReconfirmation || (s.assignment?.confirmedScheduleRevision ?? 0)!==(s.task.scheduleRevision ?? 0))throw new ApiFailure(409,'SCHEDULE_RECONFIRMATION_REQUIRED','Confirm the current task schedule before starting.');
         requirePair(s, 'CONFIRMED', 'ARRANGED', 'TASK_NOT_STARTABLE');
         const changed = result('IN_PROGRESS', 'IN_PROGRESS', 'TASK_STARTED'); changed.assignment!.startedAt = now; return changed;
       }
@@ -68,7 +71,7 @@ export class AssignmentService {
       if (s.task.compensationType === 'POINTS' && s.task.status === 'CANCELLED') return {task:s.task,offers:[],events:[]};
       if (!['DRAFT', 'OPEN', 'HAS_OFFERS', 'AWAITING_CONFIRMATION', 'ARRANGED'].includes(s.task.status)) throw new ApiFailure(409, 'INVALID_TASK_STATE', 'Normal cancellation is allowed only before execution starts.');
       const now = Timestamp.now();
-      const result: LifecycleChange = { task: { ...clearRelationship(s.task), status: 'CANCELLED', offerCount: 0 }, offers: s.backups.map(offer => ({ ...offer, status: 'NOT_SELECTED', updatedAt: now })), events: ['TASK_CANCELLED'] };
+      const result: LifecycleChange = { task: { ...clearRelationship(s.task), status: 'CANCELLED', requiresHelperReconfirmation:false, offerCount: 0 }, offers: s.backups.map(offer => ({ ...offer, status: 'NOT_SELECTED', updatedAt: now })), events: ['TASK_CANCELLED'] };
       if (s.assignment) {
         requirePair(s, s.task.status === 'AWAITING_CONFIRMATION' ? 'PENDING_CONFIRMATION' : 'CONFIRMED', s.task.status === 'AWAITING_CONFIRMATION' ? 'AWAITING_CONFIRMATION' : 'ARRANGED', 'ASSIGNMENT_NOT_CANCELLABLE');
         result.assignment = { ...s.assignment, status: 'CANCELLED_BY_REQUESTER', updatedAt: now };
@@ -87,7 +90,7 @@ export class AssignmentService {
   async execution(uid: string, id: string): Promise<AssignmentExecutionDto> {
     return this.repo.view(id, async (task, assignment, location, reader) => {
       await authorizeAssignment(reader, uid, 'VIEW_EXECUTION_DETAILS', task, assignment);
-      if (task.activeAssignmentId !== id || !['CONFIRMED', 'IN_PROGRESS', 'COMPLETION_PENDING'].includes(assignment.status) || task.status !== ({ CONFIRMED: 'ARRANGED', IN_PROGRESS: 'IN_PROGRESS', COMPLETION_PENDING: 'COMPLETION_PENDING' } as Partial<Record<Assignment['status'], Task['status']>>)[assignment.status]) throw new ApiFailure(403, 'LOCATION_NOT_VISIBLE', 'Exact location is available only for your current confirmed work.');
+      if (assignment.requiresHelperReconfirmation || (assignment.confirmedScheduleRevision ?? 0)!==(task.scheduleRevision ?? 0) || task.activeAssignmentId !== id || !['CONFIRMED', 'IN_PROGRESS', 'COMPLETION_PENDING'].includes(assignment.status) || task.status !== ({ CONFIRMED: 'ARRANGED', IN_PROGRESS: 'IN_PROGRESS', COMPLETION_PENDING: 'COMPLETION_PENDING' } as Partial<Record<Assignment['status'], Task['status']>>)[assignment.status]) throw new ApiFailure(403, 'LOCATION_NOT_VISIBLE', 'Exact location is available only for your current confirmed work.');
       if (!location || location.careContextId !== task.careContextId) throw new ApiFailure(404, 'NOT_FOUND', 'Operational location not found.');
       return { assignmentId: id, taskId: task.id, title: task.title, helpType: task.helpType, startAt: task.startAt?.toDate().toISOString(), endAt: task.endAt?.toDate().toISOString(),
         publicInstructions: task.publicInstructions, privateInstructions: task.privateInstructions,

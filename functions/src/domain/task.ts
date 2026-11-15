@@ -33,11 +33,13 @@ export interface Task {
   status: TaskStatus;
   offerCount: number;
   activeAssignmentId?: string;
+  scheduleRevision?: number;
+  requiresHelperReconfirmation?: boolean;
   createdAt: Timestamp;
   updatedAt: Timestamp;
   publishedAt?: Timestamp;
 }
-export type TaskEventType = 'OFFER_AVAILABILITY_UPDATED' | 'AVAILABILITY_RECONFIRMED' | 'TASK_CREATED' | 'TASK_UPDATED' | 'TASK_PUBLISHED' | 'TASK_CANCELLED' | 'OFFER_CREATED' | 'OFFER_WITHDRAWN' | 'HELPER_SELECTED' | 'ASSIGNMENT_CONFIRMED' | 'ASSIGNMENT_DECLINED' | 'ASSIGNMENT_CANCELLED' | 'TASK_STARTED' | 'COMPLETION_REQUESTED' | 'TASK_COMPLETED' | 'COMPLETION_DISPUTED';
+export type TaskEventType = 'TASK_RESCHEDULED' | 'SCHEDULE_RECONFIRMED' | 'OFFER_AVAILABILITY_UPDATED' | 'AVAILABILITY_RECONFIRMED' | 'TASK_CREATED' | 'TASK_UPDATED' | 'TASK_PUBLISHED' | 'TASK_CANCELLED' | 'OFFER_CREATED' | 'OFFER_WITHDRAWN' | 'HELPER_SELECTED' | 'ASSIGNMENT_CONFIRMED' | 'ASSIGNMENT_DECLINED' | 'ASSIGNMENT_CANCELLED' | 'TASK_STARTED' | 'COMPLETION_REQUESTED' | 'TASK_COMPLETED' | 'COMPLETION_DISPUTED';
 export interface TaskEvent {
   id: string;
   taskId: string;

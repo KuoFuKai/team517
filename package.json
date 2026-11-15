@@ -1,7 +1,9 @@
 {
   "name": "team517",
   "private": true,
-  "engines": { "node": "22.x" },
+  "engines": {
+    "node": "22.x"
+  },
   "workspaces": [
     "apps/mobile",
     "functions",
@@ -31,7 +33,8 @@
     "preview:trust": "tsx scripts/preview-trust-prepare.ts",
     "preview:check": "tsx scripts/preview-check.ts",
     "preview:deploy": "tsx scripts/preview-deploy.ts",
-    "preview:smoke": "tsx scripts/preview-smoke.ts"
+    "preview:smoke": "tsx scripts/preview-smoke.ts",
+    "preview:scheduling": "tsx scripts/preview-scheduling.ts"
   },
   "devDependencies": {
     "firebase-tools": "^15.35.0",

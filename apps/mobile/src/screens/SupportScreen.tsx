@@ -1,3 +1,4 @@
+import {RescheduledOfferScreen} from './RescheduledOfferScreen';
 import { TaskDetailScreen } from './TaskDetailScreen';
 import { VerificationPresentation } from './VerificationPresentation';
 import { Action, MenuRow, Disclosure } from '../components/Details';
@@ -20,6 +21,7 @@ import { OffersWorkspace } from './OffersWorkspace';
 import { Button, Text, TextInput, Card, StatusBadge, EmptyState, LoadingState, ErrorState, SectionHeader, InfoRow } from '../components/ui';
 import { friendlyError, dateLabel, localDateKey, deviceTimeZone, countLabel } from '../utils/presentation';
 export function SupportScreen({ mode, back, onNotificationsLoaded, pushId, consumePush }: { mode: 'calendar' | 'notifications' | 'verification'; back: () => void; onNotificationsLoaded?: (unread: boolean) => void; pushId?: string | null; consumePush?: () => void }) {
+  const [offerTaskId,setOfferTaskId]=useState<string|null>(null);
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [calendar, setCalendar] = useState<CalendarDto | null>(null), [notifications, setNotifications] = useState<NotificationsDto | null>(null), [verification, setVerification] = useState<VerificationStatusDto | null>(null);
   const [start, setStart] = useState(localDateKey(new Date())), [end, setEnd] = useState(localDateKey(new Date(Date.now() + 30 * 86400000))), [date, setDate] = useState(''), [rangeVisible, setRangeVisible] = useState(false);
@@ -56,11 +58,12 @@ export function SupportScreen({ mode, back, onNotificationsLoaded, pushId, consu
   useEffect(() => {
     if (!pushId || mode !== 'notifications') return;
     let active = true;
-    setTask(null); setAssignment(null); setConversationId(null); setError('');
+    setTask(null); setAssignment(null); setConversationId(null);setOfferTaskId(null); setError('');
     // Resolve recipient-owned history first, then fetch current resource authority.
     void resolvePushNotification(pushId, api).then(result => {
       if (!active) return;
-      if (result.kind === 'CONVERSATION') setConversationId(result.id);
+      if (result.kind === 'OFFER') setOfferTaskId(result.id);
+      else if (result.kind === 'CONVERSATION') setConversationId(result.id);
       else if (result.kind === 'ASSIGNMENT') setAssignment(result.assignment);
       else setTask(result.task);
     }).catch(e => { if (active) setError(friendlyError(e)); }).finally(() => { if (active) consumePush?.(); });
@@ -72,10 +75,11 @@ export function SupportScreen({ mode, back, onNotificationsLoaded, pushId, consu
     if (task || assignment) { if (!busy) { setTask(null); setAssignment(null); } return true; }
     return false;
   }, 1);
+  if(offerTaskId)return <RescheduledOfferScreen taskId={offerTaskId} back={()=>setOfferTaskId(null)}/>;
   if (conversationId) return <ConversationScreen id={conversationId} backLabel="Back to notifications" back={() => setConversationId(null)} />;
   if (offersVisible && task) return <OffersWorkspace task={task} taskId={task.id} back={() => setOffersVisible(false)} />;
   if (task || assignment) return <>
-    {assignment ? <><AssignmentPanel key={assignment.id} assignment={assignment} chooseAnother={async()=>setOffersVisible(true)} />{task && <Button title="View offers" onPress={() => setOffersVisible(true)} />}</> : task && <TaskDetailScreen task={task} locations={taskLocations} busy={busy} back={() => { setTask(null); setAssignment(null); }} viewOffers={() => setOffersVisible(true)} />}
+    {assignment ? <><AssignmentPanel key={assignment.id} assignment={assignment} chooseAnother={async()=>setOffersVisible(true)} />{task && <Button title="View offers" onPress={() => setOffersVisible(true)} />}</> : task && <TaskDetailScreen scheduleChanged={async()=>{setTask(await api.getTask(task.id));setCalendarRefresh(v=>v+1);}} task={task} locations={taskLocations} busy={busy} back={() => { setTask(null); setAssignment(null); }} viewOffers={() => setOffersVisible(true)} />}
     {error ? <ErrorState message={error} /> : null}
   </>;
   const groups = groupCalendarTasks(calendar?.tasks ?? []);
@@ -103,7 +107,7 @@ export function SupportScreen({ mode, back, onNotificationsLoaded, pushId, consu
 
 
       {!busy && notifications?.notifications.length === 0 && <EmptyState title="You’re all caught up" message="New offers and task updates will appear here." />}
-      {notifications?.notifications.map(n => <View key={n.id}><MenuRow contained disabled={busy} title={n.title} subtitle={`${dateLabel(n.createdAt)} · ${n.body}`} trailing={!n.readAt ? <View style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: t.colors.primary }} /> : undefined} onPress={() => void run(async () => { await api.markNotificationRead(n.id); await load(); setTask(null); setAssignment(null); if (n.resourceType === 'CONVERSATION') setConversationId(n.resourceId); else if (n.resourceType === 'ASSIGNMENT') setAssignment(await api.getAssignment(n.resourceId)); else setTask(await api.getTask(n.resourceId)); })} /></View>)}
+      {notifications?.notifications.map(n => <View key={n.id}><MenuRow contained disabled={busy} title={n.title} subtitle={`${dateLabel(n.createdAt)} · ${n.body}`} trailing={!n.readAt ? <View style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: t.colors.primary }} /> : undefined} onPress={() => void run(async () => { await api.markNotificationRead(n.id); await load(); setTask(null); setAssignment(null); if(n.type==='TASK_RESCHEDULED' && n.resourceType==='TASK'){const own=await api.getMyOffer(n.resourceId);if(!own.offer)throw new Error('Your offer is no longer available.');setOfferTaskId(n.resourceId);}else if (n.resourceType === 'CONVERSATION') setConversationId(n.resourceId); else if (n.resourceType === 'ASSIGNMENT') setAssignment(await api.getAssignment(n.resourceId)); else setTask(await api.getTask(n.resourceId)); })} /></View>)}
       {notifications?.truncated && <Text>Showing the most recent 50 updates.</Text>}<Text>These in-app updates remain available regardless of device push permission. Manage device notifications in Me.</Text>
       <Disclosure title="Notification options">      <Button disabled={busy} title="Mark all recent updates read" onPress={() => void run(async () => { const result = await api.markAllNotificationsRead(); await load(); if (result.truncated) setError('Only the most recent 200 updates were marked. Older unread updates may remain.'); })} /><Button variant="quiet" disabled={busy} title="Refresh notifications" onPress={() => void run(load)} /></Disclosure>
     </>}

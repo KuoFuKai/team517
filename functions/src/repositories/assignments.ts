@@ -11,7 +11,7 @@ import { ApiFailure } from '../shared/errors';
 export interface LifecycleSnapshot {
   task: Task; assignment?: Assignment; offer?: Offer; backups: Offer[]; permissions: PermissionReader; targetOffer?: Offer;
 }
-export interface LifecycleChange { task: Task; assignment?: Assignment; offers: Offer[]; events: TaskEventType[]; metadata?: TaskEvent['metadata']; unchanged?: boolean }
+export interface LifecycleChange { task: Task; assignment?: Assignment; offers: Offer[]; events: TaskEventType[]; metadata?: TaskEvent['metadata']; unchanged?: boolean; notificationRecipients?:string[]; projectionOffer?:Offer }
 // Every lifecycle writer locks the Task, including discovery Offer/selection writers.
 // Queries and permission reads finish before writes; transaction retries revalidate all states.
 export class AssignmentRepository {
@@ -53,12 +53,12 @@ export class AssignmentRepository {
       result.events.forEach((type, index) => tx.create(eventRefs[index], { id: eventRefs[index].id, taskId, careContextId: task.careContextId,
         actorId: uid, type, createdAt: now, ...(result.metadata ? {metadata:result.metadata} : result.assignment ? { metadata: { assignmentId: result.assignment.id, offerId: result.assignment.offerId } } : {}) }));
       result.events.forEach((type, index) => {
-        for (const notification of lifecycleNotifications(eventRefs[index].id, type, uid, task, now, result.assignment, result.metadata?.offerId)) tx.create(this.db.collection('notifications').doc(notification.id), notification);
+        for (const notification of lifecycleNotifications(eventRefs[index].id, type, uid, task, now, result.assignment, result.metadata?.offerId,result.notificationRecipients)) tx.create(this.db.collection('notifications').doc(notification.id), notification);
       });
       return result;
     });
   }
-  async view<T>(id: string, project: (task: Task, assignment: Assignment, location: Location | undefined, reader: PermissionReader) => Promise<T>): Promise<T> {
+  async view<T>(id: string, project: (task: Task, assignment: Assignment, location: Location | undefined, reader: PermissionReader, offer?:Offer) => Promise<T>): Promise<T> {
     // Permission and exact-location projection share a consistent transactional snapshot.
     return this.db.runTransaction(async tx => {
       const assignment = (await tx.get(this.db.collection('assignments').doc(id))).data() as Assignment | undefined;
@@ -66,7 +66,8 @@ export class AssignmentRepository {
       const task = (await tx.get(this.db.collection('tasks').doc(assignment.taskId))).data() as Task | undefined;
       if (!task) throw new ApiFailure(404, 'NOT_FOUND', 'Task not found.');
       const location = task.locationId ? (await tx.get(this.db.collection('locations').doc(task.locationId))).data() as Location | undefined : undefined;
-      return project(task, assignment, location, this.reader(tx));
+      const offer=(await tx.get(this.db.collection("offers").doc(assignment.offerId))).data() as Offer|undefined;
+      return project(task, assignment, location, this.reader(tx),offer);
     });
   }
   async currentAssignments(taskIds: string[]) {

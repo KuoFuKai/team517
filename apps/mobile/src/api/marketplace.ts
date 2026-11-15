@@ -13,7 +13,7 @@ export function createMarketplaceApi(request: ApiRequest) {
     withdrawOffer: (id: string) => request<OfferDto>(path(id) + '/offers/mine/withdraw', {}),
     getMyOffer: (id: string) => request<MyOfferDto>(path(id) + '/offers/mine'),
     listOffers: (id: string) => request<OfferListDto>(path(id) + '/offers'),
-    selectOffer: (id: string, offerId: string, availabilityRevision?:number) => request<SelectOfferResponse>(path(id) + '/select-offer', { offerId,...(availabilityRevision!==undefined?{availabilityRevision}:{}) }),
+    selectOffer: (id: string, offerId: string, availabilityRevision?:number,scheduleRevision?:number) => request<SelectOfferResponse>(path(id) + '/select-offer', { offerId,...(scheduleRevision!==undefined?{scheduleRevision}:{}),...(availabilityRevision!==undefined?{availabilityRevision}:{}) }),
     updateOfferAvailability:(id:string,body:UpdateOfferAvailabilityRequest)=>request<UpdateOfferAvailabilityResponse>(path(id)+'/offers/mine/availability',body,'PATCH'),
     getAssignment: (id: string) => request<AssignmentDto>('/assignments/' + encodeURIComponent(id)),
     updateRolePreference: (body: UpdateRolePreferenceRequest) => request<UserDto>('/me/preferences', body, 'PATCH'),

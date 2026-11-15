@@ -1,3 +1,5 @@
+import {TaskScheduleService} from '../scheduling/service';
+import {rescheduleSchema} from '../validation/scheduling';
 import { OfferAvailabilityService } from '../marketplace/availability-service';
 import { z } from 'zod';
 import { AssignmentService, type Transition } from '../assignment/service';
@@ -16,10 +18,14 @@ export function marketplaceRoutes() {
   router.post('/tasks/:id/offers/mine/withdraw', route(async (req, res) => { res.json(await market.withdraw(res.locals.uid, contextIdSchema.parse(req.params.id))); }));
   router.get('/tasks/:id/offers/mine', route(async (req, res) => { res.json(await market.mine(res.locals.uid, contextIdSchema.parse(req.params.id))); }));
   router.get('/tasks/:id/offers', route(async (req, res) => { res.json(await market.listOffers(res.locals.uid, contextIdSchema.parse(req.params.id))); }));
-  router.post('/tasks/:id/select-offer', route(async (req, res) => { res.json(await market.select(res.locals.uid, contextIdSchema.parse(req.params.id), selectOfferSchema.parse(req.body).offerId,selectOfferSchema.parse(req.body).availabilityRevision)); }));
+  router.post('/tasks/:id/select-offer', route(async (req, res) => { res.json(await market.select(res.locals.uid, contextIdSchema.parse(req.params.id), selectOfferSchema.parse(req.body).offerId,selectOfferSchema.parse(req.body).availabilityRevision,selectOfferSchema.parse(req.body).scheduleRevision)); }));
   router.get('/assignments/:id', route(async (req, res) => { res.json(await market.getAssignment(res.locals.uid, contextIdSchema.parse(req.params.id))); }));
   router.patch('/tasks/:id/offers/mine/availability',route(async(req,res)=>{res.json(await availability.update(res.locals.uid,contextIdSchema.parse(req.params.id),updateAvailabilitySchema.parse(req.body)));}));
   router.post('/assignments/:id/reconfirm-availability',route(async(req,res)=>{res.json(await availability.reconfirm(res.locals.uid,contextIdSchema.parse(req.params.id),reconfirmAvailabilitySchema.parse(req.body).expectedRevision));}));
+  const scheduling=new TaskScheduleService();
+  router.post('/tasks/:id/reschedule/preview',route(async(req,res)=>{res.json(await scheduling.preview(res.locals.uid,contextIdSchema.parse(req.params.id),rescheduleSchema.parse(req.body)));}));
+  router.post('/tasks/:id/reschedule',route(async(req,res)=>{res.json(await scheduling.reschedule(res.locals.uid,contextIdSchema.parse(req.params.id),rescheduleSchema.parse(req.body)));}));
+  router.post('/assignments/:id/reconfirm-schedule',route(async(req,res)=>{res.json(await scheduling.confirm(res.locals.uid,contextIdSchema.parse(req.params.id),reconfirmAvailabilitySchema.parse(req.body).expectedRevision));}));
   const assignments = new AssignmentService();
   router.get('/assignments/:id/task', route(async (req, res) => { res.json(await assignments.publicTask(res.locals.uid, contextIdSchema.parse(req.params.id))); }));
   router.get('/me/offers', route(async (_req, res) => { res.json(await assignments.myOffers(res.locals.uid)); }));
@@ -29,8 +35,8 @@ export function marketplaceRoutes() {
   const dispute = z.object({ reason: z.string().trim().min(1).max(500).optional() }).strict();
   for (const operation of ['confirm', 'decline', 'cancel', 'start', 'request-completion', 'confirm-completion', 'dispute'] as Transition[]) {
     router.post('/assignments/:id/' + operation, route(async (req, res) => {
-      const body = operation === 'dispute' ? dispute.parse(req.body) : operation==='cancel' ? cancelAssignmentSchema.parse(req.body) : empty.parse(req.body);
-      res.json(await assignments.transition(res.locals.uid, contextIdSchema.parse(req.params.id), operation, 'reason' in body ? body.reason as string : undefined,'expectedAvailabilityRevision' in body ? body.expectedAvailabilityRevision as number|undefined : undefined));
+      const body = operation === 'dispute' ? dispute.parse(req.body) : ['cancel','decline'].includes(operation) ? cancelAssignmentSchema.parse(req.body) : empty.parse(req.body);
+      res.json(await assignments.transition(res.locals.uid, contextIdSchema.parse(req.params.id), operation, 'reason' in body ? body.reason as string : undefined,'expectedAvailabilityRevision' in body ? body.expectedAvailabilityRevision as number|undefined : undefined,'expectedScheduleRevision' in body ? body.expectedScheduleRevision as number|undefined : undefined));
     }));
   }
   return router;

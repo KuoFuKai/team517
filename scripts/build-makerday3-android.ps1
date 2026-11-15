@@ -20,6 +20,9 @@ try {
     if($LASTEXITCODE -ne 0){throw 'Local presentation prebuild failed.'}
     Push-Location android
     try {
+      # Expo inlines environment values into JS; Gradle must not reuse a LOCAL/PREVIEW bundle from the other target.
+      # Remove only this generated output, never source or app data.
+      Remove-Item -LiteralPath 'app/build/generated/assets/react/release/index.android.bundle' -ErrorAction SilentlyContinue
       & ./gradlew.bat --init-script ../../../scripts/gradle-foojay.init.gradle :app:assembleRelease '-PreactNativeArchitectures=arm64-v8a,x86_64' --max-workers=2 --console=plain
       if($LASTEXITCODE -ne 0){throw 'Standalone release-variant build failed.'}
     } finally {Pop-Location}

@@ -3,7 +3,7 @@ import type { Task } from '../domain/task';
 import type { Offer, Assignment } from '../domain/marketplace';
 import { ApiFailure } from '../shared/errors';
 
-export type MarketplaceAction = 'UPDATE_OFFER_AVAILABILITY' | 'DISCOVER_TASK' | 'OFFER_HELP' | 'WITHDRAW_OFFER' | 'VIEW_OWN_OFFER' | 'VIEW_OFFERS' | 'SELECT_HELPER' | 'VIEW_ASSIGNMENT';
+export type MarketplaceAction = 'RESCHEDULE_TASK' | 'UPDATE_OFFER_AVAILABILITY' | 'DISCOVER_TASK' | 'OFFER_HELP' | 'WITHDRAW_OFFER' | 'VIEW_OWN_OFFER' | 'VIEW_OFFERS' | 'SELECT_HELPER' | 'VIEW_ASSIGNMENT';
 export const isOfferable = (task: Task) => Boolean(task.publishedAt) && ['OPEN', 'HAS_OFFERS'].includes(task.status);
 export async function authorizeMarketplace(reader: PermissionReader, uid: string, action: MarketplaceAction,
   resource: { task?: Task; offer?: Offer; assignment?: Assignment } = {}) {
@@ -22,6 +22,7 @@ export async function authorizeMarketplace(reader: PermissionReader, uid: string
     return;
   }
   if (action === 'VIEW_ASSIGNMENT' && assignment?.helperId === uid && assignment.taskId === task!.id) return;
+  if(action==='RESCHEDULE_TASK' && assignment?.helperId===uid)denied();
   const member = await reader.member(task!.careContextId, uid);
   const active = member?.status === 'ACTIVE';
   if (action === 'OFFER_HELP') {

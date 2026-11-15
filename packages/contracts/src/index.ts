@@ -39,6 +39,8 @@ export interface CreateLocationRequest {
 }
 export interface LocationDto extends CreateLocationRequest { id: string; careContextId: string }
 export interface TaskSummaryDto {
+  scheduleRevision?: number;
+  requiresHelperReconfirmation?: boolean;
   id: string;
   careContextId: string;
   title?: string;
@@ -47,6 +49,7 @@ export interface TaskSummaryDto {
   urgency?: TaskUrgency;
 }
 export interface TaskDetailDto extends TaskSummaryDto {
+  canReschedule?: boolean;
   createdBy: string;
   helpType?: string;
   instructions?: string; // Legacy private field.
@@ -96,9 +99,9 @@ export interface AiTaskSummaryDto {
 export type OfferStatus = 'ACTIVE' | 'WITHDRAWN' | 'SELECTED' | 'NOT_SELECTED' | 'EXPIRED';
 export type OfferAvailabilityFit = 'COVERS_TASK' | 'PARTIAL_OVERLAP' | 'CONFLICT' | 'NOT_PROVIDED';
 export interface OfferAvailabilityDto { availableFrom?: string; availableUntil?: string; availabilityFit?: OfferAvailabilityFit }
-export interface TaskOfferAvailabilityDto extends OfferAvailabilityDto { availabilityRevision?:number; taskStartAt?: string; taskEndAt?: string }
+export interface TaskOfferAvailabilityDto extends OfferAvailabilityDto { scheduleRevision?:number; availabilityRevision?:number; taskStartAt?: string; taskEndAt?: string }
 export interface OfferHelpRequest { message?: string; availableFrom?: string; availableUntil?: string }
-export interface SelectOfferRequest { offerId: string; availabilityRevision?: number }
+export interface SelectOfferRequest { offerId: string; availabilityRevision?: number; scheduleRevision?:number }
 export interface UpdateOfferAvailabilityRequest { expectedRevision: number; availableFrom?: string; availableUntil?: string }
 export interface AvailabilityReviewDto { selected: OfferAvailabilityDto; current: OfferAvailabilityDto; selectedRevision: number; currentRevision: number; requiresRequesterReconfirmation: boolean }
 export interface UpdateOfferAvailabilityResponse { offer: OfferDto; assignment?: AssignmentDto }
@@ -108,14 +111,21 @@ export interface OfferDto extends OfferAvailabilityDto {
   createdAt: string; updatedAt: string; assignmentId?: string;
 }
 export interface OfferSummaryDto extends OfferDto { verificationStatus: VerificationStatus; averageRating?: number; reviewCount?: number; trust?: HelperTrustSummaryDto; relationship?: 'CARE_CIRCLE' | 'EXTERNAL' }
+export interface ScheduleWindowDto { startAt: string; endAt: string }
+export interface RescheduleTaskRequest extends ScheduleWindowDto { expectedRevision: number; expectedAssignmentId: string | null }
+export interface ReschedulePreviewDto { current: ScheduleWindowDto; proposed: ScheduleWindowDto; scheduleRevision: number; activeAssignmentId?: string; affectedHelpers: number; selectedHelperId?: string; selectedHelperFit?: OfferAvailabilityFit; requiresHelperReconfirmation: boolean }
+export interface RescheduleTaskResponse { task: TaskDetailDto; assignment?: AssignmentDto }
+export interface ScheduleReviewDto { previous: ScheduleWindowDto; current: ScheduleWindowDto; scheduleRevision: number; confirmedScheduleRevision: number; requiresHelperReconfirmation: boolean; availability: OfferAvailabilityDto }
 export interface AssignmentDto {
+  requiresHelperReconfirmation?: boolean;
+  scheduleReview?: ScheduleReviewDto;
   availabilityReview?: AvailabilityReviewDto;
   id: string; taskId: string; offerId: string; helperId: string; selectedBy: string;
   status: AssignmentStatus; selectedAt: string; confirmedAt?: string; startedAt?: string; completionRequestedAt?: string; completedAt?: string; createdAt: string; updatedAt: string;
 }
-export interface TaskOfferStateDto { id: string; status: TaskStatus; offerCount: number; activeAssignmentId?: string }
+export interface TaskOfferStateDto { scheduleRevision?:number; startAt?:string; endAt?:string; id: string; status: TaskStatus; offerCount: number; activeAssignmentId?: string }
 export interface OfferListDto { offers: OfferSummaryDto[]; task: TaskOfferStateDto }
-export interface MyOfferDto { taskTime?: {startAt?:string;endAt?:string}; offer: OfferDto | null; taskStatus: TaskStatus }
+export interface MyOfferDto { taskTitle?:string; taskTime?: {startAt?:string;endAt?:string}; offer: OfferDto | null; taskStatus: TaskStatus }
 export interface SelectOfferResponse { task: TaskOfferStateDto; assignment: AssignmentDto }
 export interface TaskDiscoveryQuery {
   latitude?: number; longitude?: number; radiusKm?: number;
@@ -147,7 +157,7 @@ export interface DisputeCompletionRequest { reason?: string }
 export interface CalendarQuery { start: string; end: string }
 export interface CalendarTaskDto { taskId: string; title?: string; startAt: string; endAt: string; status: TaskStatus; roleInTask: 'REQUESTER' | 'HELPER'; assignmentId?: string; helperId?: string }
 export interface CalendarDto { tasks: CalendarTaskDto[]; truncated: boolean; limit: number }
-export type NotificationType = 'OFFER_AVAILABILITY_UPDATED' | 'OFFER_RECEIVED' | 'HELPER_SELECTED' | 'ASSIGNMENT_CONFIRMED' | 'ASSIGNMENT_DECLINED' | 'ASSIGNMENT_CANCELLED' | 'TASK_STARTED' | 'COMPLETION_REQUESTED' | 'TASK_COMPLETED' | 'COMPLETION_DISPUTED' | 'NEW_MESSAGE';
+export type NotificationType = 'TASK_RESCHEDULED' | 'SCHEDULE_RECONFIRMED' | 'OFFER_AVAILABILITY_UPDATED' | 'OFFER_RECEIVED' | 'HELPER_SELECTED' | 'ASSIGNMENT_CONFIRMED' | 'ASSIGNMENT_DECLINED' | 'ASSIGNMENT_CANCELLED' | 'TASK_STARTED' | 'COMPLETION_REQUESTED' | 'TASK_COMPLETED' | 'COMPLETION_DISPUTED' | 'NEW_MESSAGE';
 export interface NotificationDto { id: string; type: NotificationType; resourceType: 'TASK' | 'ASSIGNMENT' | 'CONVERSATION'; resourceId: string; title: string; body: string; readAt?: string; createdAt: string }
 export interface NotificationsDto { notifications: NotificationDto[]; limit: number; truncated: boolean }
 export interface RegisterDeviceTokenRequest { token: string; platform: 'android'; deviceId?: string; appVersion?: string; deliveryEnabled?: boolean }

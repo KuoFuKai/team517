@@ -1,3 +1,4 @@
+import {createSchedulingApi} from './scheduling';
 import { auth } from '../auth/firebase';
 import { config } from '../config';
 import { createTransport } from './transport';
@@ -12,6 +13,7 @@ const request = createTransport({
   getToken: async () => auth.currentUser?.getIdToken(),
 });
 export const { registerDeviceToken, getDeviceToken, disableDeviceToken, getNotification } = createPushApi(request);
+export const {previewReschedule,rescheduleTask,reconfirmSchedule}=createSchedulingApi(request);
 const api = createCareApi(request);
 
 export const { getCurrentUser, initializeUser, listCareContexts, createCareContext, getCareContext } = api;

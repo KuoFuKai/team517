@@ -1,3 +1,4 @@
+import {MarketplaceRepository} from '../repositories/marketplace';
 import { AssignmentService } from '../assignment/service';
 import { Timestamp } from 'firebase-admin/firestore';
 import type { CreateLocationRequest, TaskDraftFields } from '@team517/contracts';
@@ -47,7 +48,8 @@ export class TaskService {
     const task = await this.repo.task(id);
     if (!task) throw new ApiFailure(404, 'NOT_FOUND', 'Task not found.');
     const member = await authorize(this.store, uid, 'VIEW_TASK', task.careContextId, task.createdBy, task.status);
-    const dto = taskDetailDto(task);
+    const dto = {...taskDetailDto(task),canReschedule:(task.createdBy===uid || member?.role==='CARE_MANAGER') && ['OPEN','HAS_OFFERS','AWAITING_CONFIRMATION','ARRANGED'].includes(task.status)};
+    if(task.activeAssignmentId && (await new MarketplaceRepository().assignment(task.activeAssignmentId))?.helperId===uid)dto.canReschedule=false;
     // Operational instructions are a separate privilege from trusted-circle Task reads.
     if (task.createdBy !== uid && member?.role !== 'CARE_MANAGER') delete dto.privateInstructions;
     return dto;

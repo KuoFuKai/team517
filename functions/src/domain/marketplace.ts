@@ -8,6 +8,7 @@ export interface Offer {
 }
 export interface Assignment {
   id: string; taskId: string; careContextId: string; offerId: string; helperId: string; selectedBy: string;
+  selectedScheduleRevision?: number; confirmedScheduleRevision?: number; acceptedScheduleStartAt?: Timestamp; acceptedScheduleEndAt?: Timestamp; requiresHelperReconfirmation?: boolean;
   selectedAvailabilityRevision?: number; selectedAvailableFrom?: Timestamp; selectedAvailableUntil?: Timestamp; requiresRequesterReconfirmation?: boolean;
   status: AssignmentStatus; selectedAt: Timestamp; confirmedAt?: Timestamp; startedAt?: Timestamp; completionRequestedAt?: Timestamp; completedAt?: Timestamp; disputeReason?: string; createdAt: Timestamp; updatedAt: Timestamp;
 }

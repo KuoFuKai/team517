@@ -1,3 +1,4 @@
+import {AssignmentRepository} from '../repositories/assignments';
 import { TrustRepository } from '../repositories/trust';
 import { Timestamp } from 'firebase-admin/firestore';
 import type { OfferHelpRequest, MyOfferDto, OfferListDto, SelectOfferResponse } from '@team517/contracts';
@@ -49,7 +50,7 @@ export class MarketplaceService {
     const offer = await this.repo.offer(offerId(taskId, uid));
     await authorizeMarketplace(this.repo.reader(), uid, offer ? 'VIEW_OWN_OFFER' : 'OFFER_HELP', { task, offer });
     if (!offer && !isOfferable(task)) throw new ApiFailure(409, 'TASK_NOT_OFFERABLE', 'This task is not accepting offers.');
-    return { taskTime:{startAt:task.startAt?.toDate().toISOString(),endAt:task.endAt?.toDate().toISOString()}, offer: offer ? { ...offerDto(offer,task), ...(offer.status === 'SELECTED' && task.activeAssignmentId ? { assignmentId: task.activeAssignmentId } : {}) } : null, taskStatus: task.status };
+    return { taskTitle:task.title, taskTime:{startAt:task.startAt?.toDate().toISOString(),endAt:task.endAt?.toDate().toISOString()}, offer: offer ? { ...offerDto(offer,task), ...(offer.status === 'SELECTED' && task.activeAssignmentId ? { assignmentId: task.activeAssignmentId } : {}) } : null, taskStatus: task.status };
   }
   async listOffers(uid: string, taskId: string): Promise<OfferListDto> {
     const task = await this.task(taskId);
@@ -61,9 +62,10 @@ export class MarketplaceService {
       return {...offerDto(offer,task),verificationStatus:trust.verificationStatus,reviewCount:trust.reviewCount,...(trust.averageRating!==undefined?{averageRating:trust.averageRating}:{}),trust,relationship};
     })};
   }
-  async select(uid: string, taskId: string, selectedOfferId: string, expectedRevision?:number): Promise<SelectOfferResponse> {
+  async select(uid: string, taskId: string, selectedOfferId: string, expectedRevision?:number,expectedScheduleRevision?:number): Promise<SelectOfferResponse> {
     const result = await this.repo.change(taskId, uid, async (task, reads, assignmentId) => {
       await authorizeMarketplace(reads.permissions, uid, 'SELECT_HELPER', { task });
+      if((task.scheduleRevision ?? 0)!==(expectedScheduleRevision ?? 0))throw new ApiFailure(409,'SCHEDULE_STALE','Schedule changed. Refresh and review the current task before selecting.');
       if (task.activeAssignmentId) throw new ApiFailure(409, 'ACTIVE_ASSIGNMENT_EXISTS', 'An Assignment is already pending.');
       if (task.status !== 'HAS_OFFERS') throw new ApiFailure(409, 'TASK_NOT_SELECTABLE', 'Task must have active offers before selection.');
       const offer = await reads.offer(selectedOfferId);
@@ -73,6 +75,7 @@ export class MarketplaceService {
       await authorizeMarketplace(reads.permissions, offer.helperId, 'OFFER_HELP', { task });
       const now = Timestamp.now();
       const assignment: Assignment = { id: assignmentId, taskId, careContextId: task.careContextId, offerId: offer.id, helperId: offer.helperId, selectedBy: uid,
+        selectedScheduleRevision:task.scheduleRevision ?? 0, acceptedScheduleStartAt:task.startAt!,acceptedScheduleEndAt:task.endAt!,requiresHelperReconfirmation:false,
         selectedAvailabilityRevision:offer.availabilityRevision ?? 0, ...(offer.availableFrom && offer.availableUntil ? {selectedAvailableFrom:offer.availableFrom,selectedAvailableUntil:offer.availableUntil}:{}), requiresRequesterReconfirmation:false, status: 'PENDING_CONFIRMATION', selectedAt: now, createdAt: now, updatedAt: now };
       return { task: { ...task, status: 'AWAITING_CONFIRMATION', activeAssignmentId: assignmentId },
         offer: { ...offer, status: 'SELECTED', updatedAt: now }, assignment, event: 'HELPER_SELECTED' };
@@ -80,10 +83,6 @@ export class MarketplaceService {
     return { task: taskOfferStateDto(result.task), assignment: assignmentDto(result.assignment!) };
   }
   async getAssignment(uid: string, id: string) {
-    const assignment = await this.repo.assignment(id);
-    if (!assignment) throw new ApiFailure(404, 'NOT_FOUND', 'Assignment not found.');
-    const task = await this.task(assignment.taskId);
-    await authorizeMarketplace(this.repo.reader(), uid, 'VIEW_ASSIGNMENT', { task, assignment });
-    return assignmentDto(assignment,await this.repo.offer(assignment.offerId),task);
+    return new AssignmentRepository().view(id,async(task,assignment,_location,reader,offer)=>{await authorizeMarketplace(reader,uid,'VIEW_ASSIGNMENT',{task,assignment});return assignmentDto(assignment,offer,task);});
   }
 }

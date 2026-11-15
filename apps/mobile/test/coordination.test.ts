@@ -32,3 +32,10 @@ test('safe public names are caller-provided only; no UID or email fallback is ac
 test('Timeline and Notifications use product labels without exposing metadata or enums',()=>{
  assert.equal(timelineLabel('TASK_RESCHEDULED','TASK_RESCHEDULED'),'Task time changed');assert.equal(timelineLabel('SCHEDULE_RECONFIRMED','internal'),'Helper confirmed the new time');assert.equal(timelineLabel('UNKNOWN','INTERNAL_EVENT'),'Task activity updated');assert.equal(notificationTitle('TASK_RESCHEDULED','old'),'Task time changed');
 });
+
+test('fresh authorized context supersedes stale parent Task copy without changing authority',async()=>{
+ const {requesterCoordination}=await import('../src/utils/coordination');
+ const current=requesterCoordination({status:'OPEN'},{status:'HAS_OFFERS',offerCount:2});
+ assert.equal(present(current).title,'2 helpers responded');assert.equal(present(current).nextActionLabel,'Review offers');
+ assert.equal(present(requesterCoordination({status:'OPEN'})).title,'Waiting for helpers');
+});

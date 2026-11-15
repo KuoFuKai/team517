@@ -1,7 +1,7 @@
 import {useCoordinationContext} from '../utils/useCoordinationContext';
 import {RescheduleTask} from './RescheduleTask';
 import {CoordinationCard} from '../components/CoordinationCard';
-import {taskStatusPresentation} from '../utils/coordination';
+import {taskStatusPresentation,requesterCoordination} from '../utils/coordination';
 import {taskWhenLabel,compensationLabel} from '../utils/design-presentation';
 import { PreviewContentCover } from '../components/PreviewContentCover';
 import React from 'react';
@@ -18,8 +18,8 @@ export function TaskDetailScreen({ task, locations, busy, edit, cancel, back, vi
   useScreenHeader({ title: 'Task details', back, disabled: busy, priority: 2 });
   const location = locations.find(l => l.id === task.locationId);
   const context=useCoordinationContext(task.id,undefined,Boolean(viewOffers) && task.status!=='DRAFT',false,task.updatedAt);
-  const currentStatus=context?.assignment?.status ?? context?.status ?? task.status;
-  const coordination=taskStatusPresentation({status:currentStatus,helperName:context?.name,offerCount:context?.offerCount,scheduleChanged:context?.assignment?.scheduleReview?.requiresHelperReconfirmation ?? task.requiresHelperReconfirmation,availabilityChanged:context?.assignment?.availabilityReview?.requiresRequesterReconfirmation});
+  const input=requesterCoordination(task,context),currentStatus=input.status;
+  const coordination=taskStatusPresentation(input);
   const compensation = compensationLabel(task);
   return <>
     <PageHeading title={task.title || 'Untitled draft'} />

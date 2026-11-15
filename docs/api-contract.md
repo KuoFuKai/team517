@@ -300,3 +300,7 @@ All use the existing authenticated `/api/v1` JSON/error contract:
 | POST `/assignments/:assignmentId/reconfirm-schedule` | `expectedRevision` | Assignment after exact-current-revision acceptance |
 
 Only eligible current creator/manager relationships may reschedule, and a selected Helper cannot use manager membership to move their own assignment. OPEN/HAS_OFFERS/AWAITING_CONFIRMATION/ARRANGED are allowed before execution; drafts retain their ordinary editor. Normalized identical retries are read-only. Selection also carries the viewed `scheduleRevision`; decline and guarded pending cancellation carry `expectedScheduleRevision`. Relevant stable errors: `SCHEDULE_STALE`, `TASK_NOT_RESCHEDULABLE`, `SCHEDULE_RECONFIRMATION_REQUIRED`, `AVAILABILITY_UPDATE_REQUIRED`, `SCHEDULE_NOT_RECONFIRMABLE`. Errors expose no Firestore exception. Public DTOs expose safe scheduling snapshots, never persistence documents. See [policy](scheduling.md).
+
+## Sprint 8F error-contract clarification
+
+No new REST endpoint or shared DTO. A numeric Firestore ABORTED10 carrying transaction/contention details, after SDK transaction retries have exhausted, now uses existing409 `CONFLICT` with generic refresh guidance. Vendor details are excluded. Unknown failures remain500. Clients must refresh and review current state; no unseen-state destructive retry. This does not eliminate possible emulator contention or change a successful lifecycle commit.

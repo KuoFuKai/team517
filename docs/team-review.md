@@ -1,3 +1,11 @@
+## Sprint 8F review handoff — November 15
+
+[48-item report](sprint-8f-report.md), [state / actor / next-step policy](coordination-ux.md), [actual Android evidence](native-evidence/2026-11-15-coordination-clarity/README.md). Source lives on `codex/sprint-8f-status-clarity`; only previously approved8E was fast-forwarded to main. No automated message was sent to teammates.
+
+For the unaided review, ask Yiru/Kingsley to identify current state, responsible person, next actor, next action and what follows before explaining the screen. Use the synthetic Mom's care December18 availability-review Task, December19 changed-time Task, December20 OPEN Task, December21 two-response Task and December22 combined-review Task. A–D completed acceptance histories remain intact. These are fictional commitments; obtain accounts via the existing private handoff. Do not commit passwords, login receipts, private locations or service-account material.
+
+Expected distinctions: Offer is not assignment; selected is not confirmed; Keep does not confirm a Helper; changed Task time requires explicit Helper acceptance; completed help can be reviewed. Record actual comprehension mistakes, not just visual preference. No unaided comprehension session has been claimed passed. Kevin requested emulator first; combined vivo8A–8F remains queued together, no reconnection request needed now.
+
 ## Sprint 8D teammate review — November 14
 
 [Current report](sprint-8d-report.md) and [actual screenshots](native-evidence/2026-11-14-reconfirmation/README.md). Kingsley's existing brand/schedule work is preserved; no incoming changes/conflicts found on repeated fetch. Source batches were pushed throughout implementation for review. Try Alex's ACTIVE Library visit Offer edit; selected Morning company old/current availability and Keep; Choose help for a clinic visit demonstrates the existing replacement flow (already selected Marcus during emulator acceptance). These are synthetic development stories, not real care commitments. The Family appointment POINTS70 draft is deliberately unpublished for the later phone walkthrough. Obtain private Preview accounts via the existing secure handoff, never commit login receipts.

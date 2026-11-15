@@ -1,3 +1,7 @@
+## Current — Sprint 8F (November15)
+
+**Coordination / lifecycle clarity — NEW / polished**: state/actor/next-action cards, role-specific current responsibility, separate availability-vs-schedule review, safe contextual names, current pending-list reads, human Timeline/Calendar/Notification copy, grammar and focused-header cleanup. [Report](sprint-8f-report.md), [policy](coordination-ux.md), [actual matrix](native-evidence/2026-11-15-coordination-clarity/README.md). Tasks, Maps, Calendar, Messaging, Community, Push, Points, Trust, task-specific availability, availability updates/reconfirmation and Task rescheduling remain working within dated acceptance scopes. Recurring availability, provider calendars, no-show, Payments and real verification remain future; iOS deferred. Combined8A–8F physical checks and unaided Yiru/Kingsley comprehension validation are still pending. Older checkpoints below are historical.
+
 ## Current — Sprint 8E (November 14–15)
 
 Tasks, Maps, Calendar, Messaging, Community, Push, Points, Trust, Task-specific Helper availability and availability-change/requester reconfirmation are working within dated scopes. **Task rescheduling — NEW / WORKING**: current Task revision, impact preview, fit recalculation, explicit Helper acceptance, stale recovery and existing decline/replacement. [Report](sprint-8e-report.md). Recurring/global availability, external calendars, no-show, Payments and real verification remain future; iOS deferred. Combined8A–8E phone acceptance remains pending. Older sections below are historical.

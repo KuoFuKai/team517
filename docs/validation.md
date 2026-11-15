@@ -1,3 +1,13 @@
+## Sprint 8F validation — November 15, 2026
+
+Node 22.23.4 / Java 21: **38/38 backend units, 120/120 client tests, 127/127 emulator integrations**. Typecheck, smoke, default/manual HTTP, AI-mock HTTP, Community/Messaging/Maps/Points/Trust/privacy/concurrency regressions and Android Hermes export passed. [Exact final product source b826d7a CI SUCCESS](https://github.com/KuoFuKai/team517/actions/runs/43702657180). Ten focused client presentation tests supplement the preserved 110; one private transaction-conflict unit supplements the preserved 37. No framework or dependency addition; original concurrency assertions retained.
+
+Final local batch `.tools/8f-final-scope-results.json` retained one HTTP startup failure (`Functions` discovery `TypeError: fetch failed`, then route404); unchanged default HTTP retry passed in `.tools/8f-final-http-retry.log`. Other final-batch stages passed first run. Earlier Firestore ABORTED10 contention failure is retained separately: minimal existing error-boundary mapping now returns safe409 CONFLICT after exhausted SDK retries; no transaction-body redesign or emulator-frequency claim. Unknown failures remain500. Earlier 8E lock-timeout evidence below is unchanged.
+
+Auth9199, Firestore8280, Functions5001, UI4300 unchanged; Android guest host10.0.2.2. Native acceptance used standalone team517-dev cloud Preview without local services/Metro/reverse, not local emulators. APK source b826d7a, SHA256 `4c28b567eef7486e2e207fabe0b0829e7ae9ac8a8b30a6cdf8ec5a7225faadf7`. [Native matrix](native-evidence/2026-11-15-coordination-clarity/README.md), [report](sprint-8f-report.md). Mobile business-Firestore boundary scan has no matches; secret preflight has no findings. Existing dependency advisories28 (1low/20moderate/7high/0critical), no force upgrades; Gradle future-version deprecations remain.
+
+Actual API36 engineering scope is separate from queued vivo8A–8F and actual unaided teammate comprehension. No new provider or feature Sprint started.
+
 ## Sprint 8E validation — November14–15, 2026
 
 Executable source `cffdf9c`: Node22.23.4 / existing Java21, typecheck PASS;37/37 backend units;110/110 client tests;127/127 emulator integrations; smoke; default HTTP; AI-mock HTTP; Community/Messaging regression coverage; Android Hermes export PASS. [Exact source CI SUCCESS](https://github.com/KuoFuKai/team517/actions/runs/43680214205). Auth9199, Firestore8280, Functions5001 and UI4300 unchanged. One final local integration run had126/127 with a Firestore transaction lock timeout in existing completion-dispute setup; original log retained locally. Full integration retry127/127 passed without source change. Do not describe the initial failed attempt as green.

@@ -25,3 +25,7 @@ Reschedule request: startAt, endAt, expectedRevision, expectedAssignmentId. Help
 Guarded development fixtures: npm run preview:scheduling -- --project team517-dev --mode prepare; --mode smoke. Normal authenticated APIs only, private ignored receipts, no ADC/direct aggregates/delete-all. The smoke reserves20 existing development Points through ordinary Task publication, verifies no reservation/ledger mutation during reschedules, then uses ordinary Task cancellation to release them. Partial smoke receipts stop for inspection rather than rewind.
 
 Future: recurring/global availability, provider calendars, Task interruption/Early Termination, no-show, Payments, real providers and iOS. None introduced here. Consolidated8A/8B/8C/8D/8E vivo acceptance remains pending until an actual phone session.
+
+## Sprint 8F presentation handoff
+
+[Coordination policy](coordination-ux.md) separates requester availability review from Helper Task-time reconfirmation, and hides resolved comparisons. Pending list summaries hydrate existing protected detail; unknown context remains neutral rather than asserting the wrong actor. Task date/revision, strict coverage, backup policy, exact-location gate, Points and Trust semantics above remain unchanged. No recurring/global scheduling or external-calendar integration added.

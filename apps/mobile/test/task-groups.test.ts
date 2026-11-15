@@ -36,8 +36,8 @@ test('group sorting is stable, does not mutate API data and does not invent offe
   const rows: TaskSummaryDto[] = [{ ...tasks[2], id: 'late', startAt: '2026-11-14T12:00:00Z' }, { ...tasks[2], id: 'early', startAt: '2026-11-13T12:00:00Z' }];
   assert.deepEqual(groupTasks(rows, 'current')[0].tasks.map(t => t.id), ['early', 'late']);
   assert.equal(rows[0].id, 'late');
-  assert.equal(taskRowNote(rows[0]), 'Offers received · Choose a helper');
-  assert.equal(taskRowNote({ ...tasks[1], urgency: 'URGENT' }), 'Urgent · No helper yet');
+  assert.equal(taskRowNote(rows[0]), 'Helpers have responded · Review offers');
+  assert.equal(taskRowNote({ ...tasks[1], urgency: 'URGENT' }), 'Urgent · Waiting for helpers');
 });
 test('receiver UI mode retains Post and Circle/Messages without marketplace navigation', () => {
   const items = navigationItems(false);

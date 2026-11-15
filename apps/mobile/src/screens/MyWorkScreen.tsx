@@ -12,7 +12,7 @@ import type { MyOffersDto, MyAssignmentsDto, AssignmentDto } from '@team517/cont
 import * as api from '../api/client';
 import { AssignmentPanel } from './AssignmentPanel';
 import { Text, Button, Card, EmptyState, StatusBadge, SectionHeader, LoadingState, ErrorState } from '../components/ui';
-import { friendlyError, dateLabel, assignmentNextAction, workPriority } from '../utils/presentation';
+import { friendlyError, dateLabel, workPriority } from '../utils/presentation';
 import { TaskPreviewCard } from '../components/Cards';
 export function MyWorkScreen({ back }: { back: () => void }) {
   const [offers, setOffers] = useState<MyOffersDto | null>(null), [assignments, setAssignments] = useState<MyAssignmentsDto | null>(null), [titles, setTitles] = useState<Record<string, string>>({});
@@ -44,7 +44,7 @@ export function MyWorkScreen({ back }: { back: () => void }) {
       </Card>)}
     </>}
     {section === 'assignments' && <><Text accessibilityRole="header">Your tasks</Text>{!busy && assignments?.assignments.length === 0 && <EmptyState title="No assignments yet" message="When a requester selects your offer, it will appear here for you to confirm." />}
-      {assignments?.assignments.slice().sort((a, b) => workPriority(a.status) - workPriority(b.status)).map(a => <TaskPreviewCard key={a.id} status={a.status} title={titles[a.id] || 'Your task'} when={'Selected ' + dateLabel(a.selectedAt)} detail={a.requiresHelperReconfirmation?'Schedule changed · review the new time':assignmentNextAction(a.status, true)} busy={busy} open={() => setSelected(a)} />)}
+      {assignments?.assignments.slice().sort((a, b) => workPriority(a.status) - workPriority(b.status)).map(a => <TaskPreviewCard key={a.id} status={a.status} title={titles[a.id] || 'Your task'} when={'Selected ' + dateLabel(a.selectedAt)} detail={taskStatusPresentation({status:a.status,helper:true,scheduleChanged:a.requiresHelperReconfirmation,availabilityChanged:a.availabilityReview?.requiresRequesterReconfirmation}).title} busy={busy} open={() => setSelected(a)} />)}
     </>}
     {(offers?.truncated || assignments?.truncated) && <Text>Showing your 50 most recently updated items.</Text>}
     <Button variant="quiet" title="Refresh my tasks" disabled={busy} onPress={() => void run(load)} />

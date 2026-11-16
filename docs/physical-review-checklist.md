@@ -1,3 +1,7 @@
+## Current execution — November15–16
+
+Vivo is connected; [consolidated execution report](physical-8a-8h-report.md) records actual passes and pending scopes. The preparation checklist below is retained as the original protocol, not a claim that completed rows remain untested. Use8H engineering candidate separately from frozen8G participant study.
+
 # One combined vivo acceptance session — 8A–8F
 
 **READY / NOT RUN in 8G.** Current adb inventory contains only the emulator. Per Kevin, continue emulator preparation and wait for the phone without repeated connection requests. Prior phone results are historical, not passes for this APK.

@@ -5,5 +5,7 @@ export async function providerFlow<C>(intent:'signin'|'link'|'reauth',port:Provi
  const before=port.currentUid(),credential=await port.credential();if(!credential)return;
  if(intent==='signin'){if(port.currentUid()!==before)throw {code:'auth/requires-recent-login'};await port.signin(credential);return credential;}
  if(!before||port.currentUid()!==before)throw {code:'auth/requires-recent-login'};
- const uid=await(intent==='link'?port.link(credential):port.reauth(credential));if(uid!==before)throw new Error('Identity changed unexpectedly');return credential;
+ const uid=await(intent==='link'?port.link(credential):port.reauth(credential));if(uid!==before)throw new Error('Identity changed unexpectedly');
+ if(port.currentUid()!==before)throw {code:'auth/requires-recent-login'};
+ return credential;
 }

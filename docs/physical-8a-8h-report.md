@@ -8,7 +8,7 @@ Starting origin/main6727e94; branch codex/sprint-8h-auth-ios-readiness from41f76
 |---|---|---|
 |Preflight/install|PASS|vivo state device; in-place update; actual installed hash matches; original display/font/IME retained.|
 |Existing Auth/cold launch|PASS|Alex session survived update and force-stop/relaunch; actual caregiving Tasks rendered.|
-|8A wallet/history|PASS|570available/0reserved, earned activity; physical history scroll and Back. Reservation/settlement still pending below.|
+|8A wallet/history|PASS|570available/0reserved, earned activity; physical history scroll and Back. Reservation/settlement results are recorded in the next row.|
 |Verification/own Trust|PASS scoped|Current Verified state, rating4.7/3reviews/7completed, actual own profile/Review list and Back rendered. No real KYC claim.|
 |8A reservation/settlement/release|PASS native reserve/release/settlement|Full native manual POINTS5/Circle draft saved without charge, published once under rapid taps (945available/285reserved), cancelled once under rapid taps, returned to950/280 with native +5release activity.Native rapid completion approval settled exactly30: manager950available/250reserved; Alex600available/0reserved; API audit one TASK_COMPLETED.|
 |8B comparison/context|PASS|3-helper comparison; full/partial/unspecified fit; Alex/Marcus contextual profiles; Sam Care Circle + Not verified +0reviews; nested Profile→Message/input/send→hardware Back; native rapid-tap selection created one pending Assignment/one selection event and retained2ACTIVE backups.|
@@ -50,3 +50,4 @@ Final connected preflight: no adb reverse entries, no listeners on Metro8081/809
 Remaining: native provider-link cancellation/conflict/reauth variants and real mailbox link redemption not executed; GPS, floating keyboards, Apple/iOS/Xcode/APNs and8G unaided teammate study remain separately pending. No new product/domain/backend/dependency changes, no rebuild or change to frozen8G artifact. This is scoped engineering acceptance, not a claim every8H variant/platform passed.
 
 Final Kevin handoff report (November16): “全部成功” for the requested unplugged ordinary-network checklist. Device control stayed paused during the handoff. Core physical matrix is complete in its recorded scope; no BLOCKER/HIGH/MEDIUM product defect demonstrated. LOW verification-label wrapping, generic safe participant aliases and overlapping-map gesture discovery remain documented; no broad redesign.8H cross-platform closure is not claimed because extended Auth variants/iOS prerequisites and8G human study remain separate.
+

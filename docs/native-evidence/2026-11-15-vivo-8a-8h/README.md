@@ -1,6 +1,6 @@
 # Physical vivo evidence — November15–16,2026
 
-IN PROGRESS. See [actual execution and pending rows](../../physical-8a-8h-report.md). Every PNG is from vivoV2324A Android14/API34 at original1260×2800/560dpi/font1.12. Not emulator screenshots or participant-study outcomes. Fictional app data only; personal notification shade, credential screens and zero-byte protected captures are excluded.
+Core physical execution completed; extended variants remain pending. See [actual execution and pending rows](../../physical-8a-8h-report.md). Every PNG is from vivoV2324A Android14/API34 at original1260×2800/560dpi/font1.12. Not emulator screenshots or participant-study outcomes. Fictional app data only; personal notification shade, credential screens and zero-byte protected captures are excluded.
 
 Candidate installed SHA2560193d2e8223b7494185074dbe375376fedc23a58d5fda37d5e7b8654a242c235; [build source](../../auth-build.json).
 
@@ -59,3 +59,42 @@ Candidate installed SHA2560193d2e8223b7494185074dbe375376fedc23a58d5fda37d5e7b86
 - [waiting-marcus](waiting-marcus.png)
 - [zero-review-copy](zero-review-copy.png)
 - [zero-review-profile](zero-review-profile.png)
+
+November16 continued physical evidence (peer API fixture actions are identified in the report):
+
+- [c-new-schedule-confirmed](c-new-schedule-confirmed.png)
+- [c-arrival-unlocked](c-arrival-unlocked.png)
+- [c-private-visible](c-private-visible.png)
+- [c-revoked-cleared](c-revoked-cleared.png)
+- [cancelled-message](cancelled-message.png)
+- [a-before-start](a-before-start.png)
+- [a-started](a-started.png)
+- [a-approved](a-approved.png)
+- [message-route](message-route.png)
+- [message-history-top](message-history-top.png)
+- [review-before-submit](review-before-submit.png)
+- [review-submitted](review-submitted.png)
+- [timeline-completed](timeline-completed.png)
+
+Fictional native signup/onboarding/context/deletion (personal Google screens excluded):
+
+- [email-cooldown-fast](email-cooldown-fast.png)
+- [new-circle-empty](new-circle-empty.png)
+- [circle-created](circle-created.png)
+- [fresh-me](fresh-me.png)
+- [deleted-final](deleted-final.png)
+
+Remaining physical navigation/settlement/keyboard checks:
+
+- [reset-result](reset-result.png)
+- [map-loaded](map-loaded.png)
+- [map-selected](map-selected.png)
+- [map-detail](map-detail.png)
+- [map-return](map-return.png)
+- [map-to-list](map-to-list.png)
+- [inbox-native](inbox-native.png)
+- [inbox-scrolled](inbox-scrolled.png)
+- [settled-wallet](settled-wallet.png)
+- [alex-final-profile](alex-final-profile.png)
+- [restored-zhuyin](restored-zhuyin.png)
+- [helper-calendar-scheduled](helper-calendar-scheduled.png)

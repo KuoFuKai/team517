@@ -1,3 +1,5 @@
+November16 physical continuation: see [consolidated vivo matrix](physical-8a-8h-report.md) and [actual physical evidence](native-evidence/2026-11-15-vivo-8a-8h/README.md). Native core lifecycle/Points/Trust/privacy/Community/Messaging/Maps/FCM, disposable Email onboarding/deletion and Kevin-operated real Google/cold persistence executed; unplugged checklist all successful by Kevin report. No product/backend change. Extended provider-link/mailbox/iOS/runtime variants and8G human study remain pending. Earlier numbered checkpoints below retain their original dates/scope.
+
 # Sprint8H — Authentication, registration and iOS source readiness
 
 November15,2026. [Auth](authentication.md) · [Deletion](account-deletion.md) · [iOS matrix](ios-readiness.md) · [Mac handoff](ios-build-handoff.md) · [Native evidence](native-evidence/2026-11-15-auth/README.md) · [Build receipt](auth-build.json).

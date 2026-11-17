@@ -1,6 +1,6 @@
 ## Current execution — November15–16
 
-Vivo is connected; [consolidated execution report](physical-8a-8h-report.md) records actual passes and pending scopes. The preparation checklist below is retained as the original protocol, not a claim that completed rows remain untested. Use8H engineering candidate separately from frozen8G participant study.
+Core physical execution is complete, including Kevin’s successful unplugged report; [consolidated execution report](physical-8a-8h-report.md) records actual passes and pending scopes. The preparation checklist below is retained as the original protocol, not a claim that completed rows remain untested. Use8H engineering candidate separately from frozen8G participant study.
 
 # One combined vivo acceptance session — 8A–8F
 

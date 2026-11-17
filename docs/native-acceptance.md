@@ -1,4 +1,4 @@
-## Physical vivo8A–8H — November15–16, IN PROGRESS
+## Physical vivo8A–8H — November15–16, core matrix complete
 
 [Live consolidated report](physical-8a-8h-report.md) · [actual phone PNGs](native-evidence/2026-11-15-vivo-8a-8h/README.md). Original phone display/font retained; tested rows and pending rows remain separate. This supersedes earlier “phone absent” only for the rows actually executed. No participant-comprehension or iOS pass follows from these engineering checks.
 

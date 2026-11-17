@@ -1,0 +1,12 @@
+{
+  "source": "02e6e669ccb6d40941795890dda813acc3ecf56f",
+  "sha256": "c6c15559671a668916c79d59b571fd0c349592bdf965363bb133e96f00428dd7",
+  "buildDate": "2026-11-16",
+  "package": "edu.cornelltech.team517",
+  "version": "0.2.0",
+  "environment": "PREVIEW",
+  "firebaseProject": "team517-dev",
+  "apk": "artifacts/android/team517-8h-closure-preview.apk",
+  "supersedesForNewChecksOnly": "docs/auth-build.json",
+  "priorEvidencePreserved": true
+}
